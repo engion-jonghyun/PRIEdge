@@ -38,51 +38,23 @@ namespace PRIEdge
 
         void InitPri()
         {
-            //var testMenu = new ToolStripMenuItem("Test");
-            //menuStrip1.Items.Add(testMenu);
-
-            //var priTestMenu = new ToolStripMenuItem("LG PRI Test");
-            //testMenu.DropDownItems.Add(priTestMenu);
-            //// priTestMenu.Click += (_, __) => PriLineFind();
-
-            //var priTestMenu2 = new ToolStripMenuItem("LG PRI Test2");
-            //testMenu.DropDownItems.Add(priTestMenu2);
-            ////priTestMenu2.Click += (_, __) => PriLineFind2();
-
-            //var priEraseBackground = new ToolStripMenuItem("LG PRI Background Erase");
-            //testMenu.DropDownItems.Add(priEraseBackground);
-            ////priEraseBackground.Click += PriEraseBackground_Click;
-
-            //var priEraseBackground2 = new ToolStripMenuItem("LG PRI Background Erase2");
-            //testMenu.DropDownItems.Add(priEraseBackground2);
-            //priEraseBackground2.Click += PriEraseBackground2_Click;
-
-
-
-            //var priEraseBackground3 = new ToolStripMenuItem("LG PRI Background Erase3");
-            //testMenu.DropDownItems.Add(priEraseBackground3);
-            //priEraseBackground3.Click += PriEraseBackground3_Click;
-
-
-
-            //drawFunctions.Add(DrawPRI);
-
-
             Vars.recipe = Recipe.Load(Properties.Settings.Default.LastRecipeFile);
+            SaveButtonUpdate();
         }
-        unsafe private void PriLineFind_Right(BitmapBuf buf, Rectangle OffsetRect)
+        unsafe private Task<bool> PriLineFind_Right(BitmapBuf buf, Rectangle OffsetRect)
         {
             try
             {
-                if (buf == null)
-                    return;
+                if (buf == null) 
+                    return Task.FromResult(true);
                 int h = buf.Height;
                 int w = buf.Width;
                 var angle = 0.0;
 
-                buf = Rotation(buf, 180, buf.Rectangle.Center(), buf.Rectangle.Center());
+                if (recipe.RightMetalRotation)
+                    buf = Rotation(buf, 180, buf.Rectangle.Center(), buf.Rectangle.Center());
 
-                buf.Save("D:\\RightRotate180.png");
+               // buf.Save("D:\\RightRotate180.png");
                 {
                     //double sx = lgLine.GetX(0);
                     //double ex = lgLine.GetX(buf.Height - 1);
@@ -111,16 +83,25 @@ namespace PRIEdge
                     }
 
                     if (edge.Count == 0)
-                        return;
+                        return Task.FromResult(true);
                 }
-                if (lgLine_Right.AngleDeg > 0)
-                    angle = -Math.Abs(90 - lgLine_Right.AngleDeg);
-                else if (lgLine_Right.AngleDeg < 0)
-                    angle = Math.Abs(90 + lgLine_Right.AngleDeg);
+
+                if (lgLine_Left.AngleDeg > 90)
+                    angle = -Math.Abs(lgLine_Left.AngleDeg - 90);
+                else if (lgLine_Left.AngleDeg < -90)
+                    angle = Math.Abs(lgLine_Left.AngleDeg + 90);
+                else if (lgLine_Left.AngleDeg < 0 && lgLine_Left.AngleDeg > -90)
+                    angle = -Math.Abs(lgLine_Left.AngleDeg + 90);
+                else if (lgLine_Left.AngleDeg > 0 && lgLine_Left.AngleDeg < 90)
+                    angle = Math.Abs(lgLine_Left.AngleDeg - 90);
 
 
-                var buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
-                buf2.Save("D:\\RightRotate.png");
+                BitmapBuf buf2 = buf;
+                if (recipe.RightMetalRotation)
+                    buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
+
+                if (recipe.SaveRightRotateImage)
+                    Task.Run(() => buf2.Save(recipe.ImageSaveFolder + "\\RightRotated.png"));
                 // 재계산
                 {
                     //var edge2 = new List<PointF>();
@@ -145,7 +126,7 @@ namespace PRIEdge
                     {
                         RotatedPoints.Add(
                             new Point(
-                            (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X,
+                            (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X + recipe.RightOffSet,
                             (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
                             ));
                     }
@@ -184,27 +165,32 @@ namespace PRIEdge
                     }
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Right2);
 
+                    if (recipe.IntervalEverage != 0)
+                        curve = GetEverage(0, curve);
+
                     edgePixels2_Right = curve;
 
                     log.AddLogMessage(LogType.Information, 0, "Right Edge Find Done");
+                    return Task.FromResult(true);
                 }
             }
             catch (Exception ex)
             {
                 log.AddLogMessage(LogType.Error, 0, ex.Message);
+                return Task.FromResult(true);
             }
         }
-        unsafe private void PriLineFind_Left(BitmapBuf buf, Rectangle OffsetRect)
+        unsafe private Task<bool> PriLineFind_Left(BitmapBuf buf, Rectangle OffsetRect)
         {
             try
             {
+
                 if (buf == null)
-                    return;
+                    return Task.FromResult(true);
                 int h = buf.Height;
                 int w = buf.Width;
                 var angle = 0.0;
 
-                buf.Save("D:\\Left.png");
                 {
                     //double sx = lgLine.GetX(0);
                     //double ex = lgLine.GetX(buf.Height - 1);
@@ -224,16 +210,25 @@ namespace PRIEdge
                     edgePixels_Left = edge;
 
                     if (edge.Count == 0)
-                        return;
+                        return Task.FromResult(true);
                 }
-                if (lgLine_Left.AngleDeg > 0)
-                    angle = Math.Abs(90 - lgLine_Left.AngleDeg); 
-                else if (lgLine_Left.AngleDeg < 0)
-                    angle = Math.Abs(90 + lgLine_Left.AngleDeg);
+                if (lgLine_Left.AngleDeg >90)
+                    angle = -Math.Abs(lgLine_Left.AngleDeg - 90);
+                else if (lgLine_Left.AngleDeg < -90)
+                    angle = Math.Abs(lgLine_Left.AngleDeg+90);
+                else if (lgLine_Left.AngleDeg < 0 && lgLine_Left.AngleDeg > -90)
+                    angle = -Math.Abs(lgLine_Left.AngleDeg +90);
+                else if (lgLine_Left.AngleDeg > 0 && lgLine_Left.AngleDeg <90)
+                    angle = Math.Abs(lgLine_Left.AngleDeg - 90);
 
 
-                var buf2 = Rotation(buf, -angle, buf.Rectangle.Center(), buf.Rectangle.Center());
-                buf2.Save("D:\\LeftRotate.png");
+                var buf2 = buf;
+                if(recipe.LeftMetalRotation)
+                    buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
+
+                if (recipe.SaveLeftRotateImage)
+                    Task.Run(()=> buf2.Save(recipe.ImageSaveFolder + "\\LeftRotated.png"));
+                // buf2.Save("D:\\LeftRotate.png");
                 // 재계산
                 {
                     //var edge2 = new List<PointF>();
@@ -258,8 +253,8 @@ namespace PRIEdge
                     {
                         RotatedPoints.Add(
                             new Point(
-                            (int)RotatePoint(edge2[i], -angle, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X,
-                            (int)RotatePoint(edge2[i], -angle, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
+                            (int)RotatePoint(edge2[i], angle, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X - recipe.LeftOffSet,
+                            (int)RotatePoint(edge2[i], angle, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
                             ));
                     }
 
@@ -268,7 +263,7 @@ namespace PRIEdge
                     
                     for (int i = 0; i < 5; i++)
                     {
-                        curve.Add(new Point((int)lgLine_Left2.GetX(i + OffsetRect.Y), RotatedPoints[i].Y));
+                        curve.Add(new Point((int)lgLine_Left2.GetX(RotatedPoints[i].Y), RotatedPoints[i].Y));
                         //EdgeList.Add(new Defect
                         //{
                         //    Direction = DefectType.Left,
@@ -302,15 +297,21 @@ namespace PRIEdge
                     }
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Left2);
                     curve = ReverseArray(curve);
+
+                    if (recipe.IntervalEverage != 0)
+                        curve = GetEverage(0, curve);
+
                     edgePixels2_Left = curve;
 
 
                     log.AddLogMessage(LogType.Information, 0, "Left Edge Find Done");
+                    return Task.FromResult(true);
                 }
             }
             catch (Exception ex)
             {
                 log.AddLogMessage(LogType.Error, 0, ex.Message);
+                return Task.FromResult(true);
             }
         }
 
@@ -394,21 +395,21 @@ namespace PRIEdge
             
         }
 
-        unsafe private void PriLineFind_Top(BitmapBuf buf, Rectangle OffsetRect)
+        unsafe private Task<bool> PriLineFind_Top(BitmapBuf buf, Rectangle OffsetRect)
         {
             try
             {
                 if (InsImage == null)
-                    return;
+                    return Task.FromResult(true);
                 int h = buf.Height;
-                int w = buf.Width; 
+                int w = buf.Width;
                 var angle = 0.0;
 
                 {
                     //double sx = lgLine.GetX(0);
                     //double ex = lgLine.GetX(buf.Height - 1);
-                    var rect = new Rectangle((int)0, 0, buf.Width, buf.Height);
-                    var edge = Edge.FindEdge(buf, rect, new EdgeParam
+                    var rect2 = new Rectangle((int)0, 0, buf.Width, buf.Height);
+                    var edge = Edge.FindEdge(buf, rect2, new EdgeParam
                     {
                         Method = recipe.TopEdgeParam_Guide[0].Method,
                         DiffStep = recipe.TopEdgeParam_Guide[0].DiffStep,
@@ -423,85 +424,163 @@ namespace PRIEdge
                     edgePixels_Top = edge;
 
                     if (edge.Count == 0)
-                        return;
+                        return Task.FromResult(true);
                 }
 
-                //if (lgLine_Top.AngleDeg > 0)
-                //    angle = -Math.Abs(lgLine_Top.AngleDeg);
-                //else if (lgLine_Top.AngleDeg < 0)
-                //    angle = Math.Abs(lgLine_Top.AngleDeg);
+                if (lgLine_Top.AngleDeg > 0)
+                    angle = -Math.Abs(lgLine_Top.AngleDeg);
+                else if (lgLine_Top.AngleDeg < 0)
+                    angle = Math.Abs(lgLine_Top.AngleDeg);
 
                 //var buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
-                var buf2 = Rotation(buf, 0, buf.Rectangle.Center(), buf.Rectangle.Center());
+
+
+                var buf2 = buf;
+                if (recipe.TopMetalRotation)
+                    buf2 = Rotation(buf,angle , buf.Rectangle.Center(), buf.Rectangle.Center());
                 //buf2.Save("D:\\TopRotate.png");
 
+                if (recipe.SaveTopRotateImage)
+                    Task.Run(() => buf2.Save(recipe.ImageSaveFolder + "\\TopRotated.png"));
                 // 재계산
+
+
+                var rect = buf2.Rectangle;
+                var edge2 = Edge.FindEdge(buf2, rect, new EdgeParam
                 {
+                    Method = recipe.TopEdgeParam[0].Method,
+                    DiffStep = recipe.TopEdgeParam[0].DiffStep,
+                    EdgeFindDir = recipe.TopEdgeParam[0].EdgeFindDir,
+                    Threshold = recipe.TopEdgeParam[0].Threshold,
+                    EdgeLineDir = recipe.TopEdgeParam[0].EdgeLineDir,
+                    EdgeSel = recipe.TopEdgeParam[0].EdgeSel,
+                    EdgeStart = recipe.TopEdgeParam[0].EdgeStart,
+                    EdgeType = recipe.TopEdgeParam[0].EdgeType,
+                });
+                //edge2.Add(new PointF(x + OffsetRect.X, (float)edge + y + OffsetRect.Y));
+                var RotatedPoints = new List<Point>();
+                var curve = new List<Point>();
 
-                    var rect = buf2.Rectangle;
-                    var edge2 = Edge.FindEdge(buf2, rect, new EdgeParam
-                    {
-                        Method = recipe.TopEdgeParam[0].Method,
-                        DiffStep = recipe.TopEdgeParam[0].DiffStep,
-                        EdgeFindDir = recipe.TopEdgeParam[0].EdgeFindDir,
-                        Threshold = recipe.TopEdgeParam[0].Threshold,
-                        EdgeLineDir = recipe.TopEdgeParam[0].EdgeLineDir,
-                        EdgeSel = recipe.TopEdgeParam[0].EdgeSel,
-                        EdgeStart = recipe.TopEdgeParam[0].EdgeStart,
-                        EdgeType = recipe.TopEdgeParam[0].EdgeType,
-                    });
-                    //edge2.Add(new PointF(x + OffsetRect.X, (float)edge + y + OffsetRect.Y));
-                    var RotatedPoints = new List<Point>();
-                    var curve = new List<Point>();
-
-                    for (int i = 0; i < edge2.Count; i++)
-                    {
-                        RotatedPoints.Add(new Point((int)edge2[i].X + OffsetRect.X, (int)edge2[i].Y + OffsetRect.Y));
-                    }
-
-                    lgLine_Top2 = Line.LineFit(RotatedPoints.ToArray(), 10);
-                   
-                    for (int i = 0; i < 5; i++)
-                    {
-                        curve.Add(new Point(RotatedPoints[i].X, (int)lgLine_Top2.GetY(i + OffsetRect.X)));
-
-                    }
-                    for (int i = 5; i < RotatedPoints.Count - 1; i++)
-                    {
-                        if (lgLine_Top2.GetY(RotatedPoints[i].X) - recipe.TopEdgeParam[0].Margin < RotatedPoints[i].Y && lgLine_Top2.GetY(RotatedPoints[i].X) + recipe.TopEdgeParam[0].Margin > RotatedPoints[i].Y)
-                        {
-                            curve.Add(RotatedPoints[i]);
-
-                        }
-                        else if (recipe.TopEdgeParam[0].UseGuide)
-                        {
-                            curve.Add(new Point(RotatedPoints[i].X, Convert.ToInt32(lgLine_Top2.GetY(RotatedPoints[i].X))));
-
-                            // var DefectImage = InsImage.Clone(new Rectangle((int)Temp[i].X - 50, (int)lgLine_Top2.GetY(i + OffsetRect.X) - 50, 100,100), PixelFormat.Format8bppIndexed);
-
-                        }
-                        //EdgeList.Add(new Defect
-                        //{
-                        //    Direction = DefectType.Top,
-                        //    Location = new Point(Temp[i].X, (int)lgLine_Top2.GetY(i + OffsetRect.X)),
-                        //    X = Temp[i].X,
-                        //    Y = (int)lgLine_Top2.GetY(i + OffsetRect.X),
-                        //    //   DefectImage = DefectImage
-                        //});
-                    }
-
-
-                    curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Top2);
-                    edgePixels2_Top = curve;
+                for (int i = 0; i < edge2.Count; i++)
+                {
+                    RotatedPoints.Add(new Point((int)edge2[i].X + OffsetRect.X, (int)edge2[i].Y + OffsetRect.Y - recipe.TopOffSet));
                 }
+
+                lgLine_Top2 = Line.LineFit(RotatedPoints.ToArray(), 10);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    curve.Add(new Point(RotatedPoints[i].X, (int)lgLine_Top2.GetY(i + OffsetRect.X)));
+
+                }
+                for (int i = 5; i < RotatedPoints.Count - 1; i++)
+                {
+                    if (lgLine_Top2.GetY(RotatedPoints[i].X) - recipe.TopEdgeParam[0].Margin < RotatedPoints[i].Y && lgLine_Top2.GetY(RotatedPoints[i].X) + recipe.TopEdgeParam[0].Margin > RotatedPoints[i].Y)
+                    {
+                        curve.Add(RotatedPoints[i]);
+
+                    }
+                    else if (recipe.TopEdgeParam[0].UseGuide)
+                    {
+                        curve.Add(new Point(RotatedPoints[i].X, Convert.ToInt32(lgLine_Top2.GetY(RotatedPoints[i].X))));
+
+                        // var DefectImage = InsImage.Clone(new Rectangle((int)Temp[i].X - 50, (int)lgLine_Top2.GetY(i + OffsetRect.X) - 50, 100,100), PixelFormat.Format8bppIndexed);
+
+                    }
+                    //EdgeList.Add(new Defect
+                    //{
+                    //    Direction = DefectType.Top,
+                    //    Location = new Point(Temp[i].X, (int)lgLine_Top2.GetY(i + OffsetRect.X)),
+                    //    X = Temp[i].X,
+                    //    Y = (int)lgLine_Top2.GetY(i + OffsetRect.X),
+                    //    //   DefectImage = DefectImage
+                    //});
+                }
+
+                curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Top2);
+
+                if(recipe.IntervalEverage != 0)
+                    curve = GetEverage(1, curve);
+
+                edgePixels2_Top = curve;
+
                 imageViewer1.Image = InsImage;
                 imageViewer1.Invalidate();
 
                 log.AddLogMessage(LogType.Information, 0, "Top Edge Find Done");
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 log.AddLogMessage(LogType.Error, 0, ex.Message);
+                return Task.FromResult(true);
+            }
+        }
+
+        private List<Point> GetEverage(int Index, List<Point> Src)
+        {
+            try
+            {
+                if (recipe.IntervalEverage == 0)
+                    return Src;
+
+                List<Point> Rst = new List<Point>();
+                int counter = 0;
+                int Value = 0;
+                for (int i = 0; i < Src.Count; i++)
+                {
+                    counter++;
+                    //세로
+                    if (Index == 0)
+                    {
+                        Value += Src[i].X;
+                        if(counter == recipe.IntervalEverage)
+                        {
+                            int Evg = (int)Math.Round((double)Value /counter,0);
+                            for (int k = recipe.IntervalEverage; k >0  ; k--)
+                            {
+                                Rst.Add(new Point(Evg, Src[i-k+1].Y));
+                            }
+                            counter = 0;
+                            Value = 0;
+                        }
+                    }
+                    //가로
+                    else if (Index == 1)
+                    {
+                        Value += Src[i].Y;
+                        if (counter == recipe.IntervalEverage)
+                        {
+                            int Evg = (int)Math.Round((double)Value / counter, 0); 
+                            for (int k = recipe.IntervalEverage; k > 0; k--)
+                            {
+                                Rst.Add(new Point(Src[i - k + 1].X, Evg));
+                            }
+                            counter = 0;
+                            Value = 0;
+                        }
+                    }
+                    else
+                    {
+                        log.AddLogMessage(LogType.Error, 0, "Cannot Get Everage Result");
+                        return Src;
+                    }
+                }
+
+                if(counter != 0)
+                {
+                    for(int i = 0; i < counter; i++)
+                    {
+                        Rst.Add(Rst[Rst.Count-1]);
+                    }
+                }
+                return Rst;
+            }
+            catch(Exception ex)
+            {
+                log.AddLogMessage(LogType.Error, 0, ex);
+                log.AddLogMessage(LogType.Error, 0, "Cannot Get Everage Result");
+                return Src;
             }
         }
         unsafe private BitmapBuf ErasePattern(BitmapBuf buf)
@@ -531,6 +610,8 @@ namespace PRIEdge
                     }
                 }
 
+                buf2.Save(Vars.recipe.ImageSaveFolder + "\\TempErasePattern.png");
+
                 IppIF.Fill(buf, 0, buf.Rectangle);
 
                 for (int y = pitch; y < h - pitch; y++)
@@ -557,35 +638,28 @@ namespace PRIEdge
                 return buf;
             }
         }
+  
         unsafe private BitmapBuf EraseMetal(BitmapBuf buf)
         {
             try
             {
-                BitmapBuf Erosion(BitmapBuf src, int count)
-                {
-                    BitmapBuf dst = null;
-                    for (int i = 0; i < count; i++)
-                    {
-                        dst = IppIF.Erosion(src, src.Rectangle);
-                        src = dst;
-                    }
-                    return dst;
-                }
+               
                 if (buf == null)
                     return new BitmapBuf(0, 0);
                 var original = (BitmapBuf)buf.Clone();
                 int h = buf.Height;
                 int w = buf.Width;
 
+                
                 var buf2 = new BitmapBuf(w, h);
                 IppIF.Fill(buf2, 0, buf2.Rectangle);
 
                 int thres = recipe.EraseMetalLevel;
                 int pitch = recipe.EraseMetalPitch;
-                for (int y = 100; y < h - 100; y++)
+                for (int y = pitch; y < h - pitch; y++)
                 {
                     byte* p = buf.GetPtr(y);
-                    for (int x = 100; x < w - 100; x++)
+                    for (int x = pitch; x < w - pitch; x++)
                     {
                         int side = (p[x - pitch] + p[x + pitch]) / 2;
                         if (Math.Abs(side - p[x]) < thres)
@@ -594,6 +668,11 @@ namespace PRIEdge
                         }
                     }
                 }
+
+
+
+                buf2.Save(Vars.recipe.ImageSaveFolder + "\\TempEraseMetal.png");
+                #region 주석처리
                 //var buf3 = new BitmapBuf(w, h);
                 //IppIF.Fill(buf3, 0, buf3.Rectangle);
 
@@ -630,6 +709,8 @@ namespace PRIEdge
                 //        }
                 //    }
                 //}
+                #endregion
+
                 buf2 = Erosion(buf2, 1);
                 buf = buf2;
                 //buf = buf2;
@@ -642,7 +723,18 @@ namespace PRIEdge
                 return buf;
             }
 
-}
+            BitmapBuf Erosion(BitmapBuf src, int count)
+            {
+                BitmapBuf dst = null;
+                for (int i = 0; i < count; i++)
+                {
+                    dst = IppIF.Erosion(src, src.Rectangle);
+                    src = dst;
+                }
+                return dst;
+            }
+
+        }
         unsafe private void PriEraseBackground2_Click(object sender, EventArgs e)
         {
             InsImage = ErasePattern(InsImage);
@@ -757,28 +849,30 @@ namespace PRIEdge
             {
                 return;
             }
+            //Guide 라인
             if (showGuideLineToolStripMenuItem.Checked)
             {
+
+                Pen Guidetemppen = new Pen(Color.Red, recipe.DrawLineWidth);
                 if (lgLine_Left2 != null && lgLine_Top2 != null && lgLine_Right2 != null)
                 {
                     if (lgLine_Left2.a != double.NaN && lgLine_Top2.a != double.NaN && lgLine_Right2.a != double.NaN)
                     {
                         double sx2 = lgLine_Left2.GetX(recipe.MetalRect.Y);
                         double ex2 = lgLine_Left2.GetX(recipe.MetalRect.Y + recipe.MetalRect.Height - 1);
-                        g.DrawLine(Pens.Red,
+                        g.DrawLine(Guidetemppen,
                             imageViewer1.ImageToClient(new Point((int)sx2, recipe.MetalRect.Y)),
                             imageViewer1.ImageToClient(new Point((int)ex2, recipe.MetalRect.Y + recipe.MetalRect.Height - 1)));
 
                         double sy2 = lgLine_Top2.GetY(recipe.MetalRect.X);
                         double ey2 = lgLine_Top2.GetY(recipe.MetalRect.X + recipe.MetalRect.Width - 1);
-                        g.DrawLine(Pens.Red,
+                        g.DrawLine(Guidetemppen,
                             imageViewer1.ImageToClient(new Point(recipe.MetalRect.X, (int)sy2)),
                             imageViewer1.ImageToClient(new Point(recipe.MetalRect.X + recipe.MetalRect.Width - 1, (int)ey2)));
 
-
                         double sx = lgLine_Right2.GetX(recipe.MetalRect.Y);
                         double ex = lgLine_Right2.GetX(recipe.MetalRect.Y + recipe.MetalRect.Height - 1);
-                        g.DrawLine(Pens.Red,
+                        g.DrawLine(Guidetemppen,
                             imageViewer1.ImageToClient(new Point((int)sx, recipe.MetalRect.Y)),
                             imageViewer1.ImageToClient(new Point((int)ex, recipe.MetalRect.Y + recipe.MetalRect.Height - 1)));
 
@@ -791,15 +885,11 @@ namespace PRIEdge
                     log.AddLogMessage(LogType.Error, 0, "Guide Line is null");
                 }
             }
-            else
-            {
-
-            }
-                
-                    
-            
+            //Original Line
             if (showOrgToolStripMenuItem.Checked)
             {
+                Pen orgtemppen = new Pen(Color.Lime, recipe.DrawLineWidth);
+
                 PointF[] K = new PointF[edgePixels_Left.Count];
                 for (int k = 0; k < edgePixels_Left.Count; k++)
                 {
@@ -807,8 +897,7 @@ namespace PRIEdge
                 }
                
                 if (edgePixels_Left.Count > 2)
-                    g.DrawLines(Pens.Lime, imageViewer1.ImageToClient( K));
-              
+                    g.DrawLines(orgtemppen, imageViewer1.ImageToClient( K));              
 
                 K = new PointF[edgePixels_Top.Count];
                 for (int k = 0; k < edgePixels_Top.Count; k++)
@@ -817,9 +906,7 @@ namespace PRIEdge
                 }
               
                 if (edgePixels_Top.Count > 2)
-                    g.DrawLines(Pens.Lime, imageViewer1.ImageToClient(K));
-
-
+                    g.DrawLines(orgtemppen, imageViewer1.ImageToClient(K));
 
                 K = new PointF[edgePixels_Right.Count];
                 for (int k = 0; k < edgePixels_Right.Count; k++)
@@ -827,43 +914,17 @@ namespace PRIEdge
                     K[k] = new PointF(edgePixels_Right[k].X , edgePixels_Right[k].Y);
                 }
                 if (edgePixels_Right.Count > 2)
-                    g.DrawLines(Pens.Lime, imageViewer1.ImageToClient(K));
-            //    if (edgePixels_Right.Count > 2 && showEdgeLineToolStripMenuItem.Checked)
-            //        g.DrawLines(Pens.Blue, imageViewer1.ImageToClient(edgePixels2_Right.ToArray()));
+                    g.DrawLines(orgtemppen, imageViewer1.ImageToClient(K));
             }
+            //Edge 검출 Line
             if (showEdgeLineToolStripMenuItem.Checked) 
             {
-                //var J = new PointF[edgePixels2_Left.Count];
-                //for (int j = 0; j < edgePixels2_Left.Count; j++)
-                //{
-                //    J[j] = new PointF(edgePixels2_Left[j].X , edgePixels2_Left[j].Y );
-                //}
-                //if (edgePixels2_Left.Count > 2)
-                //    g.DrawLines(Pens.Blue, imageViewer1.ImageToClient(J));
-
-                //J = new PointF[edgePixels2_Top.Count];
-                //for (int j = 0; j < edgePixels2_Top.Count; j++)
-                //{
-                //    J[j] = new PointF(edgePixels2_Top[j].X , edgePixels2_Top[j].Y );
-                //}
-
-                //if (edgePixels2_Top.Count > 2 )
-                //    g.DrawLines(Pens.Blue, imageViewer1.ImageToClient(J));
-
-
-                //J = new PointF[edgePixels2_Right.Count];
-                //for (int j = 0; j < edgePixels2_Right.Count; j++)
-                //{
-                //    J[j] = new PointF(edgePixels2_Right[j].X, edgePixels2_Right[j].Y);
-                //}
-                //if (edgePixels2_Right.Count > 2)
-                //    g.DrawLines(Pens.Blue, imageViewer1.ImageToClient(J));
                 var J = new Point[Result.Count];
                 for (int j = 0; j < Result.Count; j++)
                 {
                     J[j] = new Point(Result[j].X, Result[j].Y);
                 }
-                Pen EdgeTempPen = new Pen(Color.Blue,2);
+                Pen EdgeTempPen = new Pen(Color.Blue, recipe.DrawLineWidth);
                 if (Result.Count > 2)
                     g.DrawLines(EdgeTempPen, imageViewer1.ImageToClient(J));
             }

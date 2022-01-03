@@ -24,7 +24,7 @@ namespace PRIEdge
 
         public static Point ModifyStartPoint { get; set; }
         public static bool WhileModify { get; set; }
-        
+                
         public Vars()
         {
 
@@ -34,7 +34,6 @@ namespace PRIEdge
             try
             {
                 recipe = new Recipe();
-
                 if (!Directory.Exists(RootFolder))
                 {
                     Directory.CreateDirectory(RootFolder);

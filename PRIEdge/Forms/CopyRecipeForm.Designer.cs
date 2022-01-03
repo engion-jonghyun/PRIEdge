@@ -73,6 +73,7 @@ namespace PRIEdge
             this.Controls.Add(this.NewRecipeNameTxt);
             this.Name = "CopyRecipeForm";
             this.Text = "Copy Recipe Form";
+            this.Load += new System.EventHandler(this.CopyRecipeForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

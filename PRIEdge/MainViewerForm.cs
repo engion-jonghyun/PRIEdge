@@ -50,6 +50,11 @@ namespace PRIEdge
         Point SecondPoint = new Point(0, 0);
 
         public bool ManualModify = false;
+        public bool WhileSaveImage = false;
+
+        private int PrevLeftOffset = 0;
+        private int PrevRightOffset = 0;
+        private int PrevTopOffset = 0;
 
 
         //List<Action> initFuntions = new List<Action>();
@@ -77,6 +82,10 @@ namespace PRIEdge
                 if (recipe != null)
                     CurrentRecipeTxt.Text = "Current Recipe : " + recipe.RecipeID;
                 propertyGrid_Recipe.SelectedObject = recipe;
+
+                PrevLeftOffset = recipe.LeftOffSet;
+                PrevRightOffset = recipe.RightOffSet;
+                PrevTopOffset = recipe.TopOffSet;
 
                 log.OnLogEvent += (s, ee) =>
                 {
@@ -149,18 +158,6 @@ namespace PRIEdge
                     log.AddLogMessage(LogType.Error, 0, $"Image Load Fail  :  {ex}");
                 }
             };
-        }
-
-
-        private void Form1_Shown(object sender, EventArgs e)
-        {
-        }
-
-
-
-        private async void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void OpenImageFolder(string selectedPath)
@@ -260,6 +257,7 @@ namespace PRIEdge
             }
             if (showAlignMarkToolStripMenuItem.Checked)
             {
+                Pen AlignPen = new Pen(Color.Orange, recipe.DrawLineWidth);
                 Rectangle templeft = imageViewer1.ImageToClient(new Rectangle((int)LeftAlignMarkIns.X - recipe.AlignMarkSize.Width / 2,
                                                           (int)LeftAlignMarkIns.Y - recipe.AlignMarkSize.Height / 2,
                                                           recipe.AlignMarkSize.Width, recipe.AlignMarkSize.Height));
@@ -267,18 +265,20 @@ namespace PRIEdge
                 //                                         (int)RightAlignMarkIns.Y - recipe.AlignMarkSize.Height / 2,
                 //                                         recipe.AlignMarkSize.Width, recipe.AlignMarkSize.Height));
 
-                g.DrawRectangle(Pens.Orange, templeft);
+                g.DrawRectangle(AlignPen, templeft);
                 //g.DrawRectangle(Pens.Orange, tempright);
             }
             if (showSettingToolStripMenuItem.Checked)
             {
+                Pen SettingPen = new Pen(Color.Purple, recipe.DrawLineWidth);
+
                 Rectangle tmp = imageViewer1.ImageToClient(recipe.MetalRect);
 
                 Rectangle tmp1 = imageViewer1.ImageToClient(recipe.AlignMarkLeft);
                 Rectangle tmp2 = imageViewer1.ImageToClient(recipe.AlignMarkRight);
-                g.DrawRectangle(Pens.Purple, tmp);
-                g.DrawRectangle(Pens.Purple, tmp1);
-                g.DrawRectangle(Pens.Purple, tmp2);
+                g.DrawRectangle(SettingPen, tmp);
+                g.DrawRectangle(SettingPen, tmp1);
+                g.DrawRectangle(SettingPen, tmp2);
             }
             DrawPRI(g);
 
@@ -292,12 +292,14 @@ namespace PRIEdge
             {
                 Point st = imageViewer1.ImageToClient(FirstPoint);
                 Point en = imageViewer1.ImageToClient(SecondPoint);
-                g.DrawLine(new Pen(Color.Red,3), st, en);
-
+                g.DrawLine(new Pen(Color.Red, recipe.DrawLineWidth), st, en);
+                SolidBrush BrushRect = new SolidBrush(Color.LightSteelBlue);
                 int distanceX = Math.Abs(FirstPoint.X - SecondPoint.X);
                 int distanceY = Math.Abs(FirstPoint.Y - SecondPoint.Y);
                 int distance = Convert.ToInt32(Math.Sqrt(Math.Pow(distanceX * recipe.Resolution.Width, 2) + Math.Pow(distanceY * recipe.Resolution.Height, 2)));
-                g.DrawString($"{distance.ToString()}", new Font("Arial", 20), new SolidBrush(Color.Black), en);
+                string StrDistance = distance.ToString();
+                g.FillRectangle(BrushRect, new Rectangle(en, new Size(StrDistance.Length * 19, 30)));
+                g.DrawString($"{StrDistance}", new Font("Arial", 20), new SolidBrush(Color.Black), en);
                 FirstPoint =  new Point(0, 0);
                 SecondPoint = new Point(0, 0);
             }
@@ -307,13 +309,15 @@ namespace PRIEdge
         {
             if (clickCrossLineToolStripMenuItem.Checked)
             {
+                Pen CrossLinePen = new Pen(Color.Orange, recipe.DrawLineWidth);
+
                 Point st = imageViewer1.ImageToClient(new Point(ptClickCrossLine.X, 0));
                 Point en = imageViewer1.ImageToClient(new Point(ptClickCrossLine.X, imageViewer1.Image.Height));
-                g.DrawLine(Pens.Red, st, en);
+                g.DrawLine(CrossLinePen, st, en);
 
                 st = imageViewer1.ImageToClient(new Point(0, ptClickCrossLine.Y));
                 en = imageViewer1.ImageToClient(new Point(imageViewer1.Image.Width, ptClickCrossLine.Y));
-                g.DrawLine(Pens.Red, st, en);
+                g.DrawLine(CrossLinePen, st, en);
             }
         }
 
@@ -387,8 +391,9 @@ namespace PRIEdge
                         edgePixels2_Top = HorizoneAutualModify(edgePixels2_Top, ClientPoint);
                         break;
                 }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.AddLogMessage(LogType.Error, 0, ex);
                 log.AddLogMessage(LogType.Error, 0, "Fail to Modify Edge Result");
@@ -603,103 +608,43 @@ namespace PRIEdge
                     }
                 }
             }
-
-
-
-
-            ////위에서 아래로 그렸을 때
-            //if (EndY > StartY)
-            //{
-            //    YLen = EndY - StartY;
-
-            //    Point[] ModifyPoints = new Point[YLen];
-            //    //좌에서 우로 그렸을 때
-            //    if (EndX > StartX)
-            //    {
-            //        XLen = EndX - StartX;
-            //        for (int i = 0; i < YLen; i++)
-            //        {
-            //            ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY + i);
-            //            for (int j = 0; j < OriPoints.Count(); j++)
-            //            {
-            //                if (OriPoints[j].Y == ModifyPoints[i].Y)
-            //                {
-            //                    OriPoints[j] = ModifyPoints[i];
-            //                }
-            //            }
-            //        }
-            //    }
-            //    //우에서 좌로 그렸을 때
-            //    else
-            //    {
-            //        XLen = StartX - EndX;
-            //        for (int i = 0; i < YLen; i++)
-            //        {
-            //            ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY + i);
-            //            for (int j = 0; j < OriPoints.Count(); j++)
-            //            {
-            //                if (OriPoints[j].Y == ModifyPoints[i].Y)
-            //                {
-            //                    OriPoints[j] = ModifyPoints[i];
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            ////아래에서 위로 그렸을 때
-            //else if (EndY < StartY)
-            //{
-            //    YLen = StartY - EndY;
-            //    Point[] ModifyPoints = new Point[YLen];
-            //    //좌에서 우로 그렸을 때
-            //    if (EndX > StartX)
-            //    {
-            //        XLen = EndX - StartX;
-            //        for (int i = 0; i < YLen; i++)
-            //        {
-            //            ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY - i);
-            //            for (int j = 0; j < OriPoints.Count(); j++)
-            //            {
-            //                if (OriPoints[j].Y == ModifyPoints[i].Y)
-            //                {
-            //                    OriPoints[j] = ModifyPoints[i];
-            //                }
-            //            }
-            //        }
-            //    }
-            //    //우에서 좌로 그렸을 때
-            //    else
-            //    {
-            //        XLen = StartX - EndX;
-            //        for (int i = 0; i < YLen; i++)
-            //        {
-            //            ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY - i);
-            //            for (int j = 0; j < OriPoints.Count(); j++)
-            //            {
-            //                if (OriPoints[j].Y == ModifyPoints[i].Y)
-            //                {
-            //                    OriPoints[j] = ModifyPoints[i];
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //else if (EndY == StartY)
-            //{
-            //    var CheckPoint = new Point(EndX, StartY);
-            //    for (int i = 0; i < OriPoints.Count(); i++)
-            //    {
-            //        if (OriPoints[i].Y == StartY)
-            //        {
-            //            OriPoints[i] = CheckPoint;
-            //            break;
-            //        }
-            //    }
-            //}
             RefreshImageViewer();
             return OriPoints;
         }
-
+        private void ShiftRange(int index,List<Point> OriPoints, int StartPoint , int EndPoint,int Value)
+        {
+            var Start = StartPoint;
+            var End = EndPoint;
+            int Len = Math.Abs(Start- End);
+            switch (index)
+            {
+                //좌변
+                case 0:
+                    for (int i = 0; i< edgePixels2_Left.Count;i++)
+                    {
+                        if (Start < edgePixels2_Left[i].Y && End > edgePixels2_Left[i].Y)
+                            edgePixels2_Left[i] = new Point(edgePixels2_Left[i].X + Value, edgePixels2_Left[i].Y);
+                    }
+                    break;
+                //상단
+                case 1:
+                    for (int i = 0; i < edgePixels2_Top.Count; i++)
+                    {
+                        if (Start < edgePixels2_Top[i].X && End > edgePixels2_Top[i].X)
+                            edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X , edgePixels2_Top[i].Y + Value);
+                    }
+                    break;
+                //우변
+                case 2:
+                    for (int i = 0; i < edgePixels2_Right.Count; i++)
+                    {
+                        if (Start < edgePixels2_Right[i].Y && End > edgePixels2_Right[i].Y)
+                            edgePixels2_Right[i] = new Point(edgePixels2_Right[i].X + Value, edgePixels2_Right[i].Y);
+                    }
+                    break;
+            }
+            return;
+        }
         private void imageViewerEx1_MouseMove(object sender, MouseEventArgs e)
         {
             var buf = imageViewer1.Image;
@@ -946,7 +891,6 @@ namespace PRIEdge
                 form.Values = plotData;
                 form.ShowDialog();
             }
-
         }
 
         private void showXProjectYValuesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1029,6 +973,7 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Information, 0, string.Format("Recipe Changed: {0}", recipe.RecipeID));
                 CurrentRecipeTxt.Text = "Current Recipe : " + recipe.RecipeID;
 
+                SaveButtonUpdate();
                 //bindingSource1.ResetBindings(false);
                 propertyGrid_Recipe.SelectedObject = recipe;
             }
@@ -1057,7 +1002,7 @@ namespace PRIEdge
             showSettingToolStripMenuItem.Checked = true;
             RefreshImageViewer();
         }
-        public Rectangle Align()
+        public void Align()
         {
             try
             {
@@ -1096,7 +1041,7 @@ namespace PRIEdge
                 var RightAlignMarkInsBitmap = rotate.Clone(recipe.AlignMarkRight, rotate.PixelFormat);
 
                 //LeftAlignMarkInsBitmap.Save($"D:\\OCVImage\\PRITEMP.png");
-                LeftAlignMarkIns = Point.Round(FindAlignMark(LeftAlignMarkInsBitmap, "Left", recipe.AlignMarkLeft.Location));
+                LeftAlignMarkIns = Point.Round(FindAlignMark(LeftAlignMarkInsBitmap, "Zero Point", recipe.AlignMarkLeft.Location));
                 //RightAlignMarkIns = Point.Round(FindAlignMark(RightAlignMarkInsBitmap, "Right", recipe.AlignMarkRight.Location));
 
                 log.AddLogMessage(LogType.Information, 0, $"Zero Point = {LeftAlignMarkIns.X} , {LeftAlignMarkIns.Y}");
@@ -1108,13 +1053,14 @@ namespace PRIEdge
                 RefreshImageViewer();
 
                // var ResultRotateRect = Rotation(recipe.MetalRect, angle, recipe.MetalRect.Center(), recipe.MetalRect.Center());
-                return new Rectangle();
+                return;
 
             }
             catch (Exception ex)
             {
                 log.AddLogMessage(LogType.Error, 0, ex);
-                return new Rectangle();
+                log.AddLogMessage(LogType.Error, 0, "얼라인 실패");
+                return;
             }
             
             PointF FindAlignMark(BitmapBuf buf, string LR, PointF RectPos)
@@ -1139,11 +1085,12 @@ namespace PRIEdge
                         var OutX = RectPos.X + find.Center.X;
                         var OutY = RectPos.Y + find.Center.Y;
                         PointF Out = new PointF(OutX, OutY);
+                        log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Return  Pos : {Out}/ Size : {find.Rectangle.Size}");
                         return Out;
                     }
                     else
                     {
-                        log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Fail Return 0,0");
+                        log.AddLogMessage(LogType.Error, 0, $"Find {LR} Align Mark Fail Return 0,0");
                         return new PointF(0, 0);
                     }
                 }
@@ -1186,7 +1133,7 @@ namespace PRIEdge
             bmp.Palette = pal;
             return bmp;
         }
-        private void CheckDistanceBtn_Click(object sender, EventArgs e)
+        private async void CheckDistanceBtn_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -1195,63 +1142,94 @@ namespace PRIEdge
                     log.AddLogMessage(LogType.Critical, 0, "License Error");
                     return;
                 }
+                if (WhileSaveImage == true)
+                {
+                    log.AddLogMessage(LogType.Error, 0, "While Save Image.");
+                    return;
+                }
 
-                SaveBtn_Click(null, null);
+                PrevLeftOffset = recipe.LeftOffSet;
+                PrevRightOffset = recipe.RightOffSet;
+                PrevTopOffset = recipe.TopOffSet;
+
+                _ = Task.Run(() => SaveBtn_Click(null, null));
 
                 if (InsImage == null)
                     Align();
 
+                if (!Directory.Exists(recipe.ImageSaveFolder))
+                {
+                    Directory.CreateDirectory(recipe.ImageSaveFolder);
+                }
+                if (recipe.SaveAlignImage)
+                {
+                    _ = Task.Run(() =>
+                      {
+                          WhileSaveImage = true;
+                          InsImage.Save(recipe.ImageSaveFolder + "\\AlignImage.png");
+                          log.AddLogMessage(LogType.Information, 0, "SaveAlignImageDone");
+
+                          WhileSaveImage = false;
+                      }
+                      );
+                }
+
                 EdgeList.Clear();
-                log.AddLogMessage(LogType.Information, 0, $"Start Inspect");
+                log.AddLogMessage(LogType.Information, 0, $"Start Image Processing");
 
                 Rectangle LeftRect = new Rectangle(
-                    recipe.MetalRect.X - recipe.LeftMargin/2,
-                    recipe.MetalRect.Y - 50,
+                    recipe.MetalRect.X - recipe.LeftMargin / 2,
+                    recipe.MetalRect.Y - 50 - recipe.TopOffSet,
                     recipe.LeftMargin,
-                    recipe.MetalRect.Height + 100);
-                
+                    recipe.MetalRect.Height + 100 + recipe.TopOffSet);
+
                 BitmapBuf Left = InsImage.Clone(LeftRect, PixelFormat.DontCare);
-                Left.Save("D:\\Left.png");
+                if (recipe.SaveLeftOrgImage)
+                    _ = Task.Run(() => Left.Save(recipe.ImageSaveFolder + "\\LeftOrg.png"));
                 Left.Name = "Left";
                 if (recipe.LeftFilter == Filter.ErasePattern)
                 {
                     Left = ErasePattern(Left);
                 }
-                else if(recipe.LeftFilter == Filter.EraseMetal)
+                else if (recipe.LeftFilter == Filter.EraseMetal)
                 {
                     Left = EraseMetal(Left);
                 }
-
-                Left.Save("D:\\LeftErase.png");
+                if (recipe.SaveLeftFilteredImage)
+                    _ = Task.Run(() => Left.Save(recipe.ImageSaveFolder + "\\LeftFiltered.png"));
                 log.AddLogMessage(LogType.Information, 0, $"Left Edge Image Process Done");
 
                 Rectangle TopRect = new Rectangle(
-                    recipe.MetalRect.X - 50,
-                    recipe.MetalRect.Y - recipe.TopMargin/2,
-                    recipe.MetalRect.Width + 100,
+                    recipe.MetalRect.X - 50 - recipe.LeftOffSet,
+                    recipe.MetalRect.Y - recipe.TopMargin / 2,
+                    recipe.MetalRect.Width + 100 + recipe.LeftOffSet + recipe.RightOffSet,
                     recipe.TopMargin);
                 BitmapBuf Top = InsImage.Clone(TopRect, PixelFormat.DontCare);
-                Top.Save("D:\\Top.png");
+
+                if (recipe.SaveTopOrgImage)
+                    _ = Task.Run(() => Top.Save(recipe.ImageSaveFolder + "\\TopOrg.png"));
                 Top.Name = "Top";
                 if (recipe.TopFilter == Filter.ErasePattern)
                 {
-                    Top = EraseMetal(Top);
+                    Top = ErasePattern(Top);
                 }
                 else if (recipe.TopFilter == Filter.EraseMetal)
                 {
                     Top = EraseMetal(Top);
                 }
-                Top.Save("D:\\TopErase.png");
+                if (recipe.SaveTopFilteredImage)
+                    _ = Task.Run(() => Top.Save(recipe.ImageSaveFolder + "\\TopFiltered.png"));
                 log.AddLogMessage(LogType.Information, 0, "Top Edge Image Process Done");
 
 
                 Rectangle RightRect = new Rectangle(
-                    recipe.MetalRect.X - recipe.RightMargin/2 + recipe.MetalRect.Width,
-                    recipe.MetalRect.Y - 50,
+                    recipe.MetalRect.X - recipe.RightMargin / 2 + recipe.MetalRect.Width,
+                    recipe.MetalRect.Y - 50 - recipe.TopOffSet,
                     recipe.RightMargin,
-                    recipe.MetalRect.Height + 100);
+                    recipe.MetalRect.Height + 100 + recipe.TopOffSet);
                 BitmapBuf Right = InsImage.Clone(RightRect, PixelFormat.DontCare);
-                Right.Save("D:\\Right.png");
+                if (recipe.SaveRightOrgImage)
+                    _ = Task.Run(() => Right.Save(recipe.ImageSaveFolder + "\\RightOrg.png"));
                 Right.Name = "Right";
 
                 if (recipe.RightFilter == Filter.ErasePattern)
@@ -1260,17 +1238,23 @@ namespace PRIEdge
                 }
                 else if (recipe.RightFilter == Filter.EraseMetal)
                 {
-                    Right = ErasePattern(Right);
+                    Right = EraseMetal(Right);
                 }
-               // Right.Save("D:\\RightErase.png");
+                if (recipe.SaveRightFilteredImage)
+                    _ = Task.Run(() => Right.Save(recipe.ImageSaveFolder + "\\RightFiltered.png"));
                 log.AddLogMessage(LogType.Information, 0, "Right Edge Image Process Done");
 
-                PriLineFind_Left(Left, LeftRect);
-                PriLineFind_Top(Top, TopRect);
-                PriLineFind_Right(Right, RightRect);
-                Result =  MergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
-                SetDefect();
+                log.AddLogMessage(LogType.Information, 0, $"Start Inspection");
+                await Task.WhenAll(
+                    Task.Run(() => PriLineFind_Left(Left, LeftRect)),
+                    Task.Run(() => PriLineFind_Right(Right, RightRect)),
+                    Task.Run(() => PriLineFind_Top(Top, TopRect))
+                    );
 
+
+                Result = MergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                SetDefect();
+                imageViewer1.Refresh();
                 log.AddLogMessage(LogType.Information, 0, $"End Inspect");
             }
             catch (Exception ex)
@@ -1437,10 +1421,17 @@ namespace PRIEdge
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName))
 
                 {
-                    file.WriteLine("Directtion,X,Y,Without Resolution");
+                    if(recipe.Coordinate == coordinate.RealWithResolution)
+                    {
+                        file.WriteLine("No,Directtion,X,Y,With Resolution");
+                    }
+                    else
+                    {
+                        file.WriteLine("No,Directtion,X,Y,Without Resolution");
+                    }
                     for (int i = 0; i < EdgeList.Count(); i++)
-                        file.WriteLine("{0},{1},{2}",
-                           EdgeList[i].Direction,EdgeList[i].X, EdgeList[i].Y);
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i,EdgeList[i].Direction,EdgeList[i].X, EdgeList[i].Y);
                    
                 }
                 log.AddLogMessage(LogType.Information, 0, "Extract Done");
@@ -1450,7 +1441,7 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Error, 0, "Csv Save Error");
                 log.AddLogMessage(LogType.Error, 0, exp);
             }
-            log.AddLogMessage(LogType.Information, 0, "Image File Saved.");
+            log.AddLogMessage(LogType.Information, 0, "Result File Saved.");
 
         }
         private void SaveCsvWithResolution(string fileName)
@@ -1464,12 +1455,11 @@ namespace PRIEdge
                 }
 
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName))
-
                 {
-                    file.WriteLine("Directtion,X,Y,With Resolution");
+                    file.WriteLine("No,Directtion,X,Y,With Resolution");
                     for (int i = 0; i < EdgeList.Count(); i++)
-                        file.WriteLine("{0},{1},{2}",
-                           EdgeList[i].Direction, EdgeList[i].X * recipe.Resolution.Width, EdgeList[i].Y * recipe.Resolution.Height);
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i,EdgeList[i].Direction, EdgeList[i].X, EdgeList[i].Y);
 
                 }
                 log.AddLogMessage(LogType.Information, 0, "Extract Done");
@@ -1479,7 +1469,7 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Error, 0, "Csv Save Error");
                 log.AddLogMessage(LogType.Error, 0, exp);
             }
-            log.AddLogMessage(LogType.Information, 0, "Image File Saved.");
+            log.AddLogMessage(LogType.Information, 0, "Result File Saved.");
 
         }
 
@@ -1509,6 +1499,7 @@ namespace PRIEdge
 
 
                     Point value1 = new Point ((int)row.Cells[1].Value, (int)row.Cells[2].Value);
+
                     //center = Point.Round(value1);
                     center = RealToSource(value1, LeftAlignMarkIns);
                     imageViewer1.DrawPointAtCenter(center);
@@ -1550,8 +1541,7 @@ namespace PRIEdge
 
                 ManualModifyResult(p);
 
-                Result = SimpleMergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
-
+                GetResult();
             }
             Vars.WhileModify = false;
         }
@@ -1578,9 +1568,20 @@ namespace PRIEdge
         public List<Point> SourceToRealList(List<Point> Source , Point ZeroPoint)
         {
             List<Point> Result = new List<Point>();
-            for (int i = 0; i < Source.Count(); i++)
+
+            if (recipe.Coordinate == coordinate.RealWithResolution)
             {
-                Result.Add(new Point(Source[i].X - ZeroPoint.X, ZeroPoint.Y - Source[i].Y));
+                for (int i = 0; i < Source.Count(); i++)
+                {
+                    Result.Add(new Point((Source[i].X - ZeroPoint.X)*recipe.Resolution.Width, (ZeroPoint.Y - Source[i].Y) * recipe.Resolution.Width));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Source.Count(); i++)
+                {
+                    Result.Add(new Point(Source[i].X - ZeroPoint.X, ZeroPoint.Y - Source[i].Y));
+                }
             }
             return Result;
         }
@@ -1602,9 +1603,13 @@ namespace PRIEdge
         public Point RealToSource(Point Real, Point ZeroPoint)
         {
             Point Result = new Point();
-            
+          
+            if(recipe.Coordinate == coordinate.RealWithResolution)
+            {
+                Real = new Point(Real.X / recipe.Resolution.Width, Real.Y / recipe.Resolution.Height);
+            }
             Result = new Point(Real.X + ZeroPoint.X, ZeroPoint.Y - Real.Y);
-            
+
             return Result;
         }
         public Point SourceToReal (Point Source, Point ZeroPoint)
@@ -1704,7 +1709,7 @@ namespace PRIEdge
             return Result;
         }
 
-        public List<Point> SimpleMergePoint(int index, List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine)
+        public List<Point> SimpleMergePoint( List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine, int index = 0, int Offset = 0)
         {
             
             List<Point> Result = new List<Point>();
@@ -1754,21 +1759,21 @@ namespace PRIEdge
             return Source;
         }
 
-        private void GetEdgeDataButton_Click(object sender, EventArgs e)
+        private void GetResult( )
         {
-            Result = SimpleMergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+            Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
 
             SetDefect();
         }
 
-        private void SetEdgeDataButton_Click(object sender, EventArgs e)
+        private void SetResult()
         {
             Result.Clear();
             for(int i = 0; i < EdgeList.Count; i++)
             {
                 Result.Add(RealToSource(new Point(EdgeList[i].X,EdgeList[i].Y),LeftAlignMarkIns));
             }
-            imageViewer1.Refresh();
+            RefreshImageViewer();
         }
 
         private void extractRawDataResolutionOToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1796,5 +1801,308 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Error, 0, ex);
             }
         }
+
+
+        public void ShiftResult(int Value)
+        {
+            try
+            {
+                var drawShape = imageViewer1.DrawShape;
+                if (drawShape == null)
+                    return;
+                if (drawShape.ShapeType == ShapeType.Rectangle)
+                {
+                    List<PlotData> plotData = new List<PlotData>();
+
+                    var rect = drawShape.Rect;
+                    int Direct = CheckDirection(rect);
+                    switch (Direct)
+                    {
+                        //왼
+                        case 1:
+                            ShiftRange(0, edgePixels2_Left, rect.Top, rect.Bottom, Value);
+                            break;
+                        //위
+                        case 2:
+                            ShiftRange(1, edgePixels2_Top, rect.Left, rect.Right, Value);
+                            break;
+                        //오
+                        case 3:
+                            ShiftRange(2, edgePixels2_Right, rect.Top, rect.Bottom, Value);
+                            break;
+                    }
+
+                    Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                    SetDefect();
+                    RefreshImageViewer();
+                }
+            }
+            catch
+            {
+
+            }
+        }
+        private int CheckDirection(Rectangle rect)
+        {
+            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.X, recipe.MetalRect.Y, 1, recipe.MetalRect.Height)))
+                return 1;
+            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.X, recipe.MetalRect.Y, recipe.MetalRect.Width,1 )))
+                return 2;
+            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.Right, recipe.MetalRect.Y, 1, recipe.MetalRect.Height)))
+                return 3;
+
+            return 0;
+        }
+
+        private void ResultShift(object sender, EventArgs e)
+        {
+            int value = Convert.ToInt32(ShiftValuetextBox.Text);
+            ShiftResult(value);
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+            
+            SetResult();
+        }
+
+        private void RefreshImageEvent(object sender, EventArgs e)
+        {
+            RefreshImageViewer();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveWholeImageToolStripMenuItem.Checked)
+                SaveImageChange(true);
+            else
+                SaveImageChange(false);
+
+            SaveCheck();
+        }
+        private void SaveCheckEvent(object sender, EventArgs e)
+        {
+            SaveCheck();
+        }
+        private void SaveCheck()
+        {
+
+            if (saveWholeImageToolStripMenuItem.Checked) 
+                recipe.SaveWholeImage = true;
+            else
+                recipe.SaveWholeImage = false;
+
+            if (saveAlignImageToolStripMenuItem.Checked)
+                recipe.SaveAlignImage = true;
+            else
+                recipe.SaveAlignImage = false;
+
+
+            //좌
+            if (saveFilteredToolStripMenuItem.Checked)
+                recipe.SaveLeftFilteredImage = true;
+            else
+                recipe.SaveLeftFilteredImage = false;
+            if (saveOriginalImageToolStripMenuItem.Checked)
+                recipe.SaveLeftOrgImage = true;
+            else
+                recipe.SaveLeftOrgImage = false;
+            if (saveRotateImageToolStripMenuItem.Checked)
+                recipe.SaveLeftRotateImage = true;
+            else
+                recipe.SaveLeftRotateImage = false;
+
+            //우
+            if (saveOriginalImageToolStripMenuItem1.Checked)
+                recipe.SaveRightOrgImage = true;
+            else
+                recipe.SaveRightOrgImage = false;
+            if (saveFilteredToolStripMenuItem1.Checked)
+                recipe.SaveRightFilteredImage = true;
+            else
+                recipe.SaveRightFilteredImage = false;
+            if (saveRotateImageToolStripMenuItem1.Checked)
+                recipe.SaveRightRotateImage = true;
+            else
+                recipe.SaveRightRotateImage = false;
+
+            //상
+            if (saveOriginalImageToolStripMenuItem2.Checked)
+                recipe.SaveTopOrgImage = true;
+            else
+                recipe.SaveTopOrgImage = false;
+            if (saveFilteredToolStripMenuItem2.Checked)
+                recipe.SaveTopFilteredImage = true;
+            else
+                recipe.SaveTopFilteredImage = false;
+            if (saveRotateImageToolStripMenuItem2.Checked)
+                recipe.SaveTopRotateImage = true;
+            else
+                recipe.SaveTopRotateImage = false;
+        }
+
+        private void SaveImageChange(bool Bool)
+        {
+            if (Bool == true)
+            {
+                saveWholeImageToolStripMenuItem.Checked = true;
+                saveAlignImageToolStripMenuItem.Checked = true;
+
+                saveFilteredToolStripMenuItem1.Checked = true;
+                saveOriginalImageToolStripMenuItem.Checked = true;
+                saveRotateImageToolStripMenuItem.Checked = true;
+                saveFilteredToolStripMenuItem.Checked = true;
+                saveOriginalImageToolStripMenuItem1.Checked = true;
+                saveRotateImageToolStripMenuItem1.Checked = true;
+                saveFilteredToolStripMenuItem2.Checked = true;
+                saveOriginalImageToolStripMenuItem2.Checked = true;
+                saveRotateImageToolStripMenuItem2.Checked = true;
+
+            }
+            else if(Bool == false)
+            {
+                saveWholeImageToolStripMenuItem.Checked = false;
+                saveAlignImageToolStripMenuItem.Checked = false;
+
+                saveFilteredToolStripMenuItem1.Checked = false;
+                saveOriginalImageToolStripMenuItem.Checked = false;
+                saveRotateImageToolStripMenuItem.Checked = false;
+                saveFilteredToolStripMenuItem.Checked = false;
+                saveOriginalImageToolStripMenuItem1.Checked = false;
+                saveRotateImageToolStripMenuItem1.Checked = false;
+                saveFilteredToolStripMenuItem2.Checked = false;
+                saveOriginalImageToolStripMenuItem2.Checked = false;
+                saveRotateImageToolStripMenuItem2.Checked = false;
+            }
+        }
+        private void SaveButtonUpdate()
+        {
+
+            if (recipe.SaveWholeImage)
+                saveWholeImageToolStripMenuItem.Checked = true;
+            else
+                saveWholeImageToolStripMenuItem.Checked = false;
+
+            if (recipe.SaveAlignImage)
+                saveAlignImageToolStripMenuItem.Checked = true;
+            else
+                 saveAlignImageToolStripMenuItem.Checked = false;
+
+
+            //좌
+            if (recipe.SaveLeftFilteredImage)
+                saveFilteredToolStripMenuItem.Checked = true;
+            else
+                saveFilteredToolStripMenuItem.Checked = false;
+            if (recipe.SaveLeftOrgImage)
+                saveOriginalImageToolStripMenuItem.Checked = true;
+            else
+                 saveOriginalImageToolStripMenuItem.Checked = false;
+            if (recipe.SaveLeftRotateImage)
+                saveRotateImageToolStripMenuItem.Checked = true;
+            else
+                saveRotateImageToolStripMenuItem.Checked = false;
+
+            //우
+            if (recipe.SaveRightOrgImage)
+                saveOriginalImageToolStripMenuItem1.Checked = true;
+            else
+                saveOriginalImageToolStripMenuItem1.Checked = false;
+            if (recipe.SaveRightFilteredImage)
+                saveFilteredToolStripMenuItem1.Checked = true;
+            else
+                saveFilteredToolStripMenuItem1.Checked = false;
+            if (recipe.SaveRightRotateImage)
+                saveRotateImageToolStripMenuItem1.Checked = true;
+            else
+                saveRotateImageToolStripMenuItem1.Checked = false;
+
+            //상
+            if (recipe.SaveTopOrgImage)
+                saveOriginalImageToolStripMenuItem2.Checked = true;
+            else
+                saveOriginalImageToolStripMenuItem2.Checked = false;
+            if (recipe.SaveTopFilteredImage)
+                saveFilteredToolStripMenuItem2.Checked = true;
+            else
+                saveFilteredToolStripMenuItem2.Checked = false;
+            if (recipe.SaveTopRotateImage)
+                saveRotateImageToolStripMenuItem2.Checked = true;
+            else
+                saveRotateImageToolStripMenuItem2.Checked = false;
+        }
+
+
+        private void propertyGrid_Recipe_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if (e.ChangedItem.Label == "Coordinate" || e.ChangedItem.Label == "Resolution")
+            {
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+            }
+            if(e.ChangedItem.Label.Contains("LeftOffSet"))
+            {
+                int Gap = PrevLeftOffset - recipe.LeftOffSet;
+                SetOffset(DirectionWay.Left, Gap);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                SetDefect();
+                RefreshImageViewer();
+                log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
+            }
+            if (e.ChangedItem.Label.Contains("TopOffSet") )
+            {
+                int Gap = PrevTopOffset - recipe.TopOffSet;
+                SetOffset(DirectionWay.Top, Gap);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                SetDefect();
+                RefreshImageViewer();
+                log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
+            }
+            if (e.ChangedItem.Label.Contains("RightOffSet"))
+            {
+                int Gap = PrevRightOffset - recipe.RightOffSet;
+                SetOffset(DirectionWay.Right, Gap);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                SetDefect();
+                RefreshImageViewer();
+                log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
+            }
+
+            PrevLeftOffset = recipe.LeftOffSet;
+            PrevRightOffset = recipe.RightOffSet;
+            PrevTopOffset = recipe.TopOffSet;
+
+        }
+        private void SetOffset(DirectionWay direction, int Gap)
+        {
+            switch (direction)
+            {
+                case DirectionWay.Left:
+                    for (int i = 0; i < edgePixels2_Left.Count; i++)
+                    {
+                        edgePixels2_Left[i] = new Point(edgePixels2_Left[i].X + Gap, edgePixels2_Left[i].Y);
+                    }
+                    break;
+                case DirectionWay.Right:
+                    for (int i = 0; i < edgePixels2_Right.Count; i++)
+                    {
+                        edgePixels2_Right[i] = new Point(edgePixels2_Right[i].X - Gap, edgePixels2_Right[i].Y);
+                    }
+                    break;
+                case DirectionWay.Top:
+                    for (int i = 0; i < edgePixels2_Top.Count; i++)
+                    {
+                        edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X , edgePixels2_Top[i].Y + Gap);
+                    }
+                    break;
+            }
+        }
+        
+        //private void Shiftbutton_Click(object sender, EventArgs e)
+        //{
+        //   
+        //}
+
+
     }
 }

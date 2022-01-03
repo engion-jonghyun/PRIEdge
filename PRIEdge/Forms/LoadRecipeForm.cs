@@ -26,22 +26,30 @@ namespace PRIEdge
         }
         private void RecipeLoad()
         {
-            string FolderName = Vars.RecipeFolder;
-            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(FolderName);
-            RecipeList.Clear();
-            foreach (System.IO.FileInfo File in di.GetFiles())
+            try
             {
-                if (File.Extension.ToLower().CompareTo(".xml") == 0)
+                string FolderName = Vars.RecipeFolder;
+                System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(FolderName);
+                RecipeList.Clear();
+                foreach (System.IO.FileInfo File in di.GetFiles())
                 {
-                    string FileNameOnly = File.Name.Substring(0, File.Name.Length - 4);
-                    //string FullFileName = File.FullName;
+                    if (File.Extension.ToLower().CompareTo(".xml") == 0)
+                    {
+                        string FileNameOnly = File.Name.Substring(0, File.Name.Length - 4);
+                        //string FullFileName = File.FullName;
 
-                    //MessageBox.Show(FullFileName + " " + FileNameOnly);
-                    RecipeList.Add(FileNameOnly);
+                        //MessageBox.Show(FullFileName + " " + FileNameOnly);
+                        RecipeList.Add(FileNameOnly);
+                    }
                 }
+                bindingSource1.DataSource = RecipeList;
+                bindingSource1.ResetBindings(false);
+                Vars.log.AddLogMessage(LogType.Information, 0, "Recipe List Load Done");
             }
-            bindingSource1.DataSource = RecipeList;
-            bindingSource1.ResetBindings(false);
+            catch
+            {
+                Vars.log.AddLogMessage(LogType.Error, 0, "Recipe List Load Fail");
+            }
 
         }
 
@@ -105,7 +113,7 @@ namespace PRIEdge
             }
             catch (Exception ex)
             {
-                Vars.log.AddLogMessage(LogType.Error, 0, ex + "Load Recipe Fail");
+                Vars.log.AddLogMessage(LogType.Error, 0, ex + "Delete Recipe Fail");
             }
 
         }
@@ -132,8 +140,7 @@ namespace PRIEdge
             string filename = listBox1.SelectedItem.ToString() + ".xml";
             string fullname = FolderName + "\\" + filename;
 
-            Recipe Temp = Recipe.Load(fullname);
-
+            Recipe Temp = Recipe.Load(fullname); 
          
             CopyRecipeForm form = new CopyRecipeForm();
             if (form.ShowDialog() == DialogResult.OK)
@@ -142,18 +149,6 @@ namespace PRIEdge
                 Temp.Save(FolderName + "\\" + Name  + ".xml");
 
             }
-
-
-
-
-
-
-
-
-
-
-
-
 
             RecipeLoad();
             listBox1.Refresh();

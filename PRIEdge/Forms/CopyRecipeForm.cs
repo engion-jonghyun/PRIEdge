@@ -19,9 +19,13 @@ namespace PRIEdge
 
         private void AddNewRecipeBtn_Click(object sender, EventArgs e)
         {
-           // recipe.Save(Vars.RecipeFolder + "\\" + NewRecipeNameTxt.Text + ".xml"); 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void CopyRecipeForm_Load(object sender, EventArgs e)
+        {
+            NewRecipeNameTxt.Text = Vars.recipe.RecipeID;
         }
     }
 }

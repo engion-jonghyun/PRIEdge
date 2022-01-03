@@ -24,6 +24,10 @@ namespace PRIEdge
         [Category("Option"), Description("화면 클릭 시 좌표 측정 Display 값 결정")]
         public coordinate Coordinate { get; set; } = coordinate.Pixel;
 
+        [Category("Option"), Description("Draw라인 두께")]
+        public int DrawLineWidth { get; set; } = 2;
+
+
         [Category("Align"), Description("좌측 Align Mark 찾는 Rect")]
         public Rectangle AlignMarkLeft { get; set; } = new Rectangle(0, 0, 0, 0);
         [Category("Align"), Description("우측 Align Mark 찾는 Rect")]
@@ -46,6 +50,8 @@ namespace PRIEdge
 
         [Category("Metal Left"), Description("Left Edge 검출 파라미터")]
         public EdgeParameter[] LeftEdgeParam { get; set; }= new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Left"), Description("Left Edge 검출 시 Rotate 유무")]
+        public bool LeftMetalRotation { get; set; } = true;
 
         [Category("Metal Right"), Description("우측 검출 필터")]
         public Filter RightFilter { get; set; } = Filter.ErasePattern;
@@ -57,6 +63,8 @@ namespace PRIEdge
 
         [Category("Metal Right"), Description("Right Edge 검출 파라미터")]
         public EdgeParameter[] RightEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Right"), Description("Right Edge 검출 시 Rotate 유무")]
+        public bool RightMetalRotation { get; set; } = true;
 
 
 
@@ -71,6 +79,8 @@ namespace PRIEdge
 
         [Category("Metal Top"), Description("Top Edge 검출 파라미터")]
         public EdgeParameter[] TopEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Top"), Description("Top Edge 검출 시 Rotate 유무")]
+        public bool TopMetalRotation { get; set; } = false;
 
         [Category("OffSet"), Description("Left Edge 오프셋")]
         public int LeftOffSet { get; set; } = 0;
@@ -94,6 +104,45 @@ namespace PRIEdge
         public int ErasePatternPitch { get; set; } = 13;
         [Category("Filter"), Description("filter Threshold level")]
         public int ErasePatternLevel { get; set; } = 40;
+
+        [Category("Save Image"),Browsable(false)]
+        public bool SaveLeftOrgImage { get; set; } = false;
+        [Category("Save Image"), Browsable(false)]
+        public bool SaveLeftFilteredImage { get; set; } = false;
+        [Category("Save Image"), Browsable(false)]
+        public bool SaveLeftRotateImage { get; set; } = false;
+
+
+        [Category("Option"), Browsable(false)]
+        public bool SaveRightOrgImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveRightFilteredImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveRightRotateImage { get; set; } = false;
+
+
+        [Category("Option"), Browsable(false)]
+        public bool SaveTopOrgImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveTopFilteredImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveTopRotateImage { get; set; } = false;
+
+        [Category("Option"), Browsable(false)]
+        public bool SaveAlignImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveWholeImage { get; set; } = false;
+
+        [Category("Option"),Description("Save Image Folder")]
+        public string ImageSaveFolder { get; set; } = "D:\\LGPRI_IMAGE";
+
+
+
+
+
+
+
+
 
         public void Save(string recipeFileName)
         {
@@ -158,6 +207,7 @@ namespace PRIEdge
         None = 0,
         ErasePattern = 1,
         EraseMetal = 2,
+        EraseTemp = 3,
     }
 
 
@@ -168,4 +218,11 @@ namespace PRIEdge
         RealWithResolution = 2,
     }
 
+    public enum DirectionWay
+    {
+        Left,
+        Right,
+        Top,
+        None,
+    }
 }
