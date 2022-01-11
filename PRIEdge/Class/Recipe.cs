@@ -71,7 +71,6 @@ namespace PRIEdge
         [Category("Metal Top"), Description("상단 검출 필터")]
         public Filter TopFilter { get; set; } = Filter.EraseMetal;
 
-
         [Category("Metal Top"), Description("상단 검출 영역 크기")]
         public int TopMargin { get; set; } = 300;
         [Category("Metal Top"), Description("Top Guide Edge 검출 파라미터")]
@@ -82,16 +81,35 @@ namespace PRIEdge
         [Category("Metal Top"), Description("Top Edge 검출 시 Rotate 유무")]
         public bool TopMetalRotation { get; set; } = false;
 
+
+
+        [Category("Metal Bottom"), Description("하단 검출 필터")]
+        public Filter BottomFilter { get; set; } = Filter.EraseMetal;
+
+        [Category("Metal Bottom"), Description("하단 검출 영역 크기")]
+        public int BottomMargin { get; set; } = 300;
+        [Category("Metal Bottom"), Description("Bottom Guide Edge 검출 파라미터")]
+        public EdgeParameter[] BottomEdgeParam_Guide { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+
+        [Category("Metal Bottom"), Description("Bottom Edge 검출 파라미터")]
+        public EdgeParameter[] BottomEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Bottom"), Description("Bottom Edge 검출 시 Rotate 유무")]
+        public bool BottomMetalRotation { get; set; } = false;
+
+
+
         [Category("OffSet"), Description("Left Edge 오프셋")]
         public int LeftOffSet { get; set; } = 0;
         [Category("OffSet"), Description("Top Edge 오프셋")]
         public int TopOffSet { get; set; } = 0;
         [Category("OffSet"), Description("Right Edge 오프셋")]
         public int RightOffSet { get; set; } = 0;
+        [Category("OffSet"), Description("Bottom Edge 오프셋")]
+        public int BottomOffSet { get; set; } = 0;
 
 
         [Category("OffSet"), Description("구간 평균 사용하여 Edge 출력")]
-        public int IntervalEverage { get; set; } = 0;
+        public int IntervalAverage { get; set; } = 0;
 
         [Category("Align"), Description("Align Level 값")]
         public int AlignLevel { get; set; } = 0;
@@ -127,6 +145,17 @@ namespace PRIEdge
         public bool SaveTopFilteredImage { get; set; } = false;
         [Category("Option"), Browsable(false)]
         public bool SaveTopRotateImage { get; set; } = false;
+
+
+
+        [Category("Option"), Browsable(false)]
+        public bool SaveBottomOrgImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveBottomFilteredImage { get; set; } = false;
+        [Category("Option"), Browsable(false)]
+        public bool SaveBottomRotateImage { get; set; } = false;
+
+
 
         [Category("Option"), Browsable(false)]
         public bool SaveAlignImage { get; set; } = false;

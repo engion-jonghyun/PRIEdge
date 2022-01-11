@@ -45,6 +45,7 @@ namespace PRIEdge
             this.showAlignMarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showDefectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showResultPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.profilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showYProjectXValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +66,10 @@ namespace PRIEdge
             this.saveOriginalImageToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFilteredToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveRotateImageToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveBottomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveOriginalImageToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFitteredImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveRotatedImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAlignImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveWholeImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -110,6 +115,7 @@ namespace PRIEdge
             this.roiSetupPage = new System.Windows.Forms.TabPage();
             this.dieSetupPage = new System.Windows.Forms.TabPage();
             this.defectImageDataGridViewImageColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.SetAlignMarkButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -181,7 +187,8 @@ namespace PRIEdge
             this.showEdgeLineToolStripMenuItem,
             this.showAlignMarkToolStripMenuItem,
             this.showDefectsToolStripMenuItem,
-            this.showSettingToolStripMenuItem});
+            this.showSettingToolStripMenuItem,
+            this.showResultPointToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -248,6 +255,14 @@ namespace PRIEdge
             this.showSettingToolStripMenuItem.Text = "Show Setting";
             this.showSettingToolStripMenuItem.Click += new System.EventHandler(this.RefreshImageEvent);
             // 
+            // showResultPointToolStripMenuItem
+            // 
+            this.showResultPointToolStripMenuItem.CheckOnClick = true;
+            this.showResultPointToolStripMenuItem.Name = "showResultPointToolStripMenuItem";
+            this.showResultPointToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.showResultPointToolStripMenuItem.Text = "Show Result Point";
+            this.showResultPointToolStripMenuItem.Click += new System.EventHandler(this.showResultPointToolStripMenuItem_Click);
+            // 
             // profilesToolStripMenuItem
             // 
             this.profilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -308,6 +323,7 @@ namespace PRIEdge
             this.saveLeftToolStripMenuItem,
             this.saveRightToolStripMenuItem,
             this.saveTopToolStripMenuItem,
+            this.saveBottomToolStripMenuItem,
             this.saveAlignImageToolStripMenuItem,
             this.saveWholeImageToolStripMenuItem});
             this.saveImageToolStripMenuItem1.Name = "saveImageToolStripMenuItem1";
@@ -321,7 +337,7 @@ namespace PRIEdge
             this.saveRotateImageToolStripMenuItem,
             this.saveFilteredToolStripMenuItem});
             this.saveLeftToolStripMenuItem.Name = "saveLeftToolStripMenuItem";
-            this.saveLeftToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveLeftToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveLeftToolStripMenuItem.Text = "Save Left";
             // 
             // saveOriginalImageToolStripMenuItem
@@ -355,7 +371,7 @@ namespace PRIEdge
             this.saveFilteredToolStripMenuItem1,
             this.saveRotateImageToolStripMenuItem1});
             this.saveRightToolStripMenuItem.Name = "saveRightToolStripMenuItem";
-            this.saveRightToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveRightToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveRightToolStripMenuItem.Text = "Save Right";
             // 
             // saveOriginalImageToolStripMenuItem1
@@ -389,7 +405,7 @@ namespace PRIEdge
             this.saveFilteredToolStripMenuItem2,
             this.saveRotateImageToolStripMenuItem2});
             this.saveTopToolStripMenuItem.Name = "saveTopToolStripMenuItem";
-            this.saveTopToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveTopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveTopToolStripMenuItem.Text = "Save Top";
             // 
             // saveOriginalImageToolStripMenuItem2
@@ -416,11 +432,39 @@ namespace PRIEdge
             this.saveRotateImageToolStripMenuItem2.Text = "Save Rotated Image";
             this.saveRotateImageToolStripMenuItem2.Click += new System.EventHandler(this.SaveCheckEvent);
             // 
+            // saveBottomToolStripMenuItem
+            // 
+            this.saveBottomToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveOriginalImageToolStripMenuItem3,
+            this.saveFitteredImageToolStripMenuItem,
+            this.saveRotatedImageToolStripMenuItem});
+            this.saveBottomToolStripMenuItem.Name = "saveBottomToolStripMenuItem";
+            this.saveBottomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveBottomToolStripMenuItem.Text = "Save Bottom";
+            // 
+            // saveOriginalImageToolStripMenuItem3
+            // 
+            this.saveOriginalImageToolStripMenuItem3.Name = "saveOriginalImageToolStripMenuItem3";
+            this.saveOriginalImageToolStripMenuItem3.Size = new System.Drawing.Size(182, 22);
+            this.saveOriginalImageToolStripMenuItem3.Text = "Save Original Image";
+            // 
+            // saveFitteredImageToolStripMenuItem
+            // 
+            this.saveFitteredImageToolStripMenuItem.Name = "saveFitteredImageToolStripMenuItem";
+            this.saveFitteredImageToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.saveFitteredImageToolStripMenuItem.Text = "Save Filtered Image";
+            // 
+            // saveRotatedImageToolStripMenuItem
+            // 
+            this.saveRotatedImageToolStripMenuItem.Name = "saveRotatedImageToolStripMenuItem";
+            this.saveRotatedImageToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.saveRotatedImageToolStripMenuItem.Text = "Save Rotated Image";
+            // 
             // saveAlignImageToolStripMenuItem
             // 
             this.saveAlignImageToolStripMenuItem.CheckOnClick = true;
             this.saveAlignImageToolStripMenuItem.Name = "saveAlignImageToolStripMenuItem";
-            this.saveAlignImageToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveAlignImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAlignImageToolStripMenuItem.Text = "Save Align Image";
             this.saveAlignImageToolStripMenuItem.Click += new System.EventHandler(this.SaveCheckEvent);
             // 
@@ -428,7 +472,7 @@ namespace PRIEdge
             // 
             this.saveWholeImageToolStripMenuItem.CheckOnClick = true;
             this.saveWholeImageToolStripMenuItem.Name = "saveWholeImageToolStripMenuItem";
-            this.saveWholeImageToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveWholeImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveWholeImageToolStripMenuItem.Text = "Save Whole Image";
             this.saveWholeImageToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -478,10 +522,11 @@ namespace PRIEdge
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.Controls.Add(this.SaveBtn, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.CheckDistanceBtn, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.PreviewBtn, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.PreAlignBtn, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.SaveBtn, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.PreviewBtn, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.SetAlignMarkButton, 2, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(4, 947);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -492,8 +537,7 @@ namespace PRIEdge
             // 
             // SaveBtn
             // 
-            this.SaveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SaveBtn.Location = new System.Drawing.Point(71, 3);
+            this.SaveBtn.Location = new System.Drawing.Point(3, 3);
             this.SaveBtn.Name = "SaveBtn";
             this.SaveBtn.Size = new System.Drawing.Size(62, 60);
             this.SaveBtn.TabIndex = 6;
@@ -514,8 +558,7 @@ namespace PRIEdge
             // 
             // PreviewBtn
             // 
-            this.PreviewBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PreviewBtn.Location = new System.Drawing.Point(139, 3);
+            this.PreviewBtn.Location = new System.Drawing.Point(71, 3);
             this.PreviewBtn.Name = "PreviewBtn";
             this.PreviewBtn.Size = new System.Drawing.Size(62, 60);
             this.PreviewBtn.TabIndex = 4;
@@ -525,7 +568,6 @@ namespace PRIEdge
             // 
             // PreAlignBtn
             // 
-            this.PreAlignBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PreAlignBtn.Location = new System.Drawing.Point(207, 3);
             this.PreAlignBtn.Name = "PreAlignBtn";
             this.PreAlignBtn.Size = new System.Drawing.Size(62, 60);
@@ -951,6 +993,16 @@ namespace PRIEdge
             this.defectImageDataGridViewImageColumn.HeaderText = "DefectImage";
             this.defectImageDataGridViewImageColumn.Name = "defectImageDataGridViewImageColumn";
             // 
+            // SetAlignMarkButton
+            // 
+            this.SetAlignMarkButton.Location = new System.Drawing.Point(139, 3);
+            this.SetAlignMarkButton.Name = "SetAlignMarkButton";
+            this.SetAlignMarkButton.Size = new System.Drawing.Size(62, 60);
+            this.SetAlignMarkButton.TabIndex = 4;
+            this.SetAlignMarkButton.Text = "Set Align Mark";
+            this.SetAlignMarkButton.UseVisualStyleBackColor = true;
+            this.SetAlignMarkButton.Click += new System.EventHandler(this.SetAlignMarkButton_Click);
+            // 
             // MainViewerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1071,6 +1123,12 @@ namespace PRIEdge
         private System.Windows.Forms.ToolStripMenuItem saveRotateImageToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem saveAlignImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveWholeImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showResultPointToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveBottomToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveOriginalImageToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem saveFitteredImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveRotatedImageToolStripMenuItem;
+        private System.Windows.Forms.Button SetAlignMarkButton;
     }
 }
 

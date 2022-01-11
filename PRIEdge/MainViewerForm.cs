@@ -49,14 +49,16 @@ namespace PRIEdge
         Point FirstPoint = new Point(0,0);
         Point SecondPoint = new Point(0, 0);
 
+        Point ModifyMovePoint = new Point(0, 0);
+        Point ViewerPoint = new Point(0,0);
+
+
         public bool ManualModify = false;
         public bool WhileSaveImage = false;
 
         private int PrevLeftOffset = 0;
         private int PrevRightOffset = 0;
         private int PrevTopOffset = 0;
-
-
         //List<Action> initFuntions = new List<Action>();
         List<Action<Graphics>> drawFunctions = new List<Action<Graphics>>();
 
@@ -92,7 +94,7 @@ namespace PRIEdge
                     logViewer1.ManageLog(ee);
                 };
                 //logViewer1.Log = log;
-
+                DoubleBuffered = true;
             }
             catch (Exception ex)
             {
@@ -280,7 +282,19 @@ namespace PRIEdge
                 g.DrawRectangle(SettingPen, tmp1);
                 g.DrawRectangle(SettingPen, tmp2);
             }
+            if(showResultPointToolStripMenuItem.Checked)
+            {
+                g.DrawRectangle(new Pen(Color.LightGreen, recipe.DrawLineWidth+1), new Rectangle(ViewerPoint.X - 10, ViewerPoint.Y - 10, 20, 20));
+            }
             DrawPRI(g);
+
+            //Edge 검출 결과 수정 중 DP
+            if(Vars.WhileModify == true && ManualModify)
+            {
+                Pen MovePen = new Pen(Color.Red, recipe.DrawLineWidth);
+                g.DrawLine(MovePen, imageViewer1.ImageToClient(Vars.ModifyStartPoint), imageViewer1.ImageToClient(ModifyMovePoint));
+            }
+
 
             foreach (var draw in drawFunctions)
                 draw(g);
@@ -647,27 +661,26 @@ namespace PRIEdge
         }
         private void imageViewerEx1_MouseMove(object sender, MouseEventArgs e)
         {
-            var buf = imageViewer1.Image;
-            if (imageViewer1.Image == null)
-                return;
-            var pt = imageViewer1.ClientToImage(e.Location);
-            if (imageViewer1.Image.Rectangle.Contains(pt) == false)
-                return;
+            try
+            {
+                if (imageViewer1.Image == null)
+                    return;
+                var buf = imageViewer1.Image;
+                var pt = imageViewer1.ClientToImage(e.Location);
+                if (imageViewer1.Image.Rectangle.Contains(pt) == false)
+                    return;
 
-           //if (Vars.WhileModify == true && ManualModify&& e.Button == MouseButtons.Left)
-           // {
-           //     Pen p = new Pen(Color.Red);
-           //     p.Width = 5; 
-           //     Graphics g = Graphics.FromImage((Bitmap)buf);
-           //     g.DrawLine(p, Vars.ModifyStartPoint, pt);
-           //     imageViewer1.Image = buf;
-
-           //     p.Dispose();
-           //     g.Dispose();
-
-           // }
-
-            posLabel.Text = $"{pt.X}, {pt.Y}, {buf.GetBuf8(pt.Y, pt.X)}";
+                if (Vars.WhileModify == true && ManualModify && e.Button == MouseButtons.Left)
+                {
+                    ModifyMovePoint = pt;
+                    imageViewer1.Refresh();
+                }
+                posLabel.Text = $"{pt.X}, {pt.Y}, {buf.GetBuf8(pt.Y, pt.X)}";
+            }
+            catch (Exception ex)
+            {
+                log.AddLogMessage(LogType.Error, 0, "Drawing Error");
+            }
         }
 
         public Color[] GetNormalEntries()
@@ -1137,11 +1150,11 @@ namespace PRIEdge
         {
             try
             {
-                if (Auth.IsAuth() == AuthStatus.Test)
-                {
-                    log.AddLogMessage(LogType.Critical, 0, "License Error");
-                    return;
-                }
+                //if (Auth.IsAuth() == AuthStatus.Test)
+                //{
+                //    log.AddLogMessage(LogType.Critical, 0, "License Error");
+                //    return;
+                //}
                 if (WhileSaveImage == true)
                 {
                     log.AddLogMessage(LogType.Error, 0, "While Save Image.");
@@ -1222,6 +1235,29 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Information, 0, "Top Edge Image Process Done");
 
 
+                Rectangle BottomRect = new Rectangle(
+                    recipe.MetalRect.X - 50 - recipe.LeftOffSet,
+                    recipe.MetalRect.Y - recipe.BottomMargin / 2 + recipe.MetalRect.Height,
+                    recipe.MetalRect.Width + 100 + recipe.LeftOffSet + recipe.RightOffSet,
+                    recipe.BottomMargin);
+                BitmapBuf Bottom = InsImage.Clone(BottomRect, PixelFormat.DontCare);
+
+                if (recipe.SaveBottomOrgImage)
+                    _ = Task.Run(() => Bottom.Save(recipe.ImageSaveFolder + "\\BottomOrg.png"));
+                Bottom.Name = "Bottom";
+                if (recipe.BottomFilter == Filter.ErasePattern)
+                {
+                    Bottom = ErasePattern(Bottom);
+                }
+                else if (recipe.BottomFilter == Filter.EraseMetal)
+                {
+                    Bottom = EraseMetal(Bottom);
+                }
+                if (recipe.SaveBottomFilteredImage)
+                    _ = Task.Run(() => Bottom.Save(recipe.ImageSaveFolder + "\\BottomFiltered.png"));
+                log.AddLogMessage(LogType.Information, 0, "Bottom Edge Image Process Done");
+
+
                 Rectangle RightRect = new Rectangle(
                     recipe.MetalRect.X - recipe.RightMargin / 2 + recipe.MetalRect.Width,
                     recipe.MetalRect.Y - 50 - recipe.TopOffSet,
@@ -1248,11 +1284,12 @@ namespace PRIEdge
                 await Task.WhenAll(
                     Task.Run(() => PriLineFind_Left(Left, LeftRect)),
                     Task.Run(() => PriLineFind_Right(Right, RightRect)),
-                    Task.Run(() => PriLineFind_Top(Top, TopRect))
+                    Task.Run(() => PriLineFind_Top(Top, TopRect)),
+                    Task.Run(() => PriLineFind_Bottom(Bottom, BottomRect))
                     );
 
 
-                Result = MergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                Result = MergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right,edgePixels2_Bottom);
                 SetDefect();
                 imageViewer1.Refresh();
                 log.AddLogMessage(LogType.Information, 0, $"End Inspect");
@@ -1503,9 +1540,10 @@ namespace PRIEdge
                     //center = Point.Round(value1);
                     center = RealToSource(value1, LeftAlignMarkIns);
                     imageViewer1.DrawPointAtCenter(center);
+                    ViewerPoint = imageViewer1.ImageToClient(center);
 
-                    imageViewer1.Invalidate();
-
+                    // imageViewer1.Invalidate();
+                    imageViewer1.Refresh();
                     log.AddLogMessage(LogType.Information, 0, $"Move to {value1}");
                     break;
                 }
@@ -1629,7 +1667,7 @@ namespace PRIEdge
         /// <param name="TopLine"></param>
         /// <param name="RightLine"></param>
         /// <returns></returns>
-        public List<Point> MergePoint(int index, List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine)
+        public List<Point> MergePoint(int index, List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine,List<Point> BottomLine)
         {
             List<Point> BreakPoint = new List<Point>();
             bool check = false;
@@ -1664,6 +1702,41 @@ namespace PRIEdge
                 if (check == true)
                     break;
             }
+            check = false;
+            for (int i = 0; i < LeftLine.Count; i++)
+            {
+                for (int k = 0; k < BottomLine.Count; k++)
+                {
+                    if (LeftLine[i] == BottomLine[k])
+                    {
+                        BottomLine = BottomLine.GetRange(k, BottomLine.Count - k);
+                        LeftLine = LeftLine.GetRange(i, LeftLine.Count - i);
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == true)
+                    break;
+            }
+            check = false;
+
+            for (int i = 0; i < RightLine.Count; i++)
+            {
+                for (int k = 0; k < BottomLine.Count; k++)
+                {
+                    if (RightLine[i] == BottomLine[k])
+                    {
+                        BottomLine = BottomLine.GetRange(0, k);
+                        RightLine = RightLine.GetRange(i, RightLine.Count - i);
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == true)
+                    break;
+            }
+
+
             edgePixels2_Left = LeftLine;
             edgePixels2_Top = TopLine;
             edgePixels2_Right = RightLine;
@@ -2097,7 +2170,18 @@ namespace PRIEdge
                     break;
             }
         }
-        
+
+        private void showResultPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            imageViewer1.Refresh();
+        }
+
+        private void SetAlignMarkButton_Click(object sender, EventArgs e)
+        {
+            FormAlignMark form = new FormAlignMark();
+            form.ShowDialog();
+        }
+
         //private void Shiftbutton_Click(object sender, EventArgs e)
         //{
         //   

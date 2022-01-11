@@ -108,6 +108,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\FormAlignMark.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormAlignMark.Designer.cs">
+      <DependentUpon>FormAlignMark.cs</DependentUpon>
+    </Compile>
     <Compile Include="Class\Defect.cs" />
     <Compile Include="Engion\PlotData.cs" />
     <Compile Include="Forms\LoadRecipeForm.cs">
@@ -148,6 +154,9 @@
     <Compile Include="Class\Recipe.cs" />
     <Compile Include="Class\ShapeManager.cs" />
     <Compile Include="Vars.cs" />
+    <EmbeddedResource Include="Forms\FormAlignMark.resx">
+      <DependentUpon>FormAlignMark.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoadRecipeForm.resx">
       <DependentUpon>LoadRecipeForm.cs</DependentUpon>
     </EmbeddedResource>

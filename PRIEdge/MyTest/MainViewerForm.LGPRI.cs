@@ -33,6 +33,13 @@ namespace PRIEdge
         LineEq lgLine_Right = null;
         LineEq lgLine_Right2 = null;
 
+
+
+        List<PointF> edgePixels_Bottom = new List<PointF>();
+        List<Point> edgePixels2_Bottom = new List<Point>();
+        LineEq lgLine_Bottom = null;
+        LineEq lgLine_Bottom2 = null;
+
         List<Defect> EdgeList = new List<Defect>();
         //Defect defect = new Defect();
 
@@ -86,14 +93,10 @@ namespace PRIEdge
                         return Task.FromResult(true);
                 }
 
-                if (lgLine_Left.AngleDeg > 90)
-                    angle = -Math.Abs(lgLine_Left.AngleDeg - 90);
-                else if (lgLine_Left.AngleDeg < -90)
-                    angle = Math.Abs(lgLine_Left.AngleDeg + 90);
-                else if (lgLine_Left.AngleDeg < 0 && lgLine_Left.AngleDeg > -90)
-                    angle = -Math.Abs(lgLine_Left.AngleDeg + 90);
-                else if (lgLine_Left.AngleDeg > 0 && lgLine_Left.AngleDeg < 90)
-                    angle = Math.Abs(lgLine_Left.AngleDeg - 90);
+                if (lgLine_Right.AngleDeg < 0 )
+                    angle = -(lgLine_Right.AngleDeg + 90);
+                else if (lgLine_Right.AngleDeg > 0 )
+                    angle = (lgLine_Right.AngleDeg - 90);
 
 
                 BitmapBuf buf2 = buf;
@@ -165,7 +168,7 @@ namespace PRIEdge
                     }
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Right2);
 
-                    if (recipe.IntervalEverage != 0)
+                    if (recipe.IntervalAverage != 0)
                         curve = GetEverage(0, curve);
 
                     edgePixels2_Right = curve;
@@ -212,14 +215,11 @@ namespace PRIEdge
                     if (edge.Count == 0)
                         return Task.FromResult(true);
                 }
-                if (lgLine_Left.AngleDeg >90)
-                    angle = -Math.Abs(lgLine_Left.AngleDeg - 90);
-                else if (lgLine_Left.AngleDeg < -90)
-                    angle = Math.Abs(lgLine_Left.AngleDeg+90);
-                else if (lgLine_Left.AngleDeg < 0 && lgLine_Left.AngleDeg > -90)
-                    angle = -Math.Abs(lgLine_Left.AngleDeg +90);
-                else if (lgLine_Left.AngleDeg > 0 && lgLine_Left.AngleDeg <90)
-                    angle = Math.Abs(lgLine_Left.AngleDeg - 90);
+
+                if (lgLine_Left.AngleDeg < 0)
+                    angle = -(lgLine_Left.AngleDeg + 90);
+                else if (lgLine_Left.AngleDeg > 0)
+                    angle = (lgLine_Left.AngleDeg - 90);
 
 
                 var buf2 = buf;
@@ -298,7 +298,7 @@ namespace PRIEdge
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Left2);
                     curve = ReverseArray(curve);
 
-                    if (recipe.IntervalEverage != 0)
+                    if (recipe.IntervalAverage != 0)
                         curve = GetEverage(0, curve);
 
                     edgePixels2_Left = curve;
@@ -394,6 +394,124 @@ namespace PRIEdge
             }
             
         }
+        unsafe private Task<bool> PriLineFind_Bottom(BitmapBuf buf, Rectangle OffsetRect)
+        {
+            try
+            {
+                if (InsImage == null)
+                    return Task.FromResult(true);
+                int h = buf.Height;
+                int w = buf.Width;
+                var angle = 0.0;
+
+                {
+                    //double sx = lgLine.GetX(0);
+                    //double ex = lgLine.GetX(buf.Height - 1);
+                    var rect2 = new Rectangle((int)0, 0, buf.Width, buf.Height);
+                    var edge = Edge.FindEdge(buf, rect2, new EdgeParam
+                    {
+                        Method = recipe.BottomEdgeParam_Guide[0].Method,
+                        DiffStep = recipe.BottomEdgeParam_Guide[0].DiffStep,
+                        EdgeFindDir = recipe.BottomEdgeParam_Guide[0].EdgeFindDir,
+                        Threshold = recipe.BottomEdgeParam_Guide[0].Threshold,
+                        EdgeLineDir = recipe.BottomEdgeParam_Guide[0].EdgeLineDir,
+                        EdgeSel = recipe.BottomEdgeParam_Guide[0].EdgeSel,
+                        EdgeStart = recipe.BottomEdgeParam_Guide[0].EdgeStart,
+                        EdgeType = recipe.BottomEdgeParam_Guide[0].EdgeType,
+                    });
+                    lgLine_Bottom = Line.LineFit(edge.ToArray(), 10);
+                    edgePixels_Bottom = edge;
+
+                    if (edge.Count == 0)
+                        return Task.FromResult(true);
+                }
+
+                angle = -(lgLine_Bottom.AngleDeg);
+
+                //var buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
+
+
+                var buf2 = buf;
+                if (recipe.BottomMetalRotation)
+                    buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
+                //buf2.Save("D:\\BottomRotate.png");
+
+                if (recipe.SaveBottomRotateImage)
+                    Task.Run(() => buf2.Save(recipe.ImageSaveFolder + "\\BottomRotated.png"));
+                // 재계산
+
+
+                var rect = buf2.Rectangle;
+                var edge2 = Edge.FindEdge(buf2, rect, new EdgeParam
+                {
+                    Method = recipe.BottomEdgeParam[0].Method,
+                    DiffStep = recipe.BottomEdgeParam[0].DiffStep,
+                    EdgeFindDir = recipe.BottomEdgeParam[0].EdgeFindDir,
+                    Threshold = recipe.BottomEdgeParam[0].Threshold,
+                    EdgeLineDir = recipe.BottomEdgeParam[0].EdgeLineDir,
+                    EdgeSel = recipe.BottomEdgeParam[0].EdgeSel,
+                    EdgeStart = recipe.BottomEdgeParam[0].EdgeStart,
+                    EdgeType = recipe.BottomEdgeParam[0].EdgeType,
+                });
+                //edge2.Add(new PointF(x + OffsetRect.X, (float)edge + y + OffsetRect.Y));
+                var RotatedPoints = new List<Point>();
+                var curve = new List<Point>();
+
+                for (int i = 0; i < edge2.Count; i++)
+                {
+                    RotatedPoints.Add(new Point((int)edge2[i].X + OffsetRect.X, (int)edge2[i].Y + OffsetRect.Y - recipe.BottomOffSet));
+                }
+
+                lgLine_Bottom2 = Line.LineFit(RotatedPoints.ToArray(), 10);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    curve.Add(new Point(RotatedPoints[i].X, (int)lgLine_Bottom2.GetY(i + OffsetRect.X)));
+
+                }
+                for (int i = 5; i < RotatedPoints.Count - 1; i++)
+                {
+                    if (lgLine_Bottom2.GetY(RotatedPoints[i].X) - recipe.BottomEdgeParam[0].Margin < RotatedPoints[i].Y && lgLine_Bottom2.GetY(RotatedPoints[i].X) + recipe.BottomEdgeParam[0].Margin > RotatedPoints[i].Y)
+                    {
+                        curve.Add(RotatedPoints[i]);
+
+                    }
+                    else if (recipe.BottomEdgeParam[0].UseGuide)
+                    {
+                        curve.Add(new Point(RotatedPoints[i].X, Convert.ToInt32(lgLine_Bottom2.GetY(RotatedPoints[i].X))));
+
+                        // var DefectImage = InsImage.Clone(new Rectangle((int)Temp[i].X - 50, (int)lgLine_Bottom2.GetY(i + OffsetRect.X) - 50, 100,100), PixelFormat.Format8bppIndexed);
+
+                    }
+                    //EdgeList.Add(new Defect
+                    //{
+                    //    Direction = DefectType.Bottom,
+                    //    Location = new Point(Temp[i].X, (int)lgLine_Bottom2.GetY(i + OffsetRect.X)),
+                    //    X = Temp[i].X,
+                    //    Y = (int)lgLine_Bottom2.GetY(i + OffsetRect.X),
+                    //    //   DefectImage = DefectImage
+                    //});
+                }
+
+                curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Bottom2);
+
+                if (recipe.IntervalAverage != 0)
+                    curve = GetEverage(1, curve);
+
+                edgePixels2_Bottom = curve;
+
+                imageViewer1.Image = InsImage;
+                imageViewer1.Invalidate();
+
+                log.AddLogMessage(LogType.Information, 0, "Bottom Edge Find Done");
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                log.AddLogMessage(LogType.Error, 0, ex.Message);
+                return Task.FromResult(true);
+            }
+        }
 
         unsafe private Task<bool> PriLineFind_Top(BitmapBuf buf, Rectangle OffsetRect)
         {
@@ -427,10 +545,7 @@ namespace PRIEdge
                         return Task.FromResult(true);
                 }
 
-                if (lgLine_Top.AngleDeg > 0)
-                    angle = -Math.Abs(lgLine_Top.AngleDeg);
-                else if (lgLine_Top.AngleDeg < 0)
-                    angle = Math.Abs(lgLine_Top.AngleDeg);
+                angle = -(lgLine_Top.AngleDeg);
 
                 //var buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
 
@@ -499,7 +614,7 @@ namespace PRIEdge
 
                 curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Top2);
 
-                if(recipe.IntervalEverage != 0)
+                if(recipe.IntervalAverage != 0)
                     curve = GetEverage(1, curve);
 
                 edgePixels2_Top = curve;
@@ -521,7 +636,7 @@ namespace PRIEdge
         {
             try
             {
-                if (recipe.IntervalEverage == 0)
+                if (recipe.IntervalAverage == 0)
                     return Src;
 
                 List<Point> Rst = new List<Point>();
@@ -534,10 +649,10 @@ namespace PRIEdge
                     if (Index == 0)
                     {
                         Value += Src[i].X;
-                        if(counter == recipe.IntervalEverage)
+                        if(counter == recipe.IntervalAverage)
                         {
                             int Evg = (int)Math.Round((double)Value /counter,0);
-                            for (int k = recipe.IntervalEverage; k >0  ; k--)
+                            for (int k = recipe.IntervalAverage; k >0  ; k--)
                             {
                                 Rst.Add(new Point(Evg, Src[i-k+1].Y));
                             }
@@ -549,10 +664,10 @@ namespace PRIEdge
                     else if (Index == 1)
                     {
                         Value += Src[i].Y;
-                        if (counter == recipe.IntervalEverage)
+                        if (counter == recipe.IntervalAverage)
                         {
                             int Evg = (int)Math.Round((double)Value / counter, 0); 
-                            for (int k = recipe.IntervalEverage; k > 0; k--)
+                            for (int k = recipe.IntervalAverage; k > 0; k--)
                             {
                                 Rst.Add(new Point(Src[i - k + 1].X, Evg));
                             }
