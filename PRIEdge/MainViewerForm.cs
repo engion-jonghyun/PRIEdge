@@ -1,24 +1,16 @@
 ﻿
 using Engion;
-using Engion.Net;
 using Engion.Shape;
 using Engion.Vision.Algorithm;
 using PRIEdge.Properties;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
+using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -41,10 +33,8 @@ namespace PRIEdge
         public BitmapBuf FilteredImage;
 
 
-        public Point LeftAlignMarkIns;
-        public Point RightAlignMarkIns;
-        public PointF LeftAlignMark;
-        public PointF RightAlignMark;
+        public Point AlignCenter =  new Point();
+
         public List<Point> Result = new List<Point>();
         Point FirstPoint = new Point(0,0);
         Point SecondPoint = new Point(0, 0);
@@ -52,15 +42,19 @@ namespace PRIEdge
         Point ModifyMovePoint = new Point(0, 0);
         Point ViewerPoint = new Point(0,0);
 
-
         public bool ManualModify = false;
         public bool WhileSaveImage = false;
 
         private int PrevLeftOffset = 0;
         private int PrevRightOffset = 0;
         private int PrevTopOffset = 0;
+        private int PrevBottomOffset = 0;
         //List<Action> initFuntions = new List<Action>();
         List<Action<Graphics>> drawFunctions = new List<Action<Graphics>>();
+
+
+        public FormSetAlignMark fm = new FormSetAlignMark();
+
 
         public MainViewerForm()
         {
@@ -68,7 +62,7 @@ namespace PRIEdge
 
             logViewer1.Log = log;
         }
-
+        
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -88,6 +82,7 @@ namespace PRIEdge
                 PrevLeftOffset = recipe.LeftOffSet;
                 PrevRightOffset = recipe.RightOffSet;
                 PrevTopOffset = recipe.TopOffSet;
+                PrevBottomOffset = recipe.BottomOffSet;
 
                 log.OnLogEvent += (s, ee) =>
                 {
@@ -95,6 +90,12 @@ namespace PRIEdge
                 };
                 //logViewer1.Log = log;
                 DoubleBuffered = true;
+                if(!Directory.Exists(recipe.AlignMarkSaveDirectory))
+                    Directory.CreateDirectory(recipe.AlignMarkSaveDirectory);
+                fm.LoadAlignMark(0);
+                fm.LoadAlignMark(1);
+                fm.LoadAlignMark(2);
+                fm.LoadAlignMark(3);
             }
             catch (Exception ex)
             {
@@ -259,42 +260,72 @@ namespace PRIEdge
             }
             if (showAlignMarkToolStripMenuItem.Checked)
             {
-                Pen AlignPen = new Pen(Color.Orange, recipe.DrawLineWidth);
-                Rectangle templeft = imageViewer1.ImageToClient(new Rectangle((int)LeftAlignMarkIns.X - recipe.AlignMarkSize.Width / 2,
-                                                          (int)LeftAlignMarkIns.Y - recipe.AlignMarkSize.Height / 2,
-                                                          recipe.AlignMarkSize.Width, recipe.AlignMarkSize.Height));
-                //Rectangle tempright = imageViewer1.ImageToClient(new Rectangle((int)RightAlignMarkIns.X - recipe.AlignMarkSize.Width / 2,
-                //                                         (int)RightAlignMarkIns.Y - recipe.AlignMarkSize.Height / 2,
-                //                                         recipe.AlignMarkSize.Width, recipe.AlignMarkSize.Height));
 
-                g.DrawRectangle(AlignPen, templeft);
-                //g.DrawRectangle(Pens.Orange, tempright);
+                if (ImageCbB.SelectedIndex == 0 && OriImage != null)
+                {
+                    Pen AlignMarkSetPen = new Pen(Color.DodgerBlue, recipe.DrawLineWidth);
+                    for (int i = 0; i < AlignMarkRect.Count; i++)
+                    {
+                        Rectangle temp = imageViewer1.ImageToClient(new Rectangle((AlignMarkRect[i].X), AlignMarkRect[i].Y, AlignMarkRect[i].Width, AlignMarkRect[i].Height));
+                        g.DrawRectangle(AlignMarkSetPen, temp);
+                    }
+                }
+                else if (InsImage != null)
+                {
+                    Pen AlignMarkSetPen = new Pen(Color.DodgerBlue, recipe.DrawLineWidth);
+                    for (int i = 0; i < AlignMarkRectIns.Count; i++)
+                    {
+                        Rectangle temp1 = imageViewer1.ImageToClient(new Rectangle((AlignMarkRectIns[i].X), AlignMarkRectIns[i].Y, AlignMarkRectIns[i].Width, AlignMarkRectIns[i].Height));
+                        g.DrawRectangle(AlignMarkSetPen, temp1);
+                    }
+                    AlignMarkSetPen = new Pen(Color.DodgerBlue, 15);
+                    Rectangle temp = imageViewer1.ImageToClient(new Rectangle(AlignCenter.X-15, AlignCenter.Y-15, 30, 30));
+                    g.DrawRectangle(AlignMarkSetPen, temp);
+                }
+
+
             }
             if (showSettingToolStripMenuItem.Checked)
             {
                 Pen SettingPen = new Pen(Color.Purple, recipe.DrawLineWidth);
 
                 Rectangle tmp = imageViewer1.ImageToClient(recipe.MetalRect);
-
-                Rectangle tmp1 = imageViewer1.ImageToClient(recipe.AlignMarkLeft);
-                Rectangle tmp2 = imageViewer1.ImageToClient(recipe.AlignMarkRight);
                 g.DrawRectangle(SettingPen, tmp);
-                g.DrawRectangle(SettingPen, tmp1);
-                g.DrawRectangle(SettingPen, tmp2);
-            }
-            if(showResultPointToolStripMenuItem.Checked)
-            {
-                g.DrawRectangle(new Pen(Color.LightGreen, recipe.DrawLineWidth+1), new Rectangle(ViewerPoint.X - 10, ViewerPoint.Y - 10, 20, 20));
-            }
-            DrawPRI(g);
+                tmp = imageViewer1.ImageToClient(recipe.AlignMarkLeftTop);
+                g.DrawRectangle(SettingPen, tmp);
+                tmp = imageViewer1.ImageToClient(recipe.AlignMarkLeftBottom);
+                g.DrawRectangle(SettingPen, tmp);
+                tmp = imageViewer1.ImageToClient(recipe.AlignMarkRightTop);
+                g.DrawRectangle(SettingPen, tmp);
+                tmp = imageViewer1.ImageToClient(recipe.AlignMarkRightBottom);
+                g.DrawRectangle(SettingPen, tmp);
 
+                //Rectangle tmp1 = imageViewer1.ImageToClient(recipe.AlignMarkLeft);
+                //Rectangle tmp2 = imageViewer1.ImageToClient(recipe.AlignMarkRight);
+                //g.DrawRectangle(SettingPen, tmp1);
+                //g.DrawRectangle(SettingPen, tmp2);
+            }
+           
+            DrawPRI(g);
+            if (showResultPointToolStripMenuItem.Checked)
+            {
+                g.DrawRectangle(new Pen(Color.LightGreen, recipe.DrawLineWidth + 1), imageViewer1.ImageToClient(new Rectangle(ViewerPoint.X - 5, ViewerPoint.Y - 5, 10, 10)));
+            }
             //Edge 검출 결과 수정 중 DP
-            if(Vars.WhileModify == true && ManualModify)
+            if (Vars.WhileModify == true && ManualModify)
             {
                 Pen MovePen = new Pen(Color.Red, recipe.DrawLineWidth);
                 g.DrawLine(MovePen, imageViewer1.ImageToClient(Vars.ModifyStartPoint), imageViewer1.ImageToClient(ModifyMovePoint));
             }
 
+            if(SetAlignMarkBool)
+            {
+                Pen AlignMarkSetPen = new Pen(Color.DodgerBlue, recipe.DrawLineWidth);
+                g.DrawRectangle(AlignMarkSetPen,new Rectangle( imageViewer1.ImageToClient(ModifyMovePoint).X - (recipe.markSize.Width/2)
+                    , imageViewer1.ImageToClient(ModifyMovePoint).Y- (recipe.markSize.Height / 2), recipe.markSize.Width, recipe.markSize.Height));
+                g.DrawLine(AlignMarkSetPen, imageViewer1.ImageToClient(ModifyMovePoint).X,0 , imageViewer1.ImageToClient(ModifyMovePoint).X , imageViewer1.Image.Height);
+                g.DrawLine(AlignMarkSetPen,0, imageViewer1.ImageToClient(ModifyMovePoint).Y, imageViewer1.Image.Width, imageViewer1.ImageToClient(ModifyMovePoint).Y);
+            }
 
             foreach (var draw in drawFunctions)
                 draw(g);
@@ -310,7 +341,11 @@ namespace PRIEdge
                 SolidBrush BrushRect = new SolidBrush(Color.LightSteelBlue);
                 int distanceX = Math.Abs(FirstPoint.X - SecondPoint.X);
                 int distanceY = Math.Abs(FirstPoint.Y - SecondPoint.Y);
-                int distance = Convert.ToInt32(Math.Sqrt(Math.Pow(distanceX * recipe.Resolution.Width, 2) + Math.Pow(distanceY * recipe.Resolution.Height, 2)));
+                int distance;
+                if (recipe.Resolution.Width ==0)
+                    distance = Convert.ToInt32(Math.Sqrt(Math.Pow(distanceX, 2) + Math.Pow(distanceY, 2)));
+                else 
+                    distance = Convert.ToInt32(Math.Sqrt(Math.Pow(distanceX * recipe.Resolution.Width, 2) + Math.Pow(distanceY * recipe.Resolution.Height, 2)));
                 string StrDistance = distance.ToString();
                 g.FillRectangle(BrushRect, new Rectangle(en, new Size(StrDistance.Length * 19, 30)));
                 g.DrawString($"{StrDistance}", new Font("Arial", 20), new SolidBrush(Color.Black), en);
@@ -351,7 +386,7 @@ namespace PRIEdge
                     var src = (BitmapBuf)imageViewer1.Image;
 
                     ptClickCrossLine = p;
-                    Point ClickPoint = SourceToReal(p, LeftAlignMarkIns);
+                    Point ClickPoint = SourceToReal(p, new Point(0,0));
                     Point ResClickPoint = new Point(ClickPoint.X * Vars.recipe.Resolution.Width, ClickPoint.Y * Vars.recipe.Resolution.Height);
                     if (Vars.recipe.Coordinate == coordinate.REAL)
                     {
@@ -371,7 +406,6 @@ namespace PRIEdge
                     if (imagePos.X < 0 || imagePos.Y < 0 || imagePos.X >= src.Width || imagePos.Y >= src.Height)
                         return;
 
-                    enhanceLevel = double.Parse(enhanceTextBox.Text);
                 }
             }
             catch (Exception ex)
@@ -396,13 +430,16 @@ namespace PRIEdge
                 switch (ModeCBb.SelectedIndex)
                 {
                     case 1:
-                        edgePixels2_Left = VerticalAutualModify(edgePixels2_Left, ClientPoint);
+                        edgePixels2_Left = VerticalAutualModify(true,edgePixels2_Left, ClientPoint);
                         break;
                     case 2:
-                        edgePixels2_Right = VerticalAutualModify(edgePixels2_Right, ClientPoint);
+                        edgePixels2_Right = VerticalAutualModify(false, edgePixels2_Right, ClientPoint);
                         break;
                     case 3:
-                        edgePixels2_Top = HorizoneAutualModify(edgePixels2_Top, ClientPoint);
+                        edgePixels2_Top = HorizoneAutualModify(true,edgePixels2_Top, ClientPoint);
+                        break;
+                    case 4:
+                        edgePixels2_Bottom = HorizoneAutualModify(false,edgePixels2_Bottom, ClientPoint);
                         break;
                 }
 
@@ -415,7 +452,7 @@ namespace PRIEdge
         }
 
 
-        private List<Point> VerticalAutualModify(List<Point> OriPoints,Point ClientPoint)
+        private List<Point> VerticalAutualModify(bool index, List<Point> OriPoints, Point ClientPoint)
         {
             var StartX = Vars.ModifyStartPoint.X;
             var StartY = Vars.ModifyStartPoint.Y;
@@ -425,100 +462,164 @@ namespace PRIEdge
             var endpoint = new Point(EndX, EndY);
             int YLen = 0;
             int XLen = 0;
-
             //위에서 아래로 그렸을 때
             if (EndY > StartY)
-                    {
-                        YLen = EndY - StartY;
+            {
+                YLen = EndY - StartY;
 
-                        Point[] ModifyPoints = new Point[YLen];
-                        //좌에서 우로 그렸을 때
-                        if (EndX > StartX)
+                Point[] ModifyPoints = new Point[YLen];
+                //좌에서 우로 그렸을 때
+                if (EndX > StartX)
+                {
+                    XLen = EndX - StartX;
+                    for (int i = 0; i < YLen; i++)
+                    {
+                        ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY + i);
+                        for (int j = 0; j < OriPoints.Count(); j++)
                         {
-                            XLen = EndX - StartX;
-                            for (int i = 0; i < YLen; i++)
+                            if (OriPoints[j].Y == ModifyPoints[i].Y)
                             {
-                                ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY + i);
-                                for (int j = 0; j < OriPoints.Count(); j++)
-                                {
-                                    if (OriPoints[j].Y == ModifyPoints[i].Y)
-                                    {
-                                        OriPoints[j] = ModifyPoints[i];
-                                    }
-                                }
-                            }
-                        }
-                        //우에서 좌로 그렸을 때
-                        else
-                        {
-                            XLen = StartX - EndX;
-                            for (int i = 0; i < YLen; i++)
-                            {
-                                ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY + i);
-                                for (int j = 0; j < OriPoints.Count(); j++)
-                                {
-                                    if (OriPoints[j].Y == ModifyPoints[i].Y)
-                                    {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].X - ModifyPoints[i].X);
+                                else
+                                    temp = (OriPoints[j].X - ModifyPoints[i].X);
                                 OriPoints[j] = ModifyPoints[i];
-                                    }
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Top, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Bottom, index, temp);
                                 }
                             }
                         }
                     }
-                    //아래에서 위로 그렸을 때
-                    else if (EndY < StartY)
+                }
+                //우에서 좌로 그렸을 때
+                else
+                {
+                    XLen = StartX - EndX;
+                    for (int i = 0; i < YLen; i++)
                     {
-                        YLen = StartY - EndY;
-                        Point[] ModifyPoints = new Point[YLen];
-                        //좌에서 우로 그렸을 때
-                        if (EndX > StartX)
+                        ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY + i);
+                        for (int j = 0; j < OriPoints.Count(); j++)
                         {
-                            XLen = EndX - StartX;
-                            for (int i = 0; i < YLen; i++)
+                            if (OriPoints[j].Y == ModifyPoints[i].Y)
                             {
-                                ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY - i);
-                                for (int j = 0; j < OriPoints.Count(); j++)
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].X - ModifyPoints[i].X);
+                                else
+                                    temp = (OriPoints[j].X - ModifyPoints[i].X);
+                                OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
                                 {
-                                    if (OriPoints[j].Y == ModifyPoints[i].Y)
-                                    {
-                                         OriPoints[j] = ModifyPoints[i];
-                                    }
+                                    FitGap(DirectionWay.Top, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Bottom, index, temp);
                                 }
                             }
                         }
-                        //우에서 좌로 그렸을 때
+                    }
+                }
+            }
+            //아래에서 위로 그렸을 때
+            else if (EndY < StartY)
+            {
+                YLen = StartY - EndY;
+                Point[] ModifyPoints = new Point[YLen];
+                //좌에서 우로 그렸을 때
+                if (EndX > StartX)
+                {
+                    XLen = EndX - StartX;
+                    for (int i = 0; i < YLen; i++)
+                    {
+                        ModifyPoints[i] = new Point(StartX + (XLen * i / YLen), StartY - i);
+                        for (int j = 0; j < OriPoints.Count(); j++)
+                        {
+                            if (OriPoints[j].Y == ModifyPoints[i].Y)
+                            {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].X - ModifyPoints[i].X);
+                                else
+                                    temp = (OriPoints[j].X - ModifyPoints[i].X);
+                                OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Top, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Bottom, index, temp);
+                                }
+                            }
+                        }
+                    }
+                }
+                //우에서 좌로 그렸을 때
+                else
+                {
+                    XLen = StartX - EndX;
+                    for (int i = 0; i < YLen; i++)
+                    {
+                        ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY - i);
+                        for (int j = 0; j < OriPoints.Count(); j++)
+                        {
+                            if (OriPoints[j].Y == ModifyPoints[i].Y)
+                            {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].X - ModifyPoints[i].X);
+                                else
+                                    temp = (OriPoints[j].X - ModifyPoints[i].X);
+                                OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Top, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Bottom, index, temp);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (EndY == StartY)
+            {
+                var CheckPoint = new Point(EndX, StartY);
+                for (int i = 0; i < OriPoints.Count(); i++)
+                {
+                    if (OriPoints[i].Y == StartY)
+                    {
+                        int temp = 0;
+                        if (index == true)
+                            temp = -(OriPoints[i].X - CheckPoint.X);
                         else
+                            temp = (OriPoints[i].X - CheckPoint.X);
+                        OriPoints[i] = CheckPoint; 
+                        if (i == 0)
                         {
-                            XLen = StartX - EndX;
-                            for (int i = 0; i < YLen; i++)
-                            {
-                                ModifyPoints[i] = new Point(StartX - (XLen * i / YLen), StartY -  i);
-                                for (int j = 0; j < OriPoints.Count(); j++)
-                                {
-                                    if (OriPoints[j].Y == ModifyPoints[i].Y)
-                                    {
-                                        OriPoints[j] = ModifyPoints[i];
-                                    }
-                                }
-                            }
+                            FitGap(DirectionWay.Top, index, temp);
                         }
-                    }
-                    else if (EndY == StartY)
-                    {
-                        var CheckPoint = new Point(EndX, StartY);
-                        for (int i = 0; i < OriPoints.Count(); i++)
+                        if (i == OriPoints.Count - 1)
                         {
-                            if (OriPoints[i].Y == StartY)
-                            {
-                                OriPoints[i] = CheckPoint;
-                                break;
-                            }
+                            FitGap(DirectionWay.Bottom, index, temp);
                         }
+                        break;
                     }
-                    RefreshImageViewer();
-                    return OriPoints;
+                }
+            }
+            RefreshImageViewer();
+            return OriPoints;
         }
-        private List<Point> HorizoneAutualModify(List<Point> OriPoints, Point ClientPoint)
+        private List<Point> HorizoneAutualModify(bool index,List<Point> OriPoints,Point ClientPoint)
         {
             var StartX = Vars.ModifyStartPoint.X;
             var StartY = Vars.ModifyStartPoint.Y;
@@ -528,7 +629,6 @@ namespace PRIEdge
             var endpoint = new Point(EndX, EndY);
             int YLen = 0;
             int XLen = 0;
-
 
             //좌에서 우로 그렸을 때
             if (EndX > StartX)
@@ -547,7 +647,20 @@ namespace PRIEdge
                         {
                             if (OriPoints[j].X == ModifyPoints[i].X)
                             {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].Y - ModifyPoints[i].Y);
+                                else
+                                    temp = (OriPoints[j].Y - ModifyPoints[i].Y);
                                 OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Left, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Right, index, temp);
+                                }
                             }
                         }
                     }
@@ -563,7 +676,20 @@ namespace PRIEdge
                         {
                             if (OriPoints[j].X == ModifyPoints[i].X)
                             {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].Y - ModifyPoints[i].Y);
+                                else
+                                    temp = (OriPoints[j].Y - ModifyPoints[i].Y);
                                 OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Left, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Right, index, temp);
+                                }
                             }
                         }
                     }
@@ -587,7 +713,20 @@ namespace PRIEdge
                         {
                             if (OriPoints[j].X == ModifyPoints[i].X)
                             {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].Y - ModifyPoints[i].Y);
+                                else
+                                    temp = (OriPoints[j].Y - ModifyPoints[i].Y);
                                 OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Left, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Right, index, temp);
+                                }
                             }
                         }
                     }
@@ -603,7 +742,20 @@ namespace PRIEdge
                         {
                             if (OriPoints[j].X == ModifyPoints[i].X)
                             {
+                                int temp = 0;
+                                if (index == true)
+                                    temp = -(OriPoints[j].Y - ModifyPoints[i].Y);
+                                else
+                                    temp = (OriPoints[j].Y - ModifyPoints[i].Y);
                                 OriPoints[j] = ModifyPoints[i];
+                                if (j == 0)
+                                {
+                                    FitGap(DirectionWay.Left, index, temp);
+                                }
+                                if (j == OriPoints.Count - 1)
+                                {
+                                    FitGap(DirectionWay.Right, index, temp);
+                                }
                             }
                         }
                     }
@@ -617,11 +769,28 @@ namespace PRIEdge
                 {
                     if (OriPoints[i].X == StartX)
                     {
-                        OriPoints[i] = CheckPoint;
+                        int temp = 0;
+                        if (index == true)
+                            temp = -(OriPoints[i].Y - CheckPoint.Y);
+                        else
+                            temp = (OriPoints[i].Y - CheckPoint.Y);
+                        OriPoints[i] = CheckPoint; 
+                        if (i == 0)
+                        {
+                            FitGap(DirectionWay.Left, index, temp);
+                        }
+                        if (i == OriPoints.Count - 1)
+                        {
+                            FitGap(DirectionWay.Right, index, temp);
+                        }
                         break;
                     }
                 }
             }
+
+            if(StartX == OriPoints[0].X)
+                return OriPoints;
+
             RefreshImageViewer();
             return OriPoints;
         }
@@ -645,7 +814,7 @@ namespace PRIEdge
                     for (int i = 0; i < edgePixels2_Top.Count; i++)
                     {
                         if (Start < edgePixels2_Top[i].X && End > edgePixels2_Top[i].X)
-                            edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X , edgePixels2_Top[i].Y + Value);
+                            edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X , edgePixels2_Top[i].Y - Value);
                     }
                     break;
                 //우변
@@ -654,6 +823,14 @@ namespace PRIEdge
                     {
                         if (Start < edgePixels2_Right[i].Y && End > edgePixels2_Right[i].Y)
                             edgePixels2_Right[i] = new Point(edgePixels2_Right[i].X + Value, edgePixels2_Right[i].Y);
+                    }
+                    break;  
+                //상단
+                case 3:
+                    for (int i = 0; i < edgePixels2_Bottom.Count; i++)
+                    {
+                        if (Start < edgePixels2_Bottom[i].X && End > edgePixels2_Bottom[i].X)
+                            edgePixels2_Bottom[i] = new Point(edgePixels2_Bottom[i].X, edgePixels2_Bottom[i].Y - Value);
                     }
                     break;
             }
@@ -669,6 +846,11 @@ namespace PRIEdge
                 var pt = imageViewer1.ClientToImage(e.Location);
                 if (imageViewer1.Image.Rectangle.Contains(pt) == false)
                     return;
+                if (SetAlignMarkBool)
+                {
+                    ModifyMovePoint = pt;
+                    imageViewer1.Refresh();
+                }
 
                 if (Vars.WhileModify == true && ManualModify && e.Button == MouseButtons.Left)
                 {
@@ -803,11 +985,6 @@ namespace PRIEdge
 
         private void enhanceCheck_CheckedChanged(object sender, EventArgs e)
         {
-            if (enhanceCheck.Checked == false)
-            {
-                NormalPalette(imageViewer1.Image);
-                imageViewer1.Invalidate();
-            }
         }
 
         public static void NormalPalette(BitmapBuf bmp)
@@ -1005,7 +1182,7 @@ namespace PRIEdge
                
             //}
             recipe.Save(Settings.Default.LastRecipeFolder + "\\" + $"{recipe.RecipeID}" + ".xml");
-            Settings.Default.LastRecipeFolder = Path.GetDirectoryName(fi.DirectoryName);
+            Settings.Default.LastRecipeFolder = Path.GetDirectoryName(fi.FullName);
             Settings.Default.LastRecipeFile = Settings.Default.LastRecipeFolder + "\\" + $"{recipe.RecipeID}" + ".xml";
             Settings.Default.Save();
         }
@@ -1015,57 +1192,29 @@ namespace PRIEdge
             showSettingToolStripMenuItem.Checked = true;
             RefreshImageViewer();
         }
-        public void Align()
+        public void DoAlign()
         {
             try
             {
                 var orgImage = OriImage;
-                //var log = paramDatas.log;
-                //var Thres = 50;
-
-
-                // 얼라인 마크 찾기
-                var LeftAlignBitmap = orgImage.Clone(recipe.AlignMarkLeft, orgImage.PixelFormat);
-                var RightAlignBitmap = orgImage.Clone(recipe.AlignMarkRight, orgImage.PixelFormat);
-
-                LeftAlignMark = FindAlignMark(LeftAlignBitmap, "Left", recipe.AlignMarkLeft.Location);
-                RightAlignMark = FindAlignMark(RightAlignBitmap, "Right", recipe.AlignMarkRight.Location);
-
-                log.AddLogMessage(LogType.Information, 0, $"Left Align = {LeftAlignMark.X} , {LeftAlignMark.Y}");
-                log.AddLogMessage(LogType.Information, 0, $"Right Align = {RightAlignMark.X} , {RightAlignMark.Y}");
                 // 얼라인 진행 
 
-                var angle = getAngle(LeftAlignMark, RightAlignMark);
-                var rotate = Rotation(orgImage, angle, LeftAlignMark, LeftAlignMark);
-
+                if (AlignMarkRect[0] == null || AlignMarkRect[1] == null)
+                    return;
+                var angle = getAngle(AlignMarkRect[1].Center(), AlignMarkRect[3].Center());
+                AlignCenter = GetIntersectCenterPoint(AlignMarkRect[0].Center(), AlignMarkRect[3].Center(), AlignMarkRect[1].Center(), AlignMarkRect[2].Center());
+                var rotate = Rotation(orgImage, angle, AlignCenter, AlignCenter);
+                angle = -angle ;
+                
                 rotate.GrayPalette();
-
-
-                //rotate.Save("c:\\tmp\\TestM.png");
-                //inspectImage = new BitmapBuf(rotateImage);
-                //manager.SetInsBuf(rotate, scanNo);
                 InsImage = rotate;
+                AlignMarkFind();
 
-
-
-                //Rectangle RightAlignAreaIns = new Rectangle(IPVars.metal.AlignMarkRight.X, IPVars.metal.AlignMarkRight.Y, IPVars.metal.AlignMarkLeft.Width, IPVars.metal.AlignMarkLeft.Height);
-
-                var LeftAlignMarkInsBitmap = rotate.Clone(recipe.AlignMarkLeft, rotate.PixelFormat);
-                var RightAlignMarkInsBitmap = rotate.Clone(recipe.AlignMarkRight, rotate.PixelFormat);
-
-                //LeftAlignMarkInsBitmap.Save($"D:\\OCVImage\\PRITEMP.png");
-                LeftAlignMarkIns = Point.Round(FindAlignMark(LeftAlignMarkInsBitmap, "Zero Point", recipe.AlignMarkLeft.Location));
-                //RightAlignMarkIns = Point.Round(FindAlignMark(RightAlignMarkInsBitmap, "Right", recipe.AlignMarkRight.Location));
-
-                log.AddLogMessage(LogType.Information, 0, $"Zero Point = {LeftAlignMarkIns.X} , {LeftAlignMarkIns.Y}");
-                //var inspectImage = manager.InspectImage[scanNo];
-
-                // selectShowImageComboBox.SelectedIndex = 1;
-                // ShowInspectImage();
+                log.AddLogMessage(LogType.Information, 0, "Theta Align Done");
+                log.AddLogMessage(LogType.Information, 0, $"Zero Point = {AlignCenter.X} , {AlignCenter.Y}");
                 ImageCbB.SelectedIndex = 1;
                 RefreshImageViewer();
 
-               // var ResultRotateRect = Rotation(recipe.MetalRect, angle, recipe.MetalRect.Center(), recipe.MetalRect.Center());
                 return;
 
             }
@@ -1075,44 +1224,44 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Error, 0, "얼라인 실패");
                 return;
             }
-            
-            PointF FindAlignMark(BitmapBuf buf, string LR, PointF RectPos)
-            {
-                try
-                {
-                    //buf = Erosion(buf, 3);
-                    //buf =  GetThresColorEntries(buf, recipe.AlignLevel);
-                    buf.Save($"D:\\OCVImage\\PRITEMP.png");
-                    BlobEx blob = new BlobEx();
-                    blob.ObjectType = BlobEx.ObjectTypes.Black;
-                    blob.ObjectLLevel = recipe.AlignLevel;
-                    int count = blob.Labeling(buf);
-                    var find = blob.ObjInfos.Find(o => o.Rectangle.Width > recipe.AlignMarkSize.Width- recipe.AlignMarkMargin &&
-                            o.Rectangle.Height > recipe.AlignMarkSize.Height- recipe.AlignMarkMargin && o.Rectangle.Width < recipe.AlignMarkSize.Width + recipe.AlignMarkMargin &&
-                            o.Rectangle.Height < recipe.AlignMarkSize.Height + recipe.AlignMarkMargin);
-                    // log.AddLogMessage(LogType.Information, 0, $"Find Align Mark{find.BlobNo}");
 
-                    //buf.Save($"D:\\OCVImage\\PRITEMP.png");
-                    if (find != null)
-                    {
-                        var OutX = RectPos.X + find.Center.X;
-                        var OutY = RectPos.Y + find.Center.Y;
-                        PointF Out = new PointF(OutX, OutY);
-                        log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Return  Pos : {Out}/ Size : {find.Rectangle.Size}");
-                        return Out;
-                    }
-                    else
-                    {
-                        log.AddLogMessage(LogType.Error, 0, $"Find {LR} Align Mark Fail Return 0,0");
-                        return new PointF(0, 0);
-                    }
-                }
-                catch
-                {
-                    log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Fail Return 0,0");
-                    return new PointF(0, 0);
-                }
-            }
+            //PointF FindAlignMark(BitmapBuf buf, string LR, PointF RectPos)
+            //{
+            //    try
+            //    {
+            //        //buf = Erosion(buf, 3);
+            //        //buf =  GetThresColorEntries(buf, recipe.AlignLevel);
+            //        buf.Save($"D:\\OCVImage\\PRITEMP.png");
+            //        BlobEx blob = new BlobEx();
+            //        blob.ObjectType = BlobEx.ObjectTypes.Black;
+            //        blob.ObjectLLevel = recipe.AlignLevel;
+            //        int count = blob.Labeling(buf);
+            //        var find = blob.ObjInfos.Find(o => o.Rectangle.Width > recipe.AlignMarkSize.Width - recipe.AlignMarkMargin &&
+            //                o.Rectangle.Height > recipe.AlignMarkSize.Height - recipe.AlignMarkMargin && o.Rectangle.Width < recipe.AlignMarkSize.Width + recipe.AlignMarkMargin &&
+            //                o.Rectangle.Height < recipe.AlignMarkSize.Height + recipe.AlignMarkMargin);
+            //        // log.AddLogMessage(LogType.Information, 0, $"Find Align Mark{find.BlobNo}");
+
+            //        //buf.Save($"D:\\OCVImage\\PRITEMP.png");
+            //        if (find != null)
+            //        {
+            //            var OutX = RectPos.X + find.Center.X;
+            //            var OutY = RectPos.Y + find.Center.Y;
+            //            PointF Out = new PointF(OutX, OutY);
+            //            log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Return  Pos : {Out}/ Size : {find.Rectangle.Size}");
+            //            return Out;
+            //        }
+            //        else
+            //        {
+            //            log.AddLogMessage(LogType.Error, 0, $"Find {LR} Align Mark Fail Return 0,0");
+            //            return new PointF(0, 0);
+            //        }
+            //    }
+            //    catch
+            //    {
+            //        log.AddLogMessage(LogType.Information, 0, $"Find {LR} Align Mark Fail Return 0,0");
+            //        return new PointF(0, 0);
+            //    }
+            //}
             BitmapBuf Erosion(BitmapBuf src, int count)
             {
                 BitmapBuf dst = null;
@@ -1130,6 +1279,35 @@ namespace PRIEdge
 
                 return Math.Atan2(dy, dx) * (180.0 / Math.PI);
             }
+            Point GetIntersectCenterPoint(PointF AP1, PointF AP2, PointF BP1, PointF BP2)
+            {
+                double t;
+                double s;
+                double under = (BP2.Y - BP1.Y) * (AP2.X - AP1.X) - (BP2.X - BP1.X) * (AP2.Y - AP1.Y);
+
+                if (under == 0)
+
+                    return new Point();
+
+                double _t = (BP2.X - BP1.X) * (AP1.Y - BP1.Y) - (BP2.Y - BP1.Y) * (AP1.X - BP1.X);
+                double _s = (AP2.X - AP1.X) * (AP1.Y - BP1.Y) - (AP2.Y - AP1.Y) * (AP1.X - BP1.X);
+
+
+                t = _t / under;
+                s = _s / under;
+
+                if (t < 0.0 || t > 1.0 || s < 0.0 || s > 1.0)
+                    return new Point(); ;
+
+                if (_t == 0 && _s == 0)
+                    return new Point(); ;
+                Point IP = new Point();
+                IP.X = (int)(AP1.X + t * (AP2.X - AP1.X));
+
+                IP.Y = (int)(AP1.Y + t * (AP2.Y - AP1.Y));
+                return IP;
+            }
+
         }
 
         BitmapBuf GetThresColorEntries(BitmapBuf bmp, int threlevel)
@@ -1150,6 +1328,7 @@ namespace PRIEdge
         {
             try
             {
+
                 //if (Auth.IsAuth() == AuthStatus.Test)
                 //{
                 //    log.AddLogMessage(LogType.Critical, 0, "License Error");
@@ -1164,12 +1343,21 @@ namespace PRIEdge
                 PrevLeftOffset = recipe.LeftOffSet;
                 PrevRightOffset = recipe.RightOffSet;
                 PrevTopOffset = recipe.TopOffSet;
+                PrevBottomOffset = recipe.BottomOffSet;
+                BottomRawData.Clear();
+                TopRawData.Clear();
+                LeftRawData.Clear();
+                RightRawData.Clear();
+
+
 
                 _ = Task.Run(() => SaveBtn_Click(null, null));
 
                 if (InsImage == null)
-                    Align();
-
+                {
+                    AlignMarkFind();
+                    DoAlign();
+                }
                 if (!Directory.Exists(recipe.ImageSaveFolder))
                 {
                     Directory.CreateDirectory(recipe.ImageSaveFolder);
@@ -1192,9 +1380,9 @@ namespace PRIEdge
 
                 Rectangle LeftRect = new Rectangle(
                     recipe.MetalRect.X - recipe.LeftMargin / 2,
-                    recipe.MetalRect.Y - 50 - recipe.TopOffSet,
+                    recipe.MetalRect.Y - 250 - recipe.TopOffSet,
                     recipe.LeftMargin,
-                    recipe.MetalRect.Height + 100 + recipe.TopOffSet);
+                    recipe.MetalRect.Height + 500 + recipe.TopOffSet + recipe.BottomOffSet);
 
                 BitmapBuf Left = InsImage.Clone(LeftRect, PixelFormat.DontCare);
                 if (recipe.SaveLeftOrgImage)
@@ -1213,9 +1401,9 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Information, 0, $"Left Edge Image Process Done");
 
                 Rectangle TopRect = new Rectangle(
-                    recipe.MetalRect.X - 50 - recipe.LeftOffSet,
+                    recipe.MetalRect.X - 250 - recipe.LeftOffSet,
                     recipe.MetalRect.Y - recipe.TopMargin / 2,
-                    recipe.MetalRect.Width + 100 + recipe.LeftOffSet + recipe.RightOffSet,
+                    recipe.MetalRect.Width + 500 + recipe.LeftOffSet + recipe.RightOffSet,
                     recipe.TopMargin);
                 BitmapBuf Top = InsImage.Clone(TopRect, PixelFormat.DontCare);
 
@@ -1236,9 +1424,9 @@ namespace PRIEdge
 
 
                 Rectangle BottomRect = new Rectangle(
-                    recipe.MetalRect.X - 50 - recipe.LeftOffSet,
+                    recipe.MetalRect.X - 250 - recipe.LeftOffSet,
                     recipe.MetalRect.Y - recipe.BottomMargin / 2 + recipe.MetalRect.Height,
-                    recipe.MetalRect.Width + 100 + recipe.LeftOffSet + recipe.RightOffSet,
+                    recipe.MetalRect.Width + 500 + recipe.LeftOffSet + recipe.RightOffSet,
                     recipe.BottomMargin);
                 BitmapBuf Bottom = InsImage.Clone(BottomRect, PixelFormat.DontCare);
 
@@ -1260,9 +1448,9 @@ namespace PRIEdge
 
                 Rectangle RightRect = new Rectangle(
                     recipe.MetalRect.X - recipe.RightMargin / 2 + recipe.MetalRect.Width,
-                    recipe.MetalRect.Y - 50 - recipe.TopOffSet,
+                    recipe.MetalRect.Y - 250 - recipe.TopOffSet,
                     recipe.RightMargin,
-                    recipe.MetalRect.Height + 100 + recipe.TopOffSet);
+                    recipe.MetalRect.Height + 500 + recipe.TopOffSet+recipe.BottomOffSet);
                 BitmapBuf Right = InsImage.Clone(RightRect, PixelFormat.DontCare);
                 if (recipe.SaveRightOrgImage)
                     _ = Task.Run(() => Right.Save(recipe.ImageSaveFolder + "\\RightOrg.png"));
@@ -1287,7 +1475,7 @@ namespace PRIEdge
                     Task.Run(() => PriLineFind_Top(Top, TopRect)),
                     Task.Run(() => PriLineFind_Bottom(Bottom, BottomRect))
                     );
-
+                
 
                 Result = MergePoint(0, edgePixels2_Left, edgePixels2_Top, edgePixels2_Right,edgePixels2_Bottom);
                 SetDefect();
@@ -1399,7 +1587,8 @@ namespace PRIEdge
 
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            imageViewer1.Image.Save("D:\\LG_PRI_METAL\\영상\\LG PRI Edge Image\\ton.png");
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.ShowDialog();
         }
 
         private void ImageCbB_SelectedIndexChanged(object sender, EventArgs e)
@@ -1412,7 +1601,10 @@ namespace PRIEdge
             try
             {
                 SaveBtn_Click(null, null);
-                Align();
+                //if (AlignMarkRect[0] == null)
+                AlignMarkFind();
+                DoAlign();
+                //Align();
             }
             catch(Exception ex)
             {
@@ -1445,6 +1637,52 @@ namespace PRIEdge
                 log.AddLogMessage(LogType.Error, 0, ex);
             }
         }
+        private void SaveCsvRaw(string fileName)
+        {
+            try
+            {
+                var folder = Path.GetDirectoryName(fileName);
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName))
+
+                {
+                    if (recipe.Coordinate == coordinate.RealWithResolution)
+                    {
+                        file.WriteLine("No,Directtion,X,Y,With Resolution");
+                    }
+                    else
+                    {
+                        file.WriteLine("No,Directtion,X,Y,Without Resolution");
+                    }
+                    for (int i = 0; i < LeftRawData.Count(); i++)
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i, LeftRawData[i].Direction, LeftRawData[i].X, LeftRawData[i].Y);
+                    for (int i = 0; i < TopRawData.Count(); i++)
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i, TopRawData[i].Direction, TopRawData[i].X, TopRawData[i].Y);
+                    for (int i = 0; i < RightRawData.Count(); i++)
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i, RightRawData[i].Direction, RightRawData[i].X, RightRawData[i].Y);
+                    for (int i = 0; i < BottomRawData.Count(); i++)
+                        file.WriteLine("{0},{1},{2},{3}",
+                           i, BottomRawData[i].Direction, BottomRawData[i].X, BottomRawData[i].Y);
+
+                }
+                log.AddLogMessage(LogType.Information, 0, "Extract Done");
+            }
+            catch (Exception exp)
+            {
+                log.AddLogMessage(LogType.Error, 0, "Csv Save Error");
+                log.AddLogMessage(LogType.Error, 0, exp);
+            }
+            log.AddLogMessage(LogType.Information, 0, "Result File Saved.");
+
+        }
+
         private void SaveCsv(string fileName)
         {
             try
@@ -1481,35 +1719,7 @@ namespace PRIEdge
             log.AddLogMessage(LogType.Information, 0, "Result File Saved.");
 
         }
-        private void SaveCsvWithResolution(string fileName)
-        {
-            try
-            {
-                var folder = Path.GetDirectoryName(fileName);
-                if (!Directory.Exists(folder))
-                {
-                    Directory.CreateDirectory(folder);
-                }
-
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName))
-                {
-                    file.WriteLine("No,Directtion,X,Y,With Resolution");
-                    for (int i = 0; i < EdgeList.Count(); i++)
-                        file.WriteLine("{0},{1},{2},{3}",
-                           i,EdgeList[i].Direction, EdgeList[i].X, EdgeList[i].Y);
-
-                }
-                log.AddLogMessage(LogType.Information, 0, "Extract Done");
-            }
-            catch (Exception exp)
-            {
-                log.AddLogMessage(LogType.Error, 0, "Csv Save Error");
-                log.AddLogMessage(LogType.Error, 0, exp);
-            }
-            log.AddLogMessage(LogType.Information, 0, "Result File Saved.");
-
-        }
-
+        
         private void MainViewerForm_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.ShiftKey)
@@ -1538,10 +1748,9 @@ namespace PRIEdge
                     Point value1 = new Point ((int)row.Cells[1].Value, (int)row.Cells[2].Value);
 
                     //center = Point.Round(value1);
-                    center = RealToSource(value1, LeftAlignMarkIns);
+                    center = RealToSource(value1, AlignCenter);
                     imageViewer1.DrawPointAtCenter(center);
-                    ViewerPoint = imageViewer1.ImageToClient(center);
-
+                    ViewerPoint = center;
                     // imageViewer1.Invalidate();
                     imageViewer1.Refresh();
                     log.AddLogMessage(LogType.Information, 0, $"Move to {value1}");
@@ -1596,7 +1805,21 @@ namespace PRIEdge
                 Point p = imageViewer1.ClientToImage(e.Location);
                 SecondPoint = p;
             }
+
+            if (SetAlignMarkBool)
+            {
+                Point p = imageViewer1.ClientToImage(e.Location);
+                AlignMarkImage[SetAlignMarkIdx] = (Bitmap)OriImage.Clone(new Rectangle(p.X - (recipe.markSize.Width / 2), p.Y - (recipe.markSize.Height / 2), recipe.markSize.Width,recipe.markSize.Height),PixelFormat.Format8bppIndexed);
+
+                fm.SetAlignMark(SetAlignMarkIdx);
+                fm.Activate();
+
+                SetAlignMarkBool = false;
+                SetAlignMarkIdx = -1;
+                imageViewer1.Refresh();
+            }
         }
+
         /// <summary>
         /// 좌측 얼라인 마크를 원점으로 하는 평면 좌표계로 변환
         /// </summary>
@@ -1669,16 +1892,21 @@ namespace PRIEdge
         /// <returns></returns>
         public List<Point> MergePoint(int index, List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine,List<Point> BottomLine)
         {
-            List<Point> BreakPoint = new List<Point>();
+            List<Point> InterSectPoint = new List<Point>();
+            List<Point> Left = new List<Point>(LeftLine);
+            List<Point> Right = new List<Point>(RightLine);
+            List<Point> Top = new List<Point>(TopLine);
+            List<Point> Bottom = new List<Point>(BottomLine);
             bool check = false;
-            for(int i = 0; i < LeftLine.Count; i++)
+            for(int i = 0; i < Left.Count; i++)
             {
-                for(int k =0; k< TopLine.Count; k++)
+                for(int k =0; k< Top.Count; k++)
                 {
-                    if (LeftLine[i] == TopLine[k])
+                    if (Left[i].X < Top[k].X + 2 && Left[i].X > Top[k].X - 2 && Left[i].Y < Top[k].Y + 2 && Left[i].Y > Top[k].Y - 2)
                     {
-                        TopLine = TopLine.GetRange(k, TopLine.Count- k);
-                        LeftLine = LeftLine.GetRange(0,i);
+                        InterSectPoint.Add(Left[i]);
+                        Top = Top.GetRange(k, Top.Count- k);
+                        Left = Left.GetRange(i,Left.Count-i);
                         check = true;
                         break;
                     }
@@ -1687,14 +1915,15 @@ namespace PRIEdge
                     break;
             }
             check = false;
-            for (int i = 0; i < RightLine.Count; i++)
+            for (int i = 0; i < Right.Count; i++)
             {
-                for (int k = 0; k < TopLine.Count; k++)
+                for (int k = 0; k < Top.Count; k++)
                 {
-                    if (RightLine[i] == TopLine[k])
+                    if (Right[i].X < Top[k].X+2 && Right[i].X > Top[k].X -2 && Right[i].Y < Top[k].Y + 2&& Right[i].Y > Top[k].Y -2)
                     {
-                        TopLine = TopLine.GetRange(0,k);
-                        RightLine = RightLine.GetRange(i,RightLine.Count-i);
+                        InterSectPoint.Add(Right[i]);
+                        Top = Top.GetRange(0, k+1);
+                        Right = Right.GetRange(i, Right.Count - i);
                         check = true;
                         break;
                     }
@@ -1703,14 +1932,15 @@ namespace PRIEdge
                     break;
             }
             check = false;
-            for (int i = 0; i < LeftLine.Count; i++)
+            for (int i = 0; i < Left.Count; i++)
             {
-                for (int k = 0; k < BottomLine.Count; k++)
+                for (int k = 0; k < Bottom.Count; k++)
                 {
-                    if (LeftLine[i] == BottomLine[k])
+                    if (Left[i].X < Bottom[k].X + 2 && Left[i].X > Bottom[k].X - 2 && Left[i].Y < Bottom[k].Y + 2 && Left[i].Y > Bottom[k].Y - 2)
                     {
-                        BottomLine = BottomLine.GetRange(k, BottomLine.Count - k);
-                        LeftLine = LeftLine.GetRange(i, LeftLine.Count - i);
+                        InterSectPoint.Add(Left[i]);
+                        Bottom = Bottom.GetRange(k, Bottom.Count - k);
+                        Left = Left.GetRange(0,i+1);
                         check = true;
                         break;
                     }
@@ -1720,14 +1950,15 @@ namespace PRIEdge
             }
             check = false;
 
-            for (int i = 0; i < RightLine.Count; i++)
+            for (int i = 0; i < Right.Count; i++)
             {
-                for (int k = 0; k < BottomLine.Count; k++)
+                for (int k = 0; k < Bottom.Count; k++)
                 {
-                    if (RightLine[i] == BottomLine[k])
+                    if (Right[i].X < Bottom[k].X + 2 && Right[i].X > Bottom[k].X - 2 && Right[i].Y < Bottom[k].Y + 2 && Right[i].Y > Bottom[k].Y - 2)
                     {
-                        BottomLine = BottomLine.GetRange(0, k);
-                        RightLine = RightLine.GetRange(i, RightLine.Count - i);
+                        InterSectPoint.Add(Right[i]);
+                        Bottom = Bottom.GetRange(0, k+1);
+                        Right = Right.GetRange(0,i+1);
                         check = true;
                         break;
                     }
@@ -1736,91 +1967,157 @@ namespace PRIEdge
                     break;
             }
 
+            if (recipe.IntervalAverage != 0 || recipe.IntervalAverage != 1)
+            {
+                Left = GetAverage(0, Left,InterSectPoint);
+                Right = GetAverage(1, Right, InterSectPoint);
+                Top = GetAverage(2, Top, InterSectPoint);
+                Bottom = GetAverage(3, Bottom, InterSectPoint);
+            }
 
-            edgePixels2_Left = LeftLine;
-            edgePixels2_Top = TopLine;
-            edgePixels2_Right = RightLine;
-
+            edgePixels2_Left = new List<Point>(Left);
+            edgePixels2_Top = new List<Point>(Top);
+            edgePixels2_Right = new List<Point>(Right);
+            edgePixels2_Bottom = new List<Point>(Bottom);
             List<Point> Result = new List<Point>();
-            Result.AddRange(LeftLine);
-            Result.AddRange(TopLine);
-            Result.AddRange(RightLine); 
+            Left.Reverse();
+            Bottom.Reverse();
+            Result.AddRange(Left);
+            Result.AddRange(Top);
+            Result.AddRange(Right);
+            Result.AddRange(Bottom);
             EdgeList.Clear();
-            LeftLine = SourceToRealList(LeftLine, LeftAlignMarkIns);
-            TopLine = SourceToRealList(TopLine, LeftAlignMarkIns);
-            RightLine = SourceToRealList(RightLine, LeftAlignMarkIns);
-            for (int k = 0; k < LeftLine.Count; k++)
+            Left = SourceToRealList(Left, AlignCenter);
+            Top = SourceToRealList(Top, AlignCenter);
+            Right = SourceToRealList(Right, AlignCenter);
+            Bottom = SourceToRealList(Bottom, AlignCenter);
+            for (int k = 0; k < Left.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Left,
-                    Location = LeftLine[k],
-                    X = LeftLine[k].X,
-                    Y = LeftLine[k].Y,
+                    Location = Left[k],
+                    X = Left[k].X,
+                    Y = Left[k].Y,
+                });
+                LeftRawData.Add(new Defect
+                {
+                    Direction = DefectType.Left,
+                    Location = Left[k],
+                    X = Left[k].X,
+                    Y = Left[k].Y,
                 });
             }
-            for (int k = 0; k < TopLine.Count; k++)
+            for (int k = 0; k < Top.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Top,
-                    Location = TopLine[k],
-                    X = TopLine[k].X,
-                    Y = TopLine[k].Y,
+                    Location = Top[k],
+                    X = Top[k].X,
+                    Y = Top[k].Y,
+                });
+                TopRawData.Add(new Defect
+                {
+                    Direction = DefectType.Top,
+                    Location = Top[k],
+                    X = Top[k].X,
+                    Y = Top[k].Y,
                 });
             }
-            for (int k = 0; k < RightLine.Count; k++)
+            for (int k = 0; k < Right.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Right,
-                    Location = RightLine[k],
-                    X = RightLine[k].X,
-                    Y = RightLine[k].Y,
+                    Location = Right[k],
+                    X = Right[k].X,
+                    Y = Right[k].Y,
+                });
+                RightRawData.Add(new Defect
+                {
+                    Direction = DefectType.Right,
+                    Location = Right[k],
+                    X = Right[k].X,
+                    Y = Right[k].Y,
+                });
+            }
+            for (int k = 0; k < Bottom.Count; k++)
+            {
+                EdgeList.Add(new Defect
+                {
+                    Direction = DefectType.Bottom,
+                    Location = Bottom[k],
+                    X = Bottom[k].X,
+                    Y = Bottom[k].Y,
+                }); 
+                BottomRawData.Add(new Defect
+                {
+                    Direction = DefectType.Bottom,
+                    Location = Bottom[k],
+                    X = Bottom[k].X,
+                    Y = Bottom[k].Y,
                 });
             }
             return Result;
         }
 
-        public List<Point> SimpleMergePoint( List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine, int index = 0, int Offset = 0)
-        {
-            
+        public List<Point> SimpleMergePoint( List<Point> LeftLine, List<Point> TopLine, List<Point> RightLine, List<Point> BottomLine, int index = 0, int Offset = 0)
+        {            
             List<Point> Result = new List<Point>();
-            Result.AddRange(LeftLine);
-            Result.AddRange(TopLine);
-            Result.AddRange(RightLine);
+            List<Point> Left = new List<Point>(LeftLine);
+            List<Point> Right = new List<Point>(RightLine);
+            List<Point> Top = new List<Point>(TopLine);
+            List<Point> Bottom = new List<Point>(BottomLine);
+            Left.Reverse();
+            Bottom.Reverse();
+            Result.AddRange(Left);
+            Result.AddRange(Top);
+            Result.AddRange(Right);
+            Result.AddRange(Bottom);
             EdgeList.Clear();
-            LeftLine = SourceToRealList(LeftLine, LeftAlignMarkIns);
-            TopLine = SourceToRealList(TopLine, LeftAlignMarkIns);
-            RightLine = SourceToRealList(RightLine, LeftAlignMarkIns);
-            for (int k = 0; k < LeftLine.Count; k++)
+            Left = SourceToRealList(Left, AlignCenter);
+            Top = SourceToRealList(Top, AlignCenter);
+            Right = SourceToRealList(Right, AlignCenter);
+            Bottom = SourceToRealList(Bottom, AlignCenter);
+            for (int k = 0; k < Left.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Left,
-                    Location = LeftLine[k],
-                    X = LeftLine[k].X,
-                    Y = LeftLine[k].Y,
+                    Location = Left[k],
+                    X = Left[k].X,
+                    Y = Left[k].Y,
                 });
             }
-            for (int k = 0; k < TopLine.Count; k++)
+            for (int k = 0; k < Top.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Top,
-                    Location = TopLine[k],
-                    X = TopLine[k].X,
-                    Y = TopLine[k].Y,
+                    Location = Top[k],
+                    X = Top[k].X,
+                    Y = Top[k].Y,
                 });
             }
-            for (int k = 0; k < RightLine.Count; k++)
+            for (int k = 0; k < Right.Count; k++)
             {
                 EdgeList.Add(new Defect
                 {
                     Direction = DefectType.Right,
-                    Location = RightLine[k],
-                    X = RightLine[k].X,
-                    Y = RightLine[k].Y,
+                    Location = Right[k],
+                    X = Right[k].X,
+                    Y = Right[k].Y,
+                });
+            }
+            for (int k = 0; k <Bottom.Count; k++)
+            {
+                EdgeList.Add(new Defect
+                {
+                    Direction = DefectType.Bottom,
+                    Location = Bottom[k],
+                    X = Bottom[k].X,
+                    Y = Bottom[k].Y,
                 });
             }
             return Result;
@@ -1834,7 +2131,7 @@ namespace PRIEdge
 
         private void GetResult( )
         {
-            Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+            Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
 
             SetDefect();
         }
@@ -1844,36 +2141,12 @@ namespace PRIEdge
             Result.Clear();
             for(int i = 0; i < EdgeList.Count; i++)
             {
-                Result.Add(RealToSource(new Point(EdgeList[i].X,EdgeList[i].Y),LeftAlignMarkIns));
+                Result.Add(RealToSource(new Point(EdgeList[i].X,EdgeList[i].Y), AlignCenter));
             }
             RefreshImageViewer();
         }
 
-        private void extractRawDataResolutionOToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SaveFileDialog sf = new SaveFileDialog
-                {
-                    DefaultExt = "csv"
-                };
-
-                if (sf.ShowDialog() == DialogResult.Cancel)
-                    return;
-                if (Result.Count > 2)
-                    SaveCsvWithResolution(sf.FileName);
-                else
-                {
-                    log.AddLogMessage(LogType.Error, 0, "Find Edge First");
-                    return;
-                }
-                // this.Close();
-            }
-            catch (Exception ex)
-            {
-                log.AddLogMessage(LogType.Error, 0, ex);
-            }
-        }
+    
 
 
         public void ShiftResult(int Value)
@@ -1903,9 +2176,13 @@ namespace PRIEdge
                         case 3:
                             ShiftRange(2, edgePixels2_Right, rect.Top, rect.Bottom, Value);
                             break;
+                        //아래
+                        case 4:
+                            ShiftRange(3, edgePixels2_Bottom, rect.Left, rect.Right, Value);
+                            break;
                     }
 
-                    Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                    Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right,edgePixels2_Bottom);
                     SetDefect();
                     RefreshImageViewer();
                 }
@@ -1915,15 +2192,44 @@ namespace PRIEdge
 
             }
         }
+        public bool GetInterSectPoint(Point AP1,Point AP2,Point BP1,Point BP2)
+        {
+            double t;
+            double s;
+            double under = (BP2.Y - BP1.Y) * (AP2.X - AP1.X) - (BP2.X - BP1.X) * (AP2.Y - AP1.Y);
+
+            if (under == 0)
+
+                return false;
+
+            double _t = (BP2.X - BP1.X) * (AP1.Y - BP1.Y) - (BP2.Y - BP1.Y) * (AP1.X - BP1.X);
+            double _s = (AP2.X - AP1.X) * (AP1.Y - BP1.Y) - (AP2.Y - AP1.Y) * (AP1.X - BP1.X);
+
+
+            t = _t / under;
+            s = _s / under;
+
+            if (t < 0.0 || t > 1.0 || s < 0.0 || s > 1.0)
+                return false;
+
+            if (_t == 0 && _s == 0)
+                return false;
+            Point IP = new Point();
+            IP.X = (int)(AP1.X + t * (AP2.X - AP1.X));
+
+            IP.Y = (int)(AP1.Y + t * (AP2.Y - AP1.Y));
+            return true;
+        }
         private int CheckDirection(Rectangle rect)
         {
-            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.X, recipe.MetalRect.Y, 1, recipe.MetalRect.Height)))
+            if (GetInterSectPoint(edgePixels2_Left[0], edgePixels2_Left[edgePixels2_Left.Count - 1], rect.Location, new Point(rect.Right, rect.Y)))
                 return 1;
-            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.X, recipe.MetalRect.Y, recipe.MetalRect.Width,1 )))
+            if (GetInterSectPoint(edgePixels2_Top[0], edgePixels2_Top[edgePixels2_Top.Count - 1], rect.Location, new Point(rect.Left, rect.Bottom)))
                 return 2;
-            if (rect.IntersectsWith(new Rectangle(recipe.MetalRect.Right, recipe.MetalRect.Y, 1, recipe.MetalRect.Height)))
+            if (GetInterSectPoint(edgePixels2_Right[0], edgePixels2_Right[edgePixels2_Right.Count - 1], rect.Location, new Point(rect.Right, rect.Y)))
                 return 3;
-
+            if (GetInterSectPoint(edgePixels2_Bottom[0], edgePixels2_Bottom[edgePixels2_Bottom.Count - 1], rect.Location, new Point(rect.Left, rect.Bottom)))
+                return 4;
             return 0;
         }
 
@@ -1935,8 +2241,7 @@ namespace PRIEdge
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
-            
+            //Result = SimpleMergePoint( edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
             SetResult();
         }
 
@@ -2111,13 +2416,13 @@ namespace PRIEdge
         {
             if (e.ChangedItem.Label == "Coordinate" || e.ChangedItem.Label == "Resolution")
             {
-                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
             }
             if(e.ChangedItem.Label.Contains("LeftOffSet"))
             {
                 int Gap = PrevLeftOffset - recipe.LeftOffSet;
                 SetOffset(DirectionWay.Left, Gap);
-                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
                 SetDefect();
                 RefreshImageViewer();
                 log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
@@ -2126,48 +2431,506 @@ namespace PRIEdge
             {
                 int Gap = PrevTopOffset - recipe.TopOffSet;
                 SetOffset(DirectionWay.Top, Gap);
-                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
                 SetDefect();
                 RefreshImageViewer();
-                log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
+                log.AddLogMessage(LogType.Information, 0, "Top Offset Changed");
             }
             if (e.ChangedItem.Label.Contains("RightOffSet"))
             {
                 int Gap = PrevRightOffset - recipe.RightOffSet;
                 SetOffset(DirectionWay.Right, Gap);
-                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
                 SetDefect();
                 RefreshImageViewer();
-                log.AddLogMessage(LogType.Information, 0, "Left Offset Changed");
+                log.AddLogMessage(LogType.Information, 0, "Right Offset Changed");
             }
+            if (e.ChangedItem.Label.Contains("BottomOffSet"))
+            {
+                int Gap = PrevBottomOffset - recipe.BottomOffSet;
+                SetOffset(DirectionWay.Bottom, Gap);
+                Result = SimpleMergePoint(edgePixels2_Left, edgePixels2_Top, edgePixels2_Right, edgePixels2_Bottom);
+                SetDefect();
+                RefreshImageViewer();
+                log.AddLogMessage(LogType.Information, 0, "Bottom Offset Changed");
+            }
+
 
             PrevLeftOffset = recipe.LeftOffSet;
             PrevRightOffset = recipe.RightOffSet;
             PrevTopOffset = recipe.TopOffSet;
+            PrevBottomOffset = recipe.BottomOffSet;
+
+        }
+        public void FitGap(DirectionWay dir,bool StartEnd,int Gap)
+        {
+            int GapSub = 0;
+            int GapSub2 = 0;
+            int j = 1;
+            switch (dir)
+            {
+                case DirectionWay.Left:
+                    if (StartEnd == true)
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Left.Insert(0, new Point(edgePixels2_Left[0].X, edgePixels2_Left[0].Y - 1));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub = edgePixels2_Left[1].Y - edgePixels2_Left[0].Y - Gap;
+                                if (GapSub <= recipe.IntervalAverage)
+                                    edgePixels2_Left[0] = new Point(edgePixels2_Left[0].X, edgePixels2_Left[1].Y - GapSub);
+                                else
+                                {
+                                    edgePixels2_Left.RemoveAt(0);
+                                    while (GapSub > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Left.Insert(0, new Point(edgePixels2_Left[0].X, edgePixels2_Left[0].Y - recipe.IntervalAverage));
+                                        GapSub -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Left.Insert(0, new Point(edgePixels2_Left[0].X, edgePixels2_Left[0].Y - GapSub));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Left.RemoveRange(0, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp0 = edgePixels2_Left[0].Y + Gap;
+                                while (edgePixels2_Left[0].Y < GapTemp0)
+                                {
+                                    edgePixels2_Left.RemoveAt(0);
+                                }
+                                edgePixels2_Left.Insert(0, edgePixels2_Top[0]);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Left.Add(new Point(edgePixels2_Left[edgePixels2_Left.Count - 1].X, edgePixels2_Left[edgePixels2_Left.Count - 1].Y + 1));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub = -edgePixels2_Left[edgePixels2_Left.Count - 2].Y + edgePixels2_Left[edgePixels2_Left.Count - 1].Y - Gap;
+                                if (GapSub <= recipe.IntervalAverage)
+                                    edgePixels2_Left[edgePixels2_Left.Count - 1] = new Point(edgePixels2_Left[0].X, edgePixels2_Left[0].Y + Gap);
+                                else
+                                {
+                                    edgePixels2_Left.RemoveAt(edgePixels2_Left.Count - 1);
+                                    while (GapSub > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Left.Add(new Point(edgePixels2_Left[edgePixels2_Left.Count - 1].X, edgePixels2_Left[edgePixels2_Left.Count - 1].Y + recipe.IntervalAverage));
+                                        GapSub -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Left.Add(new Point(edgePixels2_Left[edgePixels2_Left.Count - 1].X, edgePixels2_Left[edgePixels2_Left.Count - 1].Y + GapSub));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Left.RemoveRange(edgePixels2_Left.Count - Gap, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp0 = edgePixels2_Left[edgePixels2_Left.Count - 1].Y - Gap;
+                                while (edgePixels2_Left[edgePixels2_Left.Count - 1].Y > GapTemp0)
+                                {
+                                    edgePixels2_Left.RemoveAt(edgePixels2_Left.Count - 1);
+                                }
+                                edgePixels2_Left.Add(edgePixels2_Bottom[0]);
+                            }
+                        }
+                    }
+                    break;
+
+                case DirectionWay.Right:
+                    if (StartEnd == true)
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Right.Insert(0, new Point(edgePixels2_Right[0].X, edgePixels2_Right[0].Y - 1));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub2 = edgePixels2_Right[1].Y - edgePixels2_Right[0].Y - Gap;
+                                if (GapSub2 <= recipe.IntervalAverage)
+                                    edgePixels2_Right[0] = new Point(edgePixels2_Right[0].X, edgePixels2_Right[1].Y - GapSub2);
+                                else
+                                {
+                                    edgePixels2_Right.RemoveAt(0);
+                                    while (GapSub2 > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Right.Insert(0, new Point(edgePixels2_Right[0].X, edgePixels2_Right[0].Y - recipe.IntervalAverage));
+                                        GapSub2 -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Right.Insert(0, new Point(edgePixels2_Right[0].X, edgePixels2_Right[0].Y - GapSub));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Right.RemoveRange(0, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                 int GapTemp1 = edgePixels2_Right[0].Y + Gap;
+                                while (edgePixels2_Right[0].Y < GapTemp1)
+                                {
+                                    edgePixels2_Right.RemoveAt(0);
+                                }
+                                edgePixels2_Right.Insert(0, edgePixels2_Top[edgePixels2_Top.Count - 1]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Right.Add(new Point(edgePixels2_Right[edgePixels2_Right.Count - 1].X, edgePixels2_Right[edgePixels2_Right.Count - 1].Y + 1));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub2 = -edgePixels2_Right[edgePixels2_Right.Count - 2].Y + edgePixels2_Right[edgePixels2_Right.Count - 1].Y - Gap;
+                              
+                                if (GapSub2 <= recipe.IntervalAverage)
+                                    edgePixels2_Right[edgePixels2_Right.Count - 1] = new Point(edgePixels2_Right[edgePixels2_Right.Count - 1].X + Gap, edgePixels2_Bottom[edgePixels2_Right.Count - 1].Y + recipe.IntervalAverage);
+                                else
+                                {
+                                    edgePixels2_Right.RemoveAt(edgePixels2_Right.Count - 1);
+                                    while (GapSub2 > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Right.Add(new Point(edgePixels2_Right[edgePixels2_Right.Count - 1].X, edgePixels2_Right[edgePixels2_Right.Count - 1].Y + recipe.IntervalAverage));
+                                        GapSub2 -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Right.Add(new Point(edgePixels2_Right[edgePixels2_Right.Count - 1].X, edgePixels2_Right[edgePixels2_Right.Count - 1].Y + GapSub));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Right.RemoveRange(edgePixels2_Right.Count - Gap, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp1 = edgePixels2_Right[edgePixels2_Right.Count - 1].Y - Gap;
+                                while (edgePixels2_Right[edgePixels2_Right.Count - 1].Y > GapTemp1)
+                                {
+                                    edgePixels2_Right.RemoveAt(edgePixels2_Right.Count - 1);
+                                }
+                                edgePixels2_Right.Add(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1]);
+                            }
+                        }
+
+                    }
+                    break;
+
+                case DirectionWay.Top:
+                    if (StartEnd == true)
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Top.Insert(0, new Point(edgePixels2_Top[0].X - 1, edgePixels2_Top[0].Y));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub = edgePixels2_Top[1].X - edgePixels2_Top[0].X - Gap;
+                                if (GapSub <= recipe.IntervalAverage)
+                                    edgePixels2_Top[0] = new Point(edgePixels2_Top[1].X - GapSub, edgePixels2_Top[0].Y);
+                                else
+                                {
+                                    edgePixels2_Top.RemoveAt(0);
+                                    while (GapSub > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Top.Insert(0, new Point(edgePixels2_Top[0].X - recipe.IntervalAverage, edgePixels2_Top[0].Y));
+                                        GapSub -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Top.Insert(0, new Point(edgePixels2_Top[0].X - GapSub, edgePixels2_Top[0].Y));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Top.RemoveRange(0, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp0 = edgePixels2_Top[0].X + Gap;
+                                while (edgePixels2_Top[0].X < GapTemp0)
+                                {
+                                    edgePixels2_Top.RemoveAt(0);
+                                }
+                                edgePixels2_Top.Insert(0, edgePixels2_Left[0]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Bottom.Add(new Point(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X + 1, edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].Y));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub = -edgePixels2_Top[edgePixels2_Top.Count - 2].X + edgePixels2_Top[edgePixels2_Top.Count - 1].X - Gap;
+                                GapSub2 = -edgePixels2_Bottom[edgePixels2_Bottom.Count - 2].X + edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X - Gap;
+                                if (GapSub <= recipe.IntervalAverage)
+                                    edgePixels2_Top[edgePixels2_Top.Count - 1] = new Point(edgePixels2_Top[0].X + Gap, edgePixels2_Top[0].Y);
+                                else
+                                {
+                                    edgePixels2_Top.RemoveAt(edgePixels2_Top.Count - 1);
+                                    while (GapSub > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Top.Add(new Point(edgePixels2_Top[edgePixels2_Top.Count - 1].X + recipe.IntervalAverage, edgePixels2_Top[edgePixels2_Top.Count - 1].Y));
+                                        GapSub -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Top.Add(new Point(edgePixels2_Top[edgePixels2_Top.Count - 1].X + GapSub, edgePixels2_Top[edgePixels2_Top.Count - 1].Y));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Top.RemoveRange(edgePixels2_Top.Count - Gap, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp0 = edgePixels2_Top[edgePixels2_Top.Count - 1].X - Gap;
+                                while (edgePixels2_Top[edgePixels2_Top.Count - 1].X > GapTemp0)
+                                {
+                                    edgePixels2_Top.RemoveAt(edgePixels2_Top.Count - 1);
+                                }
+                                edgePixels2_Top.Add(edgePixels2_Right[0]);
+                            }
+
+                        }
+
+                    }
+                    break;
+
+                case DirectionWay.Bottom:
+                    if (StartEnd == true)
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Bottom.Insert(0, new Point(edgePixels2_Bottom[0].X - 1, edgePixels2_Bottom[0].Y));
+                                    Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub2 = edgePixels2_Bottom[1].X - edgePixels2_Bottom[0].X - Gap;
+                                if (GapSub2 <= recipe.IntervalAverage)
+                                    edgePixels2_Bottom[0] = new Point(edgePixels2_Bottom[1].X - GapSub2, edgePixels2_Bottom[0].Y);
+                                else
+                                {
+
+                                    edgePixels2_Bottom.RemoveAt(0);
+                                    while (GapSub2 > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Bottom.Insert(0, new Point(edgePixels2_Bottom[0].X - recipe.IntervalAverage, edgePixels2_Bottom[0].Y));
+                                        GapSub2 -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Bottom.Insert(0, new Point(edgePixels2_Bottom[0].X - GapSub, edgePixels2_Bottom[0].Y));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Bottom.RemoveRange(0, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp1 = edgePixels2_Bottom[0].X + Gap;
+                                while (edgePixels2_Bottom[0].X < GapTemp1)
+                                {
+                                    edgePixels2_Bottom.RemoveAt(0);
+                                }
+                                edgePixels2_Bottom.Insert(0, edgePixels2_Left[edgePixels2_Left.Count - 1]);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        if (Gap < 0)
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                while (Gap < 0)
+                                {
+                                    j++;
+                                    edgePixels2_Bottom.Add(new Point(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X + 1, edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].Y));
+                                     Gap += 1;
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                GapSub2 = -edgePixels2_Bottom[edgePixels2_Bottom.Count - 2].X + edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X - Gap;
+                                if (GapSub2 <= recipe.IntervalAverage)
+                                    edgePixels2_Bottom[edgePixels2_Bottom.Count - 1] = new Point(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X + Gap + recipe.IntervalAverage, edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].Y);
+                                else
+                                {
+                                    edgePixels2_Bottom.RemoveAt(edgePixels2_Bottom.Count - 1);
+                                    while (GapSub2 > recipe.IntervalAverage)
+                                    {
+                                        edgePixels2_Bottom.Add(new Point(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X + recipe.IntervalAverage, edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].Y));
+                                        GapSub2 -= recipe.IntervalAverage;
+                                    }
+                                    edgePixels2_Bottom.Add(new Point(edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X + GapSub, edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].Y));
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if (recipe.IntervalAverage == 0 || recipe.IntervalAverage == 1)
+                            {
+                                edgePixels2_Bottom.RemoveRange(edgePixels2_Bottom.Count - Gap, Gap);
+                                break;
+                            }
+                            else
+                            {
+                                int GapTemp1 = edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X - Gap;
+                                while (edgePixels2_Bottom[edgePixels2_Bottom.Count - 1].X > GapTemp1)
+                                {
+                                    edgePixels2_Bottom.RemoveAt(edgePixels2_Bottom.Count - 1);
+                                }
+                                edgePixels2_Bottom.Add(edgePixels2_Right[edgePixels2_Right.Count - 1]);
+                            }
+                        }
+
+                    }
+                    break;
+            }
 
         }
         private void SetOffset(DirectionWay direction, int Gap)
         {
-            switch (direction)
+            try
             {
-                case DirectionWay.Left:
-                    for (int i = 0; i < edgePixels2_Left.Count; i++)
-                    {
-                        edgePixels2_Left[i] = new Point(edgePixels2_Left[i].X + Gap, edgePixels2_Left[i].Y);
-                    }
-                    break;
-                case DirectionWay.Right:
-                    for (int i = 0; i < edgePixels2_Right.Count; i++)
-                    {
-                        edgePixels2_Right[i] = new Point(edgePixels2_Right[i].X - Gap, edgePixels2_Right[i].Y);
-                    }
-                    break;
-                case DirectionWay.Top:
-                    for (int i = 0; i < edgePixels2_Top.Count; i++)
-                    {
-                        edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X , edgePixels2_Top[i].Y + Gap);
-                    }
-                    break;
+                switch (direction)
+                {
+                    case DirectionWay.Left:
+                        for (int i = 0; i < edgePixels2_Left.Count; i++)
+                        {
+                            edgePixels2_Left[i] = new Point(edgePixels2_Left[i].X + Gap, edgePixels2_Left[i].Y);
+                        }
+                        FitGap(DirectionWay.Top, true, Gap);
+                        FitGap(DirectionWay.Bottom, true, Gap);
+                        break;
+                    case DirectionWay.Right:
+                        for (int i = 0; i < edgePixels2_Right.Count; i++)
+                        {
+                            edgePixels2_Right[i] = new Point(edgePixels2_Right[i].X - Gap, edgePixels2_Right[i].Y);
+                        }
+                        FitGap(DirectionWay.Top, false, Gap);
+                        FitGap(DirectionWay.Bottom, false, Gap);
+                        break;
+                    case DirectionWay.Top:
+                        for (int i = 0; i < edgePixels2_Top.Count; i++)
+                        {
+                            edgePixels2_Top[i] = new Point(edgePixels2_Top[i].X, edgePixels2_Top[i].Y + Gap);
+                        }
+                        FitGap(DirectionWay.Left, true, Gap);
+                        FitGap(DirectionWay.Right, true, Gap);
+                        break;
+                    case DirectionWay.Bottom:
+                        for (int i = 0; i < edgePixels2_Bottom.Count; i++)
+                        {
+                            edgePixels2_Bottom[i] = new Point(edgePixels2_Bottom[i].X, edgePixels2_Bottom[i].Y - Gap);
+                        }
+                        FitGap(DirectionWay.Left, false, Gap);
+                        FitGap(DirectionWay.Right, false, Gap);
+                        break;
+
+                }
+
+                Vars.log.AddLogMessage(LogType.Information, 0, "Set OffSet Done");
+            }
+            catch
+            {
+                Vars.log.AddLogMessage(LogType.Error, 0, "Set OffSet Error");
             }
         }
 
@@ -2178,8 +2941,54 @@ namespace PRIEdge
 
         private void SetAlignMarkButton_Click(object sender, EventArgs e)
         {
-            FormAlignMark form = new FormAlignMark();
-            form.ShowDialog();
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form.Name == "FormSetAlignMark")
+                {
+                    form.Activate();
+                    form.Show();
+                    return;
+                }
+            }
+
+            fm.Show();
+        }
+
+        private void imageViewer1_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void openRawDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RawDataForm rf = new RawDataForm();
+            rf.Show();
+        }
+
+        private void extractRawDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog sf = new SaveFileDialog
+                {
+                    DefaultExt = "csv"
+                };
+
+                if (sf.ShowDialog() == DialogResult.Cancel)
+                    return;
+                if (Result.Count > 2)
+                    SaveCsvRaw(sf.FileName);
+                else
+                {
+                    log.AddLogMessage(LogType.Error, 0, "Find Edge First");
+                    return;
+                }
+                // this.Close();
+            }
+            catch (Exception ex)
+            {
+                log.AddLogMessage(LogType.Error, 0, ex);
+            }
         }
 
         //private void Shiftbutton_Click(object sender, EventArgs e)

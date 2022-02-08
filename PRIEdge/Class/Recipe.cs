@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Engion.Vision.Algorithm;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Engion;
-using Engion.Vision.Algorithm;
 
 namespace PRIEdge
 {
@@ -28,46 +23,24 @@ namespace PRIEdge
         public int DrawLineWidth { get; set; } = 2;
 
 
-        [Category("Align"), Description("좌측 Align Mark 찾는 Rect")]
-        public Rectangle AlignMarkLeft { get; set; } = new Rectangle(0, 0, 0, 0);
-        [Category("Align"), Description("우측 Align Mark 찾는 Rect")]
-        public Rectangle AlignMarkRight { get; set; } = new Rectangle(0, 0, 0, 0);
+        [Category("Align"), Description("좌측 상단 Align Mark 찾는 Rect")]
+        public Rectangle AlignMarkLeftTop { get; set; } = new Rectangle(0, 0, 0, 0);
+        [Category("Align"), Description("우측 상단 Align Mark 찾는 Rect")]
+        public Rectangle AlignMarkRightTop { get; set; } = new Rectangle(0, 0, 0, 0);
 
-        [Category("Align"), Description("Align Mark Size")]
-        public Size AlignMarkSize { get; set; } = new Size(30, 30);
-        [Category("Align"), Description("Align Mark Margin")]
-        public int AlignMarkMargin { get; set; } = 30;
+        [Category("Align"), Description("좌측 하단 Align Mark 찾는 Rect")]
+        public Rectangle AlignMarkLeftBottom { get; set; } = new Rectangle(0, 0, 0, 0);
+        [Category("Align"), Description("우측 하단 Align Mark 찾는 Rect")]
+        public Rectangle AlignMarkRightBottom { get; set; } = new Rectangle(0, 0, 0, 0);
 
+        [Category("Align"), Description("AlignMarkSize")]
+        public Size markSize = new Size(20, 90);
+        [Category("Align"), Description("AlignMark 정확도")]
+        public Double Accuracy = 0.8;
+        [Category("Align"), Description("Align Mark 저장 위치")]
+        public string AlignMarkSaveDirectory { get; set; } = "C:\\engion\\LGPRIEdge\\AlignMark";
         [Category("Metal"), Description("대략적인 Metal Size")]
         public Rectangle MetalRect { get; set; } = new Rectangle(0, 0, 0, 0);
-
-        [Category("Metal Left"), Description("좌측 검출 필터")]
-        public Filter LeftFilter { get; set; } = Filter.ErasePattern;
-        [Category("Metal Left"), Description("좌측 검출 영역 크기")]
-        public int LeftMargin { get; set; } = 300;
-        [Category("Metal Left"), Description("Left Guide Edge 검출 파라미터")]
-        public EdgeParameter[] LeftEdgeParam_Guide { get; set; } = new EdgeParameter[] { new EdgeParameter() };
-
-        [Category("Metal Left"), Description("Left Edge 검출 파라미터")]
-        public EdgeParameter[] LeftEdgeParam { get; set; }= new EdgeParameter[] { new EdgeParameter() };
-        [Category("Metal Left"), Description("Left Edge 검출 시 Rotate 유무")]
-        public bool LeftMetalRotation { get; set; } = true;
-
-        [Category("Metal Right"), Description("우측 검출 필터")]
-        public Filter RightFilter { get; set; } = Filter.ErasePattern;
-        [Category("Metal Right"), Description("우측 검출 영역 크기")]
-        public int  RightMargin { get; set; } = 300;
-        [Category("Metal Right"), Description("Right Guide Edge 검출 파라미터")]
-        public EdgeParameter[] RightEdgeParam_Guide { get; set; } = new EdgeParameter[] { new EdgeParameter() };
-
-
-        [Category("Metal Right"), Description("Right Edge 검출 파라미터")]
-        public EdgeParameter[] RightEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
-        [Category("Metal Right"), Description("Right Edge 검출 시 Rotate 유무")]
-        public bool RightMetalRotation { get; set; } = true;
-
-
-
         [Category("Metal Top"), Description("상단 검출 필터")]
         public Filter TopFilter { get; set; } = Filter.EraseMetal;
 
@@ -96,6 +69,31 @@ namespace PRIEdge
         [Category("Metal Bottom"), Description("Bottom Edge 검출 시 Rotate 유무")]
         public bool BottomMetalRotation { get; set; } = false;
 
+        [Category("Metal Right"), Description("우측 검출 필터")]
+        public Filter RightFilter { get; set; } = Filter.ErasePattern;
+        [Category("Metal Right"), Description("우측 검출 영역 크기")]
+        public int RightMargin { get; set; } = 300;
+        [Category("Metal Right"), Description("Right Guide Edge 검출 파라미터")]
+        public EdgeParameter[] RightEdgeParam_Guide { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+
+
+        [Category("Metal Right"), Description("Right Edge 검출 파라미터")]
+        public EdgeParameter[] RightEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Right"), Description("Right Edge 검출 시 Rotate 유무")]
+        public bool RightMetalRotation { get; set; } = true;
+
+
+        [Category("Metal Left"), Description("좌측 검출 필터")]
+        public Filter LeftFilter { get; set; } = Filter.ErasePattern;
+        [Category("Metal Left"), Description("좌측 검출 영역 크기")]
+        public int LeftMargin { get; set; } = 300;
+        [Category("Metal Left"), Description("Left Guide Edge 검출 파라미터")]
+        public EdgeParameter[] LeftEdgeParam_Guide { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+
+        [Category("Metal Left"), Description("Left Edge 검출 파라미터")]
+        public EdgeParameter[] LeftEdgeParam { get; set; } = new EdgeParameter[] { new EdgeParameter() };
+        [Category("Metal Left"), Description("Left Edge 검출 시 Rotate 유무")]
+        public bool LeftMetalRotation { get; set; } = true;
 
 
         [Category("OffSet"), Description("Left Edge 오프셋")]
@@ -110,9 +108,6 @@ namespace PRIEdge
 
         [Category("OffSet"), Description("구간 평균 사용하여 Edge 출력")]
         public int IntervalAverage { get; set; } = 0;
-
-        [Category("Align"), Description("Align Level 값")]
-        public int AlignLevel { get; set; } = 0;
 
         [Category("Filter"), Description("filter Pitch")]
         public int EraseMetalPitch { get; set; } = 7;
@@ -195,8 +190,6 @@ namespace PRIEdge
             }
             return setup;
         }
-
-
     }
     [Serializable]
     public class EdgeParameter
@@ -206,7 +199,6 @@ namespace PRIEdge
         public EdgeFindDir EdgeFindDir { get; set; }
         public EdgeType EdgeType { get; set; }
         public EdgeSel EdgeSel { get; set; }
-        public int StartPoint { get; set; }
         public int Threshold { get; set; }
         //
         // 요약:
@@ -215,8 +207,6 @@ namespace PRIEdge
         public int DiffStep { get; set; }
         public bool UseGuide { get; set; }
         public EdgeFindMethod Method { get; set; }
-        public int WidthMargin { get; set; }
-        public int HeightMargin { get; set; }
         public EdgeParameter()
         {
             EdgeLineDir = EdgeLineDir.Hori;
@@ -236,7 +226,6 @@ namespace PRIEdge
         None = 0,
         ErasePattern = 1,
         EraseMetal = 2,
-        EraseTemp = 3,
     }
 
 
@@ -252,6 +241,7 @@ namespace PRIEdge
         Left,
         Right,
         Top,
+        Bottom,
         None,
     }
 }

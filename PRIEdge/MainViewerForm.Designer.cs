@@ -43,7 +43,6 @@ namespace PRIEdge
             this.showGuideLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showEdgeLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAlignMarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showDefectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showResultPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.profilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,8 +50,9 @@ namespace PRIEdge
             this.showYProjectXValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showXProjectYValuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.extractRawDatacsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.extractRawDataResolutionOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractDatacsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLeftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveOriginalImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,10 +75,11 @@ namespace PRIEdge
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.SaveBtn = new System.Windows.Forms.Button();
             this.CheckDistanceBtn = new System.Windows.Forms.Button();
-            this.PreviewBtn = new System.Windows.Forms.Button();
             this.PreAlignBtn = new System.Windows.Forms.Button();
+            this.SaveBtn = new System.Windows.Forms.Button();
+            this.PreviewBtn = new System.Windows.Forms.Button();
+            this.SetAlignMarkButton = new System.Windows.Forms.Button();
             this.propertyGrid_Recipe = new System.Windows.Forms.PropertyGrid();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,8 +101,6 @@ namespace PRIEdge
             this.btnThresholdImage = new System.Windows.Forms.Button();
             this.CurrentRecipeTxt = new System.Windows.Forms.Label();
             this.btnGrayImage = new System.Windows.Forms.Button();
-            this.enhanceTextBox = new System.Windows.Forms.TextBox();
-            this.enhanceCheck = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ShiftValuetextBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -115,7 +114,6 @@ namespace PRIEdge
             this.roiSetupPage = new System.Windows.Forms.TabPage();
             this.dieSetupPage = new System.Windows.Forms.TabPage();
             this.defectImageDataGridViewImageColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.SetAlignMarkButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -186,7 +184,6 @@ namespace PRIEdge
             this.showGuideLineToolStripMenuItem,
             this.showEdgeLineToolStripMenuItem,
             this.showAlignMarkToolStripMenuItem,
-            this.showDefectsToolStripMenuItem,
             this.showSettingToolStripMenuItem,
             this.showResultPointToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -239,14 +236,6 @@ namespace PRIEdge
             this.showAlignMarkToolStripMenuItem.Text = "Show Align Mark";
             this.showAlignMarkToolStripMenuItem.Click += new System.EventHandler(this.RefreshImageEvent);
             // 
-            // showDefectsToolStripMenuItem
-            // 
-            this.showDefectsToolStripMenuItem.CheckOnClick = true;
-            this.showDefectsToolStripMenuItem.Name = "showDefectsToolStripMenuItem";
-            this.showDefectsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.showDefectsToolStripMenuItem.Text = "Show Defects";
-            this.showDefectsToolStripMenuItem.Click += new System.EventHandler(this.RefreshImageEvent);
-            // 
             // showSettingToolStripMenuItem
             // 
             this.showSettingToolStripMenuItem.CheckOnClick = true;
@@ -297,25 +286,33 @@ namespace PRIEdge
             // dataToolStripMenuItem
             // 
             this.dataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.extractRawDatacsvToolStripMenuItem,
-            this.extractRawDataResolutionOToolStripMenuItem});
+            this.openRawDataToolStripMenuItem,
+            this.extractDatacsvToolStripMenuItem,
+            this.extractRawDataToolStripMenuItem});
             this.dataToolStripMenuItem.Name = "dataToolStripMenuItem";
             this.dataToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.dataToolStripMenuItem.Text = "Data";
             // 
-            // extractRawDatacsvToolStripMenuItem
+            // openRawDataToolStripMenuItem
             // 
-            this.extractRawDatacsvToolStripMenuItem.Name = "extractRawDatacsvToolStripMenuItem";
-            this.extractRawDatacsvToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
-            this.extractRawDatacsvToolStripMenuItem.Text = "Extract Raw Data(Resolution X)";
-            this.extractRawDatacsvToolStripMenuItem.Click += new System.EventHandler(this.extractRawDatacsvToolStripMenuItem_Click);
+            this.openRawDataToolStripMenuItem.Name = "openRawDataToolStripMenuItem";
+            this.openRawDataToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.openRawDataToolStripMenuItem.Text = "Open Raw Data";
+            this.openRawDataToolStripMenuItem.Click += new System.EventHandler(this.openRawDataToolStripMenuItem_Click);
             // 
-            // extractRawDataResolutionOToolStripMenuItem
+            // extractDatacsvToolStripMenuItem
             // 
-            this.extractRawDataResolutionOToolStripMenuItem.Name = "extractRawDataResolutionOToolStripMenuItem";
-            this.extractRawDataResolutionOToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
-            this.extractRawDataResolutionOToolStripMenuItem.Text = "Extract Raw Data(Resolution O)";
-            this.extractRawDataResolutionOToolStripMenuItem.Click += new System.EventHandler(this.extractRawDataResolutionOToolStripMenuItem_Click);
+            this.extractDatacsvToolStripMenuItem.Name = "extractDatacsvToolStripMenuItem";
+            this.extractDatacsvToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.extractDatacsvToolStripMenuItem.Text = "Extract Result Data";
+            this.extractDatacsvToolStripMenuItem.Click += new System.EventHandler(this.extractRawDatacsvToolStripMenuItem_Click);
+            // 
+            // extractRawDataToolStripMenuItem
+            // 
+            this.extractRawDataToolStripMenuItem.Name = "extractRawDataToolStripMenuItem";
+            this.extractRawDataToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.extractRawDataToolStripMenuItem.Text = "Extract Raw Data";
+            this.extractRawDataToolStripMenuItem.Click += new System.EventHandler(this.extractRawDataToolStripMenuItem_Click);
             // 
             // saveImageToolStripMenuItem1
             // 
@@ -337,7 +334,7 @@ namespace PRIEdge
             this.saveRotateImageToolStripMenuItem,
             this.saveFilteredToolStripMenuItem});
             this.saveLeftToolStripMenuItem.Name = "saveLeftToolStripMenuItem";
-            this.saveLeftToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveLeftToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveLeftToolStripMenuItem.Text = "Save Left";
             // 
             // saveOriginalImageToolStripMenuItem
@@ -371,7 +368,7 @@ namespace PRIEdge
             this.saveFilteredToolStripMenuItem1,
             this.saveRotateImageToolStripMenuItem1});
             this.saveRightToolStripMenuItem.Name = "saveRightToolStripMenuItem";
-            this.saveRightToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveRightToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveRightToolStripMenuItem.Text = "Save Right";
             // 
             // saveOriginalImageToolStripMenuItem1
@@ -405,7 +402,7 @@ namespace PRIEdge
             this.saveFilteredToolStripMenuItem2,
             this.saveRotateImageToolStripMenuItem2});
             this.saveTopToolStripMenuItem.Name = "saveTopToolStripMenuItem";
-            this.saveTopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveTopToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveTopToolStripMenuItem.Text = "Save Top";
             // 
             // saveOriginalImageToolStripMenuItem2
@@ -439,7 +436,7 @@ namespace PRIEdge
             this.saveFitteredImageToolStripMenuItem,
             this.saveRotatedImageToolStripMenuItem});
             this.saveBottomToolStripMenuItem.Name = "saveBottomToolStripMenuItem";
-            this.saveBottomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveBottomToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveBottomToolStripMenuItem.Text = "Save Bottom";
             // 
             // saveOriginalImageToolStripMenuItem3
@@ -464,7 +461,7 @@ namespace PRIEdge
             // 
             this.saveAlignImageToolStripMenuItem.CheckOnClick = true;
             this.saveAlignImageToolStripMenuItem.Name = "saveAlignImageToolStripMenuItem";
-            this.saveAlignImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAlignImageToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveAlignImageToolStripMenuItem.Text = "Save Align Image";
             this.saveAlignImageToolStripMenuItem.Click += new System.EventHandler(this.SaveCheckEvent);
             // 
@@ -472,7 +469,7 @@ namespace PRIEdge
             // 
             this.saveWholeImageToolStripMenuItem.CheckOnClick = true;
             this.saveWholeImageToolStripMenuItem.Name = "saveWholeImageToolStripMenuItem";
-            this.saveWholeImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveWholeImageToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.saveWholeImageToolStripMenuItem.Text = "Save Whole Image";
             this.saveWholeImageToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -535,6 +532,27 @@ namespace PRIEdge
             this.tableLayoutPanel3.Size = new System.Drawing.Size(344, 66);
             this.tableLayoutPanel3.TabIndex = 10;
             // 
+            // CheckDistanceBtn
+            // 
+            this.CheckDistanceBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CheckDistanceBtn.Location = new System.Drawing.Point(275, 3);
+            this.CheckDistanceBtn.Name = "CheckDistanceBtn";
+            this.CheckDistanceBtn.Size = new System.Drawing.Size(66, 60);
+            this.CheckDistanceBtn.TabIndex = 3;
+            this.CheckDistanceBtn.Text = "Inspect";
+            this.CheckDistanceBtn.UseVisualStyleBackColor = true;
+            this.CheckDistanceBtn.Click += new System.EventHandler(this.CheckDistanceBtn_ClickAsync);
+            // 
+            // PreAlignBtn
+            // 
+            this.PreAlignBtn.Location = new System.Drawing.Point(207, 3);
+            this.PreAlignBtn.Name = "PreAlignBtn";
+            this.PreAlignBtn.Size = new System.Drawing.Size(62, 60);
+            this.PreAlignBtn.TabIndex = 4;
+            this.PreAlignBtn.Text = "Align";
+            this.PreAlignBtn.UseVisualStyleBackColor = true;
+            this.PreAlignBtn.Click += new System.EventHandler(this.PreAlignBtn_Click_1);
+            // 
             // SaveBtn
             // 
             this.SaveBtn.Location = new System.Drawing.Point(3, 3);
@@ -545,36 +563,25 @@ namespace PRIEdge
             this.SaveBtn.UseVisualStyleBackColor = true;
             this.SaveBtn.Click += new System.EventHandler(this.SaveBtn_Click);
             // 
-            // CheckDistanceBtn
-            // 
-            this.CheckDistanceBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CheckDistanceBtn.Location = new System.Drawing.Point(275, 3);
-            this.CheckDistanceBtn.Name = "CheckDistanceBtn";
-            this.CheckDistanceBtn.Size = new System.Drawing.Size(66, 60);
-            this.CheckDistanceBtn.TabIndex = 3;
-            this.CheckDistanceBtn.Text = "Check Distance";
-            this.CheckDistanceBtn.UseVisualStyleBackColor = true;
-            this.CheckDistanceBtn.Click += new System.EventHandler(this.CheckDistanceBtn_ClickAsync);
-            // 
             // PreviewBtn
             // 
             this.PreviewBtn.Location = new System.Drawing.Point(71, 3);
             this.PreviewBtn.Name = "PreviewBtn";
             this.PreviewBtn.Size = new System.Drawing.Size(62, 60);
             this.PreviewBtn.TabIndex = 4;
-            this.PreviewBtn.Text = "Pre View";
+            this.PreviewBtn.Text = "Show Setting";
             this.PreviewBtn.UseVisualStyleBackColor = true;
             this.PreviewBtn.Click += new System.EventHandler(this.PreviewBtn_Click);
             // 
-            // PreAlignBtn
+            // SetAlignMarkButton
             // 
-            this.PreAlignBtn.Location = new System.Drawing.Point(207, 3);
-            this.PreAlignBtn.Name = "PreAlignBtn";
-            this.PreAlignBtn.Size = new System.Drawing.Size(62, 60);
-            this.PreAlignBtn.TabIndex = 4;
-            this.PreAlignBtn.Text = "Pre Align";
-            this.PreAlignBtn.UseVisualStyleBackColor = true;
-            this.PreAlignBtn.Click += new System.EventHandler(this.PreAlignBtn_Click_1);
+            this.SetAlignMarkButton.Location = new System.Drawing.Point(139, 3);
+            this.SetAlignMarkButton.Name = "SetAlignMarkButton";
+            this.SetAlignMarkButton.Size = new System.Drawing.Size(62, 60);
+            this.SetAlignMarkButton.TabIndex = 4;
+            this.SetAlignMarkButton.Text = "Set Align Mark";
+            this.SetAlignMarkButton.UseVisualStyleBackColor = true;
+            this.SetAlignMarkButton.Click += new System.EventHandler(this.SetAlignMarkButton_Click);
             // 
             // propertyGrid_Recipe
             // 
@@ -701,8 +708,6 @@ namespace PRIEdge
             this.tableLayoutPanel4.Controls.Add(this.btnThresholdImage, 4, 0);
             this.tableLayoutPanel4.Controls.Add(this.CurrentRecipeTxt, 8, 0);
             this.tableLayoutPanel4.Controls.Add(this.btnGrayImage, 5, 0);
-            this.tableLayoutPanel4.Controls.Add(this.enhanceTextBox, 7, 0);
-            this.tableLayoutPanel4.Controls.Add(this.enhanceCheck, 6, 0);
             this.tableLayoutPanel4.Controls.Add(this.label4, 13, 0);
             this.tableLayoutPanel4.Controls.Add(this.ShiftValuetextBox, 14, 0);
             this.tableLayoutPanel4.Controls.Add(this.button1, 15, 0);
@@ -719,9 +724,9 @@ namespace PRIEdge
             // 
             this.CheckDistanceCheckBox.AutoSize = true;
             this.CheckDistanceCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CheckDistanceCheckBox.Location = new System.Drawing.Point(1304, 3);
+            this.CheckDistanceCheckBox.Location = new System.Drawing.Point(1187, 3);
             this.CheckDistanceCheckBox.Name = "CheckDistanceCheckBox";
-            this.CheckDistanceCheckBox.Size = new System.Drawing.Size(237, 24);
+            this.CheckDistanceCheckBox.Size = new System.Drawing.Size(354, 24);
             this.CheckDistanceCheckBox.TabIndex = 2;
             this.CheckDistanceCheckBox.Text = "Check Distance";
             this.CheckDistanceCheckBox.UseVisualStyleBackColor = true;
@@ -744,8 +749,9 @@ namespace PRIEdge
             "Normal",
             "Left Modify",
             "Right Modify",
-            "Top Modify"});
-            this.ModeCBb.Location = new System.Drawing.Point(1032, 3);
+            "Top Modify",
+            "Bottom Modify"});
+            this.ModeCBb.Location = new System.Drawing.Point(915, 3);
             this.ModeCBb.Name = "ModeCBb";
             this.ModeCBb.Size = new System.Drawing.Size(91, 20);
             this.ModeCBb.TabIndex = 25;
@@ -755,7 +761,7 @@ namespace PRIEdge
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(985, 0);
+            this.label1.Location = new System.Drawing.Point(868, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(41, 30);
             this.label1.TabIndex = 26;
@@ -766,7 +772,7 @@ namespace PRIEdge
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(783, 0);
+            this.label3.Location = new System.Drawing.Point(666, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 30);
             this.label3.TabIndex = 26;
@@ -778,7 +784,7 @@ namespace PRIEdge
             this.ImageCbB.Items.AddRange(new object[] {
             "Original Image",
             "Inspect Image"});
-            this.ImageCbB.Location = new System.Drawing.Point(878, 3);
+            this.ImageCbB.Location = new System.Drawing.Point(761, 3);
             this.ImageCbB.Name = "ImageCbB";
             this.ImageCbB.Size = new System.Drawing.Size(101, 20);
             this.ImageCbB.TabIndex = 25;
@@ -820,7 +826,7 @@ namespace PRIEdge
             // 
             this.CurrentRecipeTxt.AutoSize = true;
             this.CurrentRecipeTxt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CurrentRecipeTxt.Location = new System.Drawing.Point(592, 0);
+            this.CurrentRecipeTxt.Location = new System.Drawing.Point(475, 0);
             this.CurrentRecipeTxt.Name = "CurrentRecipeTxt";
             this.CurrentRecipeTxt.Size = new System.Drawing.Size(185, 30);
             this.CurrentRecipeTxt.TabIndex = 24;
@@ -838,32 +844,11 @@ namespace PRIEdge
             this.btnGrayImage.UseVisualStyleBackColor = true;
             this.btnGrayImage.Click += new System.EventHandler(this.btnGrayImage_Click);
             // 
-            // enhanceTextBox
-            // 
-            this.enhanceTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.enhanceTextBox.Location = new System.Drawing.Point(555, 3);
-            this.enhanceTextBox.Name = "enhanceTextBox";
-            this.enhanceTextBox.Size = new System.Drawing.Size(31, 21);
-            this.enhanceTextBox.TabIndex = 23;
-            this.enhanceTextBox.Text = "4";
-            // 
-            // enhanceCheck
-            // 
-            this.enhanceCheck.AutoSize = true;
-            this.enhanceCheck.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.enhanceCheck.Location = new System.Drawing.Point(475, 3);
-            this.enhanceCheck.Name = "enhanceCheck";
-            this.enhanceCheck.Size = new System.Drawing.Size(74, 24);
-            this.enhanceCheck.TabIndex = 22;
-            this.enhanceCheck.Text = "Enhance";
-            this.enhanceCheck.UseVisualStyleBackColor = true;
-            this.enhanceCheck.CheckedChanged += new System.EventHandler(this.enhanceCheck_CheckedChanged);
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Location = new System.Drawing.Point(1129, 0);
+            this.label4.Location = new System.Drawing.Point(1012, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(41, 30);
             this.label4.TabIndex = 27;
@@ -872,14 +857,14 @@ namespace PRIEdge
             // 
             // ShiftValuetextBox
             // 
-            this.ShiftValuetextBox.Location = new System.Drawing.Point(1176, 3);
+            this.ShiftValuetextBox.Location = new System.Drawing.Point(1059, 3);
             this.ShiftValuetextBox.Name = "ShiftValuetextBox";
             this.ShiftValuetextBox.Size = new System.Drawing.Size(67, 21);
             this.ShiftValuetextBox.TabIndex = 28;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1249, 3);
+            this.button1.Location = new System.Drawing.Point(1132, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(49, 23);
             this.button1.TabIndex = 29;
@@ -927,6 +912,7 @@ namespace PRIEdge
             this.imageViewer1.UseFastDisplay = false;
             this.imageViewer1.Zoom = 1D;
             this.imageViewer1.PrePaint += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.imageViewerEx1_PrePaint);
+            this.imageViewer1.Click += new System.EventHandler(this.imageViewer1_Click);
             this.imageViewer1.Paint += new System.Windows.Forms.PaintEventHandler(this.imageViewerEx1_Paint);
             this.imageViewer1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.imageViewer1_MouseClick);
             this.imageViewer1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageViewerEx1_MouseDown);
@@ -993,16 +979,6 @@ namespace PRIEdge
             this.defectImageDataGridViewImageColumn.HeaderText = "DefectImage";
             this.defectImageDataGridViewImageColumn.Name = "defectImageDataGridViewImageColumn";
             // 
-            // SetAlignMarkButton
-            // 
-            this.SetAlignMarkButton.Location = new System.Drawing.Point(139, 3);
-            this.SetAlignMarkButton.Name = "SetAlignMarkButton";
-            this.SetAlignMarkButton.Size = new System.Drawing.Size(62, 60);
-            this.SetAlignMarkButton.TabIndex = 4;
-            this.SetAlignMarkButton.Text = "Set Align Mark";
-            this.SetAlignMarkButton.UseVisualStyleBackColor = true;
-            this.SetAlignMarkButton.Click += new System.EventHandler(this.SetAlignMarkButton_Click);
-            // 
             // MainViewerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1066,8 +1042,6 @@ namespace PRIEdge
         private System.Windows.Forms.Button btnGrayImage;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clickCrossLineToolStripMenuItem;
-        private System.Windows.Forms.CheckBox enhanceCheck;
-        private System.Windows.Forms.TextBox enhanceTextBox;
         private System.Windows.Forms.DataGridViewImageColumn defectImageDataGridViewImageColumn;
         private System.Windows.Forms.ToolStripMenuItem saveImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem profilesToolStripMenuItem;
@@ -1098,7 +1072,6 @@ namespace PRIEdge
         private System.Windows.Forms.PropertyGrid propertyGrid_Recipe;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.BindingSource DefectBindindSource;
-        private System.Windows.Forms.ToolStripMenuItem showDefectsToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn Direction;
         private System.Windows.Forms.DataGridViewTextBoxColumn xDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn yDataGridViewTextBoxColumn;
@@ -1106,8 +1079,6 @@ namespace PRIEdge
         private System.Windows.Forms.TextBox ShiftValuetextBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox CheckDistanceCheckBox;
-        private System.Windows.Forms.ToolStripMenuItem extractRawDatacsvToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem extractRawDataResolutionOToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveImageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem saveLeftToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveOriginalImageToolStripMenuItem;
@@ -1129,6 +1100,9 @@ namespace PRIEdge
         private System.Windows.Forms.ToolStripMenuItem saveFitteredImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveRotatedImageToolStripMenuItem;
         private System.Windows.Forms.Button SetAlignMarkButton;
+        private System.Windows.Forms.ToolStripMenuItem openRawDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractDatacsvToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractRawDataToolStripMenuItem;
     }
 }
 

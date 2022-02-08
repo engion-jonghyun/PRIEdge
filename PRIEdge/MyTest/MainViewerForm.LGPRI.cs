@@ -41,7 +41,18 @@ namespace PRIEdge
         LineEq lgLine_Bottom2 = null;
 
         List<Defect> EdgeList = new List<Defect>();
+        public List<Defect> LeftRawData = new List<Defect>();
+        public List<Defect> RightRawData = new List<Defect>();
+        public List<Defect> TopRawData = new List<Defect>();
+        public List<Defect> BottomRawData = new List<Defect>();
         //Defect defect = new Defect();
+
+        public Bitmap[] AlignMarkImage = new Bitmap[4];
+        bool SetAlignMarkBool = false;
+        int SetAlignMarkIdx = -1;
+        public List<Rectangle> AlignMarkRect = new List<Rectangle>();
+        public List<Rectangle> AlignMarkRectIns = new List<Rectangle>();
+
 
         void InitPri()
         {
@@ -58,8 +69,7 @@ namespace PRIEdge
                 int w = buf.Width;
                 var angle = 0.0;
 
-                if (recipe.RightMetalRotation)
-                    buf = Rotation(buf, 180, buf.Rectangle.Center(), buf.Rectangle.Center());
+                buf = Rotation(buf, 180, buf.Rectangle.Center(), buf.Rectangle.Center());
 
                // buf.Save("D:\\RightRotate180.png");
                 {
@@ -83,15 +93,16 @@ namespace PRIEdge
                     for (int i = edge.Count - 1; i >= 0; i--)
                     {
                         edgePixels_Right.Add(
-                            new Point(
-                            (int)RotatePoint(edge[i], - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X,
-                            (int)RotatePoint(edge[i], - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
-                            ));
+                        new Point(
+                        (int)RotatePoint(edge[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X,
+                        (int)RotatePoint(edge[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
+                        ));
                     }
 
                     if (edge.Count == 0)
                         return Task.FromResult(true);
                 }
+
 
                 if (lgLine_Right.AngleDeg < 0 )
                     angle = -(lgLine_Right.AngleDeg + 90);
@@ -127,11 +138,23 @@ namespace PRIEdge
 
                     for (int i = edge2.Count - 1; i >= 0; i--)
                     {
-                        RotatedPoints.Add(
+                        if (recipe.RightMetalRotation)
+                        {
+                            RotatedPoints.Add(
                             new Point(
                             (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X + recipe.RightOffSet,
                             (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
                             ));
+                        }
+                        else
+                        {
+                            RotatedPoints.Add(
+                               new Point(
+                               (int)RotatePoint(edge2[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X + recipe.RightOffSet,
+                               (int)RotatePoint(edge2[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
+                               ));
+
+                        }
                     }
                     PointF A = RotatedPoints[RotatedPoints.Count - 1];
                     lgLine_Right2 = Line.LineFit(RotatedPoints.ToArray(), 10);
@@ -168,8 +191,6 @@ namespace PRIEdge
                     }
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Right2);
 
-                    if (recipe.IntervalAverage != 0)
-                        curve = GetEverage(0, curve);
 
                     edgePixels2_Right = curve;
 
@@ -296,10 +317,7 @@ namespace PRIEdge
                         //});
                     }
                     curve = FillResult(0, curve[0], curve[curve.Count - 1], OffsetRect.Y, OffsetRect.Y + OffsetRect.Height, curve, lgLine_Left2);
-                    curve = ReverseArray(curve);
-
-                    if (recipe.IntervalAverage != 0)
-                        curve = GetEverage(0, curve);
+                   // curve = ReverseArray(curve);
 
                     edgePixels2_Left = curve;
 
@@ -349,18 +367,6 @@ namespace PRIEdge
                             }
                         }
                         Result = TEMP;
-                        //int Gap = ST.Y - StLimit;
-                        //if (Gap>0)
-                        //{
-                        //    for (int i = 0; i < Gap; i++)
-                        //        Result.Insert(i,new Point(Convert.ToInt32(Guide.GetX(StLimit + i)),StLimit+i));
-                        //}
-                        //Gap = EnLiMit - EN.Y;
-                        //if (Gap > 0)
-                        //{
-                        //    for (int i = 0; i < Gap; i++)
-                        //        Result.Add(new Point(Convert.ToInt32(Guide.GetX(EN.Y + i)), EN.Y + i));
-                        //}
                         break;
                     //가로
                     case 1:
@@ -373,15 +379,22 @@ namespace PRIEdge
                             {
                                 if (Result[k].X == TempX)
                                 {
-                                    Check = true; 
+                                    Check = true;
+                                    TEMPP = Result[k];
                                     break;
                                 }
                             }
-                            if(Check== false)
+                            if (Check == false)
                             {
-                                Result.Insert(i, new Point(TempX, Convert.ToInt32(Guide.GetY(TempX))));
+                                TEMP.Add(new Point(TempX, Convert.ToInt32(Guide.GetY(TempX))));
                             }
+                            else
+                            {
+                                TEMP.Add(TEMPP);
+                            }
+
                         }
+                        Result = TEMP;
                         break;
                 }
 
@@ -404,6 +417,10 @@ namespace PRIEdge
                 int w = buf.Width;
                 var angle = 0.0;
 
+
+
+                buf = Rotation(buf, 180, buf.Rectangle.Center(), buf.Rectangle.Center());
+
                 {
                     //double sx = lgLine.GetX(0);
                     //double ex = lgLine.GetX(buf.Height - 1);
@@ -420,18 +437,28 @@ namespace PRIEdge
                         EdgeType = recipe.BottomEdgeParam_Guide[0].EdgeType,
                     });
                     lgLine_Bottom = Line.LineFit(edge.ToArray(), 10);
-                    edgePixels_Bottom = edge;
+                    edgePixels_Bottom.Clear();
+                    for (int i = edge.Count - 1; i >= 0; i--)
+                    {
+                        edgePixels_Bottom.Add(
+                        new Point(
+                        (int)RotatePoint(edge[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X,
+                        (int)RotatePoint(edge[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y
+                        ));
+                    }
 
                     if (edge.Count == 0)
                         return Task.FromResult(true);
                 }
-
-                angle = -(lgLine_Bottom.AngleDeg);
+                if (lgLine_Bottom.AngleDeg < 0)
+                    angle = (lgLine_Bottom.AngleDeg);
+                else if (lgLine_Bottom.AngleDeg > 0)
+                    angle = -(lgLine_Bottom.AngleDeg);
 
                 //var buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
 
 
-                var buf2 = buf;
+                BitmapBuf buf2 = buf;
                 if (recipe.BottomMetalRotation)
                     buf2 = Rotation(buf, angle, buf.Rectangle.Center(), buf.Rectangle.Center());
                 //buf2.Save("D:\\BottomRotate.png");
@@ -453,15 +480,31 @@ namespace PRIEdge
                     EdgeStart = recipe.BottomEdgeParam[0].EdgeStart,
                     EdgeType = recipe.BottomEdgeParam[0].EdgeType,
                 });
+                buf2.Save("D:\\TempBuf.png");
                 //edge2.Add(new PointF(x + OffsetRect.X, (float)edge + y + OffsetRect.Y));
                 var RotatedPoints = new List<Point>();
                 var curve = new List<Point>();
 
-                for (int i = 0; i < edge2.Count; i++)
+                for (int i = edge2.Count - 1; i >= 0; i--)
                 {
-                    RotatedPoints.Add(new Point((int)edge2[i].X + OffsetRect.X, (int)edge2[i].Y + OffsetRect.Y - recipe.BottomOffSet));
-                }
+                    if (recipe.BottomMetalRotation)
+                    {
+                        RotatedPoints.Add(
+                        new Point(
+                        (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X ,
+                        (int)RotatePoint(edge2[i], angle - 180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y + recipe.BottomOffSet
+                        ));
+                    }
+                    else
+                    {
+                        RotatedPoints.Add(
+                           new Point(
+                           (int)RotatePoint(edge2[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).X + OffsetRect.X ,
+                           (int)RotatePoint(edge2[i], -180, buf.Rectangle.Center().X, buf.Rectangle.Center().Y).Y + OffsetRect.Y + recipe.BottomOffSet
+                           ));
 
+                    }
+                }
                 lgLine_Bottom2 = Line.LineFit(RotatedPoints.ToArray(), 10);
 
                 for (int i = 0; i < 5; i++)
@@ -494,10 +537,7 @@ namespace PRIEdge
                 }
 
                 curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Bottom2);
-
-                if (recipe.IntervalAverage != 0)
-                    curve = GetEverage(1, curve);
-
+                
                 edgePixels2_Bottom = curve;
 
                 imageViewer1.Image = InsImage;
@@ -614,9 +654,6 @@ namespace PRIEdge
 
                 curve = FillResult(1, curve[0], curve[curve.Count - 1], OffsetRect.X, OffsetRect.X + OffsetRect.Width, curve, lgLine_Top2);
 
-                if(recipe.IntervalAverage != 0)
-                    curve = GetEverage(1, curve);
-
                 edgePixels2_Top = curve;
 
                 imageViewer1.Image = InsImage;
@@ -632,9 +669,9 @@ namespace PRIEdge
             }
         }
 
-        private List<Point> GetEverage(int Index, List<Point> Src)
+        private List<Point> GetAverage(int Index, List<Point> Src, List<Point> InsPoint)
         {
-            try
+            try            
             {
                 if (recipe.IntervalAverage == 0)
                     return Src;
@@ -642,53 +679,140 @@ namespace PRIEdge
                 List<Point> Rst = new List<Point>();
                 int counter = 0;
                 int Value = 0;
-                for (int i = 0; i < Src.Count; i++)
+
+                //왼
+                if (Index == 0)
                 {
-                    counter++;
-                    //세로
-                    if (Index == 0)
+                    bool Temp = false;
+                    //Rst.Add(InsPoint[2]);
+                    for (int i = 0; i < Src.Count; i++)
                     {
+                        counter++;
                         Value += Src[i].X;
-                        if(counter == recipe.IntervalAverage)
+                        
+                        if (counter == recipe.IntervalAverage)
                         {
-                            int Evg = (int)Math.Round((double)Value /counter,0);
-                            for (int k = recipe.IntervalAverage; k >0  ; k--)
+                            int Evg = (int)Math.Round((double)Value / counter, 0);
+                            Point TempPoint = new Point(Evg, Src[i + 1 - counter].Y);
+                            if(InsPoint[0].Y == TempPoint.Y)
+                                Rst.Add(InsPoint[0]);
+                            else if(InsPoint[2].Y <= TempPoint.Y)
                             {
-                                Rst.Add(new Point(Evg, Src[i-k+1].Y));
+                                Temp = true;
+                                Rst.Add(InsPoint[2]);
+                                break;
                             }
+                            else
+                                Rst.Add(TempPoint);
                             counter = 0;
                             Value = 0;
                         }
                     }
-                    //가로
-                    else if (Index == 1)
+                    if (Temp == false)
+                        Rst.Add(InsPoint[2]);
+                }
+                //오
+                else if (Index == 1)
+                {
+                    bool Temp = false;
+                    //Rst.Add(InsPoint[2]);
+                    for (int i = 0; i < Src.Count; i++)
                     {
+                        counter++;
+                        Value += Src[i].X;
+
+                        if (counter == recipe.IntervalAverage)
+                        {
+                            int Evg = (int)Math.Round((double)Value / counter, 0);
+                            Point TempPoint = new Point(Evg, Src[i + 1 - counter].Y);
+                            if (InsPoint[1].Y == TempPoint.Y)
+                                Rst.Add(InsPoint[1]);
+                            else if (InsPoint[3].Y <= TempPoint.Y)
+                            {
+                                Temp = true;
+                                Rst.Add(InsPoint[3]);
+                                break;
+                            }
+                            else
+                                Rst.Add(TempPoint);
+                            counter = 0;
+                            Value = 0;
+                        }
+                    }
+                    if (Temp == false)
+                        Rst.Add(InsPoint[3]);
+                }
+                //위
+                else if (Index == 2)
+                {
+                    bool Temp = false;
+                    for (int i = 0; i < Src.Count; i++)
+                    {
+                        counter++;
                         Value += Src[i].Y;
                         if (counter == recipe.IntervalAverage)
                         {
-                            int Evg = (int)Math.Round((double)Value / counter, 0); 
-                            for (int k = recipe.IntervalAverage; k > 0; k--)
+                            int Evg = (int)Math.Round((double)Value / counter, 0);
+                            Point TempPoint = new Point(Src[i - counter + 1].X, Evg);
+                            if (InsPoint[0].X == TempPoint.X)
+                                Rst.Add(InsPoint[0]);
+                            else if (InsPoint[1].X <= TempPoint.X)
                             {
-                                Rst.Add(new Point(Src[i - k + 1].X, Evg));
+                                Rst.Add(InsPoint[1]);
+                                Temp = true;
+                                break;
                             }
+                            else
+                                Rst.Add(TempPoint);
                             counter = 0;
                             Value = 0;
                         }
                     }
-                    else
-                    {
-                        log.AddLogMessage(LogType.Error, 0, "Cannot Get Everage Result");
-                        return Src;
-                    }
+                    if(Temp == false)
+                        Rst.Add(InsPoint[1]);
                 }
-
-                if(counter != 0)
+                else if (Index == 3)
                 {
-                    for(int i = 0; i < counter; i++)
+                    bool Temp = false;
+                    for (int i = 0; i < Src.Count; i++)
                     {
-                        Rst.Add(Rst[Rst.Count-1]);
+                        counter++;
+                        Value += Src[i].Y;
+                        if (counter == recipe.IntervalAverage)
+                        {
+                            int Evg = (int)Math.Round((double)Value / counter, 0);
+                            Point TempPoint = new Point(Src[i - counter + 1].X, Evg);
+                            if (InsPoint[2].X == TempPoint.X)
+                                Rst.Add(InsPoint[2]);
+                            else if (InsPoint[3].X <= TempPoint.X)
+                            {
+                                Rst.Add(InsPoint[3]);
+                                Temp = true;
+                                break;
+                            }
+                            else
+                                Rst.Add(TempPoint);
+                            counter = 0;
+                            Value = 0;
+                        }
                     }
+                    if (Temp == false)
+                        Rst.Add(InsPoint[3]);
                 }
+                else
+                {
+                    log.AddLogMessage(LogType.Error, 0, "Cannot Get Everage Result");
+                    return Src;
+                }
+                
+
+                //if(counter != 0)
+                //{
+                //    for(int i = 0; i < counter; i++)
+                //    {
+                //        Rst.Add(Rst[Rst.Count-1]);
+                //    }
+                //}
                 return Rst;
             }
             catch(Exception ex)
@@ -990,9 +1114,15 @@ namespace PRIEdge
                         g.DrawLine(Guidetemppen,
                             imageViewer1.ImageToClient(new Point((int)sx, recipe.MetalRect.Y)),
                             imageViewer1.ImageToClient(new Point((int)ex, recipe.MetalRect.Y + recipe.MetalRect.Height - 1)));
+                       
+                        double sy = lgLine_Bottom2.GetY(recipe.MetalRect.X);
+                        double ey = lgLine_Bottom2.GetY(recipe.MetalRect.X + recipe.MetalRect.Width - 1);
+                        g.DrawLine(Guidetemppen,
+                            imageViewer1.ImageToClient(new Point(recipe.MetalRect.X, (int)sy)),
+                            imageViewer1.ImageToClient(new Point(recipe.MetalRect.X + recipe.MetalRect.Width - 1, (int)ey)));
 
-                    //    g.DrawLine(Pens.Green, imageViewer1.ImageToClient(new Point((int)edgePixels_Left[0].X+ recipe.MetalRect.X , (int)edgePixels_Left[0].Y+ recipe.MetalRect.Y)),
-                    //        imageViewer1.ImageToClient(new Point((int)edgePixels_Left[edgePixels_Left.Count-1].X + recipe.MetalRect.X, (int)edgePixels_Left[edgePixels_Left.Count -1 ].Y + recipe.MetalRect.Y)));
+                        //    g.DrawLine(Pens.Green, imageViewer1.ImageToClient(new Point((int)edgePixels_Left[0].X+ recipe.MetalRect.X , (int)edgePixels_Left[0].Y+ recipe.MetalRect.Y)),
+                        //        imageViewer1.ImageToClient(new Point((int)edgePixels_Left[edgePixels_Left.Count-1].X + recipe.MetalRect.X, (int)edgePixels_Left[edgePixels_Left.Count -1 ].Y + recipe.MetalRect.Y)));
                     }
                 }
                 else
@@ -1124,6 +1254,140 @@ namespace PRIEdge
             }
         }
 
+
+        public void SetAlignMark(int idx)
+        {
+            SetAlignMarkBool = true;
+            SetAlignMarkIdx = idx;
+        }
+        public void AlignMarkFind()
+        {
+            try
+            {
+                AlignMatchEx[] alignMatch;
+                int nCount = 0;
+                BitmapBuf a;
+                BitmapBuf src;
+
+                if (InsImage == null)
+                {
+                    AlignMarkRect.Clear();
+                    for (int i = 0; i < AlignMarkImage.Count(); i++)
+                    {
+                        if (AlignMarkImage[i] == null)
+                            continue;
+                        switch (i)
+                        {
+                            case 0:
+                                src = (BitmapBuf)OriImage.Clone(recipe.AlignMarkLeftTop, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches);
+                                var match = IppIF.GetHighestPoint(matches);
+                                nCount = matches.Count;
+                                PointF ptMatch = match.matchPoint;
+                                AlignMarkRect.Add(new Rectangle((int)(recipe.AlignMarkLeftTop.X + ptMatch.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkLeftTop.Y + ptMatch.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 1:
+                                src = (BitmapBuf)OriImage.Clone(recipe.AlignMarkLeftBottom, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches1 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches1);
+                                var match1 = IppIF.GetHighestPoint(matches1);
+                                nCount = matches1.Count;
+                                PointF ptMatch1 = match1.matchPoint;
+                                AlignMarkRect.Add(new Rectangle((int)(recipe.AlignMarkLeftBottom.X + ptMatch1.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkLeftBottom.Y + ptMatch1.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 2:
+                                src = (BitmapBuf)OriImage.Clone(recipe.AlignMarkRightTop, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches2 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches2);
+                                var match2 = IppIF.GetHighestPoint(matches2);
+                                nCount = matches2.Count;
+                                PointF ptMatch2 = match2.matchPoint;
+                                AlignMarkRect.Add(new Rectangle((int)(recipe.AlignMarkRightTop.X + ptMatch2.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkRightTop.Y + ptMatch2.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 3:
+                                src = (BitmapBuf)OriImage.Clone(recipe.AlignMarkRightBottom, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches3 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches3);
+                                var match3 = IppIF.GetHighestPoint(matches3);
+                                nCount = matches3.Count;
+                                PointF ptMatch3 = match3.matchPoint;
+                                AlignMarkRect.Add(new Rectangle((int)(recipe.AlignMarkRightBottom.X + ptMatch3.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkRightBottom.Y + ptMatch3.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    AlignMarkRectIns.Clear();
+                    for (int i = 0; i < AlignMarkImage.Count(); i++)
+                    {
+                        if (AlignMarkImage[i] == null)
+                            continue;
+                        switch (i)
+                        {
+                            case 0:
+                                src = (BitmapBuf)InsImage.Clone(recipe.AlignMarkLeftTop, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches);
+                                var match = IppIF.GetHighestPoint(matches);
+                                nCount = matches.Count;
+                                PointF ptMatch = match.matchPoint;
+                                AlignMarkRectIns.Add(new Rectangle((int)(recipe.AlignMarkLeftTop.X + ptMatch.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkLeftTop.Y + ptMatch.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 1:
+                                src = (BitmapBuf)InsImage.Clone(recipe.AlignMarkLeftBottom, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches1 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches1);
+                                var match1 = IppIF.GetHighestPoint(matches1);
+                                nCount = matches1.Count;
+                                PointF ptMatch1 = match1.matchPoint;
+                                AlignMarkRectIns.Add(new Rectangle((int)(recipe.AlignMarkLeftBottom.X + ptMatch1.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkLeftBottom.Y + ptMatch1.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 2:
+                                src = (BitmapBuf)InsImage.Clone(recipe.AlignMarkRightTop, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches2 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches2);
+                                var match2 = IppIF.GetHighestPoint(matches2);
+                                nCount = matches2.Count;
+                                PointF ptMatch2 = match2.matchPoint;
+                                AlignMarkRectIns.Add(new Rectangle((int)(recipe.AlignMarkRightTop.X + ptMatch2.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkRightTop.Y + ptMatch2.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+
+                                break;
+                            case 3:
+                                src = (BitmapBuf)InsImage.Clone(recipe.AlignMarkRightBottom, PixelFormat.Format8bppIndexed);
+                                a = BitmapBuf.FromBitmap((Bitmap)AlignMarkImage[i].Clone());
+                                List<AlignMatchEx> matches3 = null;
+                                IppIF.FindTemplate(a, src, new Rectangle(0, 0, src.Width, src.Height), recipe.Accuracy, out matches3);
+                                var match3 = IppIF.GetHighestPoint(matches3);
+                                nCount = matches3.Count;
+                                PointF ptMatch3 = match3.matchPoint;
+                                AlignMarkRectIns.Add(new Rectangle((int)(recipe.AlignMarkRightBottom.X + ptMatch3.X - (recipe.markSize.Width / 2)), (int)(recipe.AlignMarkRightBottom.Y + ptMatch3.Y - (recipe.markSize.Height / 2)), recipe.markSize.Width, recipe.markSize.Height));
+                                break;
+                        }
+                    }
+                }
+                Vars.log.AddLogMessage(LogType.Information, 0, "Find Align Mark Done");
+            }
+            catch (Exception ex)
+            {
+                Vars.log.AddLogMessage(LogType.Error, 0, ex + "얼라인 마크 찾기 실패");
+            }
+
+        }
     }
 }
 

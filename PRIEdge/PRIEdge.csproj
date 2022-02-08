@@ -108,11 +108,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\FormAlignMark.cs">
+    <Compile Include="Forms\FormSetAlignMark.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormAlignMark.Designer.cs">
-      <DependentUpon>FormAlignMark.cs</DependentUpon>
+    <Compile Include="Forms\FormSetAlignMark.Designer.cs">
+      <DependentUpon>FormSetAlignMark.cs</DependentUpon>
     </Compile>
     <Compile Include="Class\Defect.cs" />
     <Compile Include="Engion\PlotData.cs" />
@@ -153,9 +153,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Class\Recipe.cs" />
     <Compile Include="Class\ShapeManager.cs" />
+    <Compile Include="Forms\RawDataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RawDataForm.Designer.cs">
+      <DependentUpon>RawDataForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Vars.cs" />
-    <EmbeddedResource Include="Forms\FormAlignMark.resx">
-      <DependentUpon>FormAlignMark.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormSetAlignMark.resx">
+      <DependentUpon>FormSetAlignMark.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoadRecipeForm.resx">
       <DependentUpon>LoadRecipeForm.cs</DependentUpon>
@@ -181,6 +187,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\RawDataForm.resx">
+      <DependentUpon>RawDataForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\DataSources\Defect.datasource" />
     <None Include="Properties\Settings.settings">

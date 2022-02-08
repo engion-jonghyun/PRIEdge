@@ -39,15 +39,17 @@ namespace PRIEdge
             this.addItemButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Copybutton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // RecipeListLbl
             // 
             this.RecipeListLbl.AutoSize = true;
             this.RecipeListLbl.Font = new System.Drawing.Font("굴림", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.RecipeListLbl.Location = new System.Drawing.Point(12, 20);
+            this.RecipeListLbl.Location = new System.Drawing.Point(3, 0);
             this.RecipeListLbl.Name = "RecipeListLbl";
             this.RecipeListLbl.Size = new System.Drawing.Size(136, 24);
             this.RecipeListLbl.TabIndex = 16;
@@ -70,9 +72,9 @@ namespace PRIEdge
             this.listBox1.DataSource = this.bindingSource1;
             this.listBox1.Font = new System.Drawing.Font("굴림", 10F, System.Drawing.FontStyle.Bold);
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 50);
+            this.listBox1.Location = new System.Drawing.Point(3, 27);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(410, 316);
+            this.listBox1.Size = new System.Drawing.Size(411, 316);
             this.listBox1.TabIndex = 14;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick_1);
             // 
@@ -85,7 +87,7 @@ namespace PRIEdge
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(76, 42);
             this.button1.TabIndex = 13;
-            this.button1.Text = "Cancel";
+            this.button1.Text = "Close";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -122,12 +124,13 @@ namespace PRIEdge
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.addItemButton, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.openButton, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.button1, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.openButton, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.deleteButton, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.Copybutton, 1, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 390);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 349);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -146,21 +149,37 @@ namespace PRIEdge
             this.Copybutton.UseVisualStyleBackColor = true;
             this.Copybutton.Click += new System.EventHandler(this.Copybutton_Click);
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.RecipeListLbl, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel1, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.listBox1, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(417, 401);
+            this.tableLayoutPanel2.TabIndex = 18;
+            // 
             // LoadRecipeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 450);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.RecipeListLbl);
-            this.Controls.Add(this.listBox1);
+            this.ClientSize = new System.Drawing.Size(417, 401);
+            this.Controls.Add(this.tableLayoutPanel2);
             this.Name = "LoadRecipeForm";
             this.Text = "LoadRecipeForm";
             this.Load += new System.EventHandler(this.LoadRecipeForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -175,5 +194,6 @@ namespace PRIEdge
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button Copybutton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }

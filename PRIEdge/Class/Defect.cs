@@ -14,7 +14,6 @@ namespace PRIEdge
     {
         public Defect()
         {
-            DefectImage = null;
             Location = new Point(0, 0);
             Direction = DefectType.Left;
             XOffSet = 0;
@@ -39,6 +38,7 @@ namespace PRIEdge
     {
         Left = 0,
         Right = 1,
-        Top = 2
+        Top = 2,
+        Bottom = 3,
     };
 }
