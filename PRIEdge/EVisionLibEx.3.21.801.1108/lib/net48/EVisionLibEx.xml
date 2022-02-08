@@ -1,0 +1,2497 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EVisionLibEx</name>
+    </assembly>
+    <members>
+        <member name="T:Engion.Auth">
+            <summary>
+            EImage.dll의 Auth를 확인한다.
+            0 이면 OK,
+            1 이면 Test 기간
+            -1 이면 Fail
+            </summary>
+        </member>
+        <member name="M:Engion.Auth.IsAuth(System.Boolean)">
+            <summary>
+            EImage.dll의 Auth를 확인한다.
+            </summary>
+        </member>
+        <member name="M:Engion.CoordiConvert.MakeFactor(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            int drawMargin = 10;
+            maskPanel1.DrawMargin = drawMargin;
+            PointF[] realPos = new PointF[3];
+            PointF[] screenPos = new PointF[3];
+            realPos[0] = new PointF(0, 0);
+            realPos[1] = new PointF(150, 0);
+            realPos[2] = new PointF(0, 150);
+            screenPos[0] = new PointF(maskPanel1.Width / 2, maskPanel1.Height / 2);
+            screenPos[1] = new PointF(maskPanel1.Width - drawMargin, maskPanel1.Height / 2);
+            screenPos[2] = new PointF(maskPanel1.Height / 2, drawMargin);
+            maskPanel1.MakeFactor(realPos, screenPos);
+            </summary>
+            <param name="sourcePos"></param>
+            <param name="targetPos"></param>
+        </member>
+        <member name="T:Engion.DecimalMath">
+            <summary>
+            Analogy of Syatem.Math class for decimal types 
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Pi">
+            <summary>
+            represents PI
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Epsilon">
+            <summary>
+            represents PI
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.PIx2">
+            <summary>
+            represents 2*PI
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.E">
+            <summary>
+            represents E
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.PIdiv2">
+            <summary>
+            represents PI/2
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.PIdiv4">
+            <summary>
+            represents PI/4
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Einv">
+            <summary>
+            represents 1.0/E
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Log10Inv">
+            <summary>
+            log(10,E) factor
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Zero">
+            <summary>
+            Zero
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.One">
+            <summary>
+            One
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.Half">
+            <summary>
+            Represents 0.5M
+            </summary>
+        </member>
+        <member name="F:Engion.DecimalMath.MaxIteration">
+            <summary>
+            Max iterations count in Taylor series
+            </summary>
+        </member>
+        <member name="M:Engion.DecimalMath.Exp(System.Decimal)">
+            <summary>
+            Analogy of Math.Exp method
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Power(System.Decimal,System.Decimal)">
+            <summary>
+            Analogy of Math.Pow method
+            </summary>
+            <param name="value"></param>
+            <param name="pow"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.PowerN(System.Decimal,System.Int32)">
+            <summary>
+            Power to the integer value
+            </summary>
+            <param name="value"></param>
+            <param name="power"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Log10(System.Decimal)">
+            <summary>
+            Analogy of Math.Log10
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Log(System.Decimal)">
+            <summary>
+            Analogy of Math.Log
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Cos(System.Decimal)">
+            <summary>
+            Analogy of Math.Cos
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Tan(System.Decimal)">
+            <summary>
+            Analogy of Math.Tan
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.CalculateSinFromCos(System.Decimal,System.Decimal)">
+            <summary>
+            Helper function for calculating sin(x) from cos(x)
+            </summary>
+            <param name="x"></param>
+            <param name="cos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Sin(System.Decimal)">
+            <summary>
+            Analogy of Math.Sin
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.TruncateToPeriodicInterval(System.Decimal@)">
+            <summary>
+            Truncates to  [-2*PI;2*PI]
+            </summary>
+            <param name="x"></param>
+        </member>
+        <member name="M:Engion.DecimalMath.Sqrt(System.Decimal,System.Decimal)">
+            <summary>
+            Analogy of Math.Sqrt
+            </summary>
+            <param name="x"></param>
+            <param name="epsilon">lasts iteration while error less than this epsilon</param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Sinh(System.Decimal)">
+            <summary>
+            Analogy of Math.Sinh
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Cosh(System.Decimal)">
+            <summary>
+            Analogy of Math.Cosh
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Sign(System.Decimal)">
+            <summary>
+            Analogy of Math.Sign
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Tanh(System.Decimal)">
+            <summary>
+            Analogy of Math.Tanh
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Abs(System.Decimal)">
+            <summary>
+            Analogy of Math.Abs
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Asin(System.Decimal)">
+            <summary>
+            Analogy of Math.Asin
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.ATan(System.Decimal)">
+            <summary>
+            Analogy of Math.Atan
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Acos(System.Decimal)">
+            <summary>
+            Analogy of Math.Acos
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.DecimalMath.Atan2(System.Decimal,System.Decimal)">
+            <summary>
+            Analogy of Math.Atan2
+            for more see this
+            <seealso href="http://i.imgur.com/TRLjs8R.png"/>
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Engion.BitmapBufEditor">
+            <devdoc>
+               <para>Provides an editor for visually picking an image.</para> 
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufEditor.CreateExtensionsString(System.String[],System.String)">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc> 
+        </member>
+        <member name="M:Engion.BitmapBufEditor.CreateFilterEntry(Engion.BitmapBufEditor)">
+            <devdoc>
+               <para>[To be supplied.]</para> 
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufEditor.EditValue(System.ComponentModel.ITypeDescriptorContext,System.IServiceProvider,System.Object)">
+            <devdoc>
+                 Edits the given object value using the editor style provided by 
+                 GetEditorStyle.  A service provider is provided so that any
+                 required editing services can be obtained. 
+            </devdoc> 
+        </member>
+        <member name="M:Engion.BitmapBufEditor.GetEditStyle(System.ComponentModel.ITypeDescriptorContext)">
+            <devdoc>
+                 Retrieves the editing style of the Edit method.  If the method
+                 is not supported, this will return None.
+            </devdoc> 
+        </member>
+        <member name="M:Engion.BitmapBufEditor.GetFileDialogDescription">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc> 
+        </member>
+        <member name="M:Engion.BitmapBufEditor.GetExtensions">
+            <devdoc>
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufEditor.GetPaintValueSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <devdoc>
+                 Determines if this editor supports the painting of a representation 
+                 of an object's value.
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufEditor.LoadFromStream(System.IO.Stream)">
+            <devdoc> 
+               <para>[To be supplied.]</para>
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufEditor.PaintValue(System.Drawing.Design.PaintValueEventArgs)">
+            <devdoc> 
+               <para>
+                  Paints a representative value of the given object to the provided 
+                  canvas. Painting should be done within the boundaries of the
+                  provided rectangle.
+               </para>
+            </devdoc> 
+        </member>
+        <member name="T:Engion.BitmapBuf">
+            <summary>
+             영상을 관리하고 처리하기 위한 클래스임.
+             기존 Bitmap은 Lock 및 Unlock 과정에서 두개의 쓰레드가 동시에 작업하면 문제가 발생함
+             이 클래스는 그런 문제를 해결하기 위한 클래스임
+             SafeHandleZeroOrMinusOneIsInvalid 클래스를 계승 받아서 관리되는 메모리 처럼 필요시 자동으로 Dispose됨
+            </summary>
+            
+        </member>
+        <member name="P:Engion.BitmapBuf.CastingByCopy">
+            <summary>
+            Bitmap으로 복사할 때 메모리 복사 여부를 결정한다.
+            Default 값을 true
+            이 값이 false 면 memory를 공유한다.
+            </summary>
+        </member>
+        <member name="F:Engion.BitmapBuf._lockCount">
+            <summary>
+            데이터가 Lock 되어 있음을 나타낸다.
+            데이터가 lock이 되어 있으면 메모리 해지가 되지 않는다.
+            </summary>
+        </member>
+        <member name="F:Engion.BitmapBuf.sample">
+            <summary>
+            컬러 팔레트를 만들기 위한 임시 비트맵
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Name">
+            <summary>
+            버퍼의 이름을 지정한다.
+            </summary>
+        </member>
+        <member name="F:Engion.BitmapBuf.interalBD">
+            <summary>
+            BitmapBuf(Bitmap bitmap) 생성자를 이용해서 BitmapBuf를 생성 했을 때 
+            생성된 BitmapData를 저장하는 임시 변수
+            </summary>
+        </member>
+        <member name="F:Engion.BitmapBuf.parent">
+            <summary>
+            SubBuffer의 경우 부모를 가지고 있는다.
+            이게 없으면 연산중에 부모가 dispose 될 수 있다
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.IsInvalid">
+            <summary>
+            유요한 버퍼인지 확인한다.
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.SerializeType">
+            <summary>
+            영상을 Serialize할 때 사용하는 영상 포맷을 결정한다.
+            원래 Bitmap은 Png로 압축해서 Serialize하지만 실제로 Png압축이 시간이 많이 걸리기 때문에 효율적이지 않은 경우가 많다.
+            Jpeg나 Bitmap으로 보내면 속도에서 많은 이득을 얻을 수 있다.
+            기본값은 Bitmap이다.
+            단 Jpeg는 손실 압축이니 주의 할 것 
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.BitmapData">
+            <summary>
+            BitmapBuf가 가지고 있는 BitmapData 클래스
+            </summary>
+        </member>
+        <member name="M:Engion.BitmapBuf.LockBits(System.Drawing.Rectangle,System.Drawing.Imaging.ImageLockMode,System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            Bitmap과 호환을 위해서 사용됨.
+            이 함수를 사용하는 경우 반드시 UnlockBits를 사용해서 Lock을 풀어주어야 함.
+            Unlock을 하지 않으면 메모리가 삭제 되지 않음.
+            </summary>
+            <param name="rect">Bitmap과 같음</param>
+            <param name="flags">Bitmap과 같음</param>
+            <param name="format">Bitmap과 같음</param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.UnlockBits(System.Drawing.Imaging.BitmapData)">
+            <summary>
+            Bitmap과 호환을 위해서 사용됨
+            Lock을 한 회수보다 더 많이 Unlock하면 Exception이 발생함
+            </summary>
+            <param name="bd">Bitmap과 같음</param>
+        </member>
+        <member name="P:Engion.BitmapBuf.Size">
+            <summary>
+            BitmapBuf의 크기
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Rectangle">
+            <summary>
+            BitmapBuf의 Rectangle
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Palette">
+            <summary>
+            Bitmap의 Palette
+            </summary>  
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Drawing.Imaging.BitmapData)">
+            <summary>
+            메모리 할당을 하지 않고 BitmapData를 이용해서 Buf를 생성한다.
+            </summary>
+            <param name="bd"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.String)">
+            <summary>
+            파일을 읽어서 BitmapBuf를 생성한다.
+            Bitmap과 다르게 파일이 Lock되지 않는다.
+            </summary>
+            <param name="fileName">읽을 파일이름</param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Drawing.Bitmap)">
+            <summary>
+            Bitmap에서 메모리을 복사해서 Image Buf를 만든다.
+            </summary>
+            <param name="bitmap"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Drawing.Bitmap,System.Drawing.Rectangle)">
+            <summary>
+            Bitmap에서 메모리을 복사해서 Image Buf를 만든다.
+            </summary>
+            <param name="bitmap"></param>
+            <param name="rect"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Int32,System.Int32,System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            BitmapBuf를 생성한다.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="pixelFormat"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Int32,System.Int32,System.Int32,System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            BitmapBuf를 생성한다.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="stride"></param>
+            <param name="pixelFormat"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.#ctor(System.Int32,System.Int32,System.Int32,System.Drawing.Imaging.PixelFormat,System.IntPtr)">
+            <summary>
+            비트맵 버퍼를 생성한다.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="stride"></param>
+            <param name="pixelFormat"></param>
+            <param name="scan0"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetPixelBytes(System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            한개의 픽셀이 몇 바이트로 구성되어 있는 지를 구한다.
+            </summary>
+            <param name="pixelFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetPixelBytes">
+            <summary>
+            한개의 픽셀이 몇 바이트로 구성되어 있는 지를 구한다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GrayPalette">
+            <summary>
+            포함하고 있는 Bitmap을 256 그레이 팔레트로 바꾼다.
+            </summary>
+        </member>
+        <member name="M:Engion.BitmapBuf.FromBitmap(System.Drawing.Bitmap)">
+            <summary>
+            Bitmap의 데이터를 복사해서 BitmapBuf를 만든다.
+            </summary>
+            <param name="bitmap"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetSubBuf(System.Drawing.Rectangle)">
+            <summary>
+            전체 영상에서 rect영역 부분만 잘라서 BitmapBuf를 만든다.
+            여기서 만든 BitmapBuf는 원래 BitmapBuf에 종속된다.(메모리를 공유한다)
+            </summary>
+            <param name="rect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GrayImageFromFile(System.String)">
+            <summary>
+            파일에서 영상을 읽어서 BitmapBuf로 만든다.
+            영상을 무조건 8bit 그레이 영상으로 바꾼다.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.Lock(System.Drawing.Bitmap)">
+            <summary>
+            Bitmap을 임시로 Lock해서 BitmapBuf를 만든다.
+            이 함수를 사용 할 경우 반드시 사용후 unlock을 해야 한다.
+            </summary>
+            <param name="bitmap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.Unlock">
+            <summary>
+            Lock함수를 사용할 경우 이 함수를 사용해서 Unlock한다
+            </summary>
+        </member>
+        <member name="M:Engion.BitmapBuf.LockBitmap">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Engion.BitmapBuf.Width">
+            <summary>
+            비트맵 가로 크기
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Height">
+            <summary>
+            비트맵 세로 크기
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Stride">
+            <summary>
+            한 줄의 메모리 할당(bytes)
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.Scan0">
+            <summary>
+            영상 시작 주소
+            </summary>
+        </member>
+        <member name="P:Engion.BitmapBuf.PixelFormat">
+            <summary>
+            영상의 PixelFormat
+            </summary>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetPtr(System.Int32,System.Int32)">
+            <summary>
+            해당 위치의 메모리 주소
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetPtr(System.Drawing.Point)">
+            <summary>
+            해당 위치의 메모리 주소
+            </summary>
+            <param name="pt"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Engion.BitmapBuf.Item(System.Int32,System.Int32)">
+            <summary>
+            해당위치의 픽셀값을 가져오거나 설정한다.
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Engion.BitmapBuf.Item(System.Drawing.Point)">
+            <summary>
+            해당위치의 픽셀값을 가져오거나 설정한다.
+            </summary>
+            <param name="pt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetBuf(System.Int32,System.Int32)">
+            <summary>
+            한 바이트의 데이터를 읽는다.
+            실패하면 Exception 발생
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.SetBuf(System.Int32,System.Int32,System.Drawing.Color)">
+            <summary>
+            한 바이트를 쓴다
+            실패하면 Exception 발생
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <param name="b"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.First(System.Func{System.Byte,System.Boolean})">
+            <summary>
+            영상에서 조전에 맞는 첫번째 픽셀을 찾는다.
+            </summary>
+            <param name="predicate"></param>
+            <returns>-1 이면 못찾음</returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.FirstLoc(System.Func{System.Byte,System.Boolean})">
+            <summary>
+            조건에 맞는 첫번째 값의 위치를 찾는다.
+            </summary>
+            <param name="predicate"></param>
+            <returns>못찾으면 -1, -1</returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.ForEach(System.Action{System.Byte})">
+            <summary>
+            각 픽셀에 대한 동작
+            </summary>
+            <param name="action">Action</param>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetBitmap">
+            <summary>
+            Bitmap을 얻는다.
+            메모리 복사가 일어난다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetHandle">
+            <summary>
+            Bitmap casting
+            메모리 복사가 일어나지 않는다.
+            단순 캐스팅이다.
+            </summary>
+        </member>
+        <member name="M:Engion.BitmapBuf.op_Explicit(Engion.BitmapBuf)~System.Drawing.Image">
+            <summary>
+            Image casting
+            메모리 복사가 일어나지 않는다.
+            단순 캐스팅이다.
+            </summary>
+            <param name="b"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.op_Explicit(Engion.BitmapBuf)~System.Drawing.Bitmap">
+            <summary>
+            Bitmap casting
+            메모리 복사가 일어나지 않는다.
+            단순 캐스팅이다.
+            </summary>
+            <param name="b"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.GetBitmap(System.Drawing.Rectangle)">
+            <summary>
+            Bitmap을 얻는다.
+            </summary>
+            <param name="rect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.Clone">
+            <summary>
+            Clone 한다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.Clone(System.Drawing.Rectangle,System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            영역을 클론 한다.
+            </summary>
+            <param name="rect"></param>
+            <param name="pixelFormat"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.BitmapBuf.Save(System.String,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            영상을 저장한다.
+            </summary>
+            <param name="filename"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:Engion.BitmapBuf.Save(System.String)">
+            <summary>
+            영상을 저장한다.
+            </summary>
+            <param name="filename"></param>
+        </member>
+        <member name="T:Engion.BitmapBufConverter">
+            <devdoc>
+                 ImageConverter is a class that can be used to convert
+                 Image from one data type to another.  Access this
+                 class through the TypeDescriptor.
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <devdoc>
+               <para>Gets a value indicating whether this converter can
+                  convert an object in the given source type to the native type of the converter
+                  using the context.</para>
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <devdoc>
+               <para>Gets a value indicating whether this converter can
+                  convert an object to the given destination type using the context.</para>
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <devdoc>
+               <para>Converts the given object to the converter's native type.</para>
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <devdoc>
+                 Converts the given object to another type.  The most common types to convert
+                 are to and from a string object.  The default implementation will make a call
+                 to ToString on the object if the object is valid and if the destination
+                 type is string.  If this cannot convert to the desitnation type, this will
+                 throw a NotSupportedException.
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext,System.Object,System.Attribute[])">
+            <devdoc>
+                 Retrieves the set of properties for this type.  By default, a type has
+                 does not return any properties.  An easy implementation of this method
+                 can just call TypeDescriptor.GetProperties for the correct data type.
+            </devdoc>
+        </member>
+        <member name="M:Engion.BitmapBufConverter.GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <devdoc>
+                 Determines if this object supports properties.  By default, this
+                 is false.
+            </devdoc>
+        </member>
+        <member name="E:Engion.ImageViewerEx.ZoomChangedEvent">
+            <summary>
+            Zoom 이 바뀌었다
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.InterpolationMode">
+            <summary>
+            System.Drawing.Drawing2D.Interpolation 타입의 변수
+            확대시에 영상을 뿌리는 방법을 지정합니다.
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.EnhanceWhenMouseClick">
+            <summary>
+            마우스가 클릭했을 때 Enhance를 한다.
+            EnhanceImage가 true일 때 동작한다.
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.EnhanceRefLevel">
+            <summary>
+            Enhance하는 기준 레벨을 설정한다.
+            Click시 Enhance하는 기능(EnhanceWhenMouseClick)이 false일때 이 값을 기준으로 Enhance한다.
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.Pen">
+            <summary>
+            ROI를 그릴 때 사용할 펜을 설정 또는 읽어온다.
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.Brush">
+            <summary>
+            ROI를 그릴 때 사용할 브러쉬를 설정 또는 읽어온다.
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.ShowDrawShape">
+            <summary>
+            ROI 를 화면에 표시할 지 여부를 설정 또는 읽어온다.
+            </summary>
+        </member>
+        <member name="T:Engion.ImageViewerEx.MouseModes">
+            <summary>
+            컨트롤의 상태에 대한 화면 모드
+            </summary>
+            
+        </member>
+        <member name="F:Engion.ImageViewerEx.MouseModes.None">
+            <summary>
+            아무것도 하지않음
+            </summary>
+        </member>
+        <member name="F:Engion.ImageViewerEx.MouseModes.Panning">
+            <summary>
+            마우스로 영상을 이동할 수 있음
+            </summary>
+        </member>
+        <member name="F:Engion.ImageViewerEx.MouseModes.DrawRect">
+            <summary>
+            화면에 사각형을 그림
+            </summary>
+        </member>
+        <member name="F:Engion.ImageViewerEx.MouseModes.EditRect">
+            <summary>
+            화면에 그려진 사각형을 수정함.(아직 구현되지 않음)
+            </summary>
+        </member>
+        <member name="P:Engion.ImageViewerEx.MouseMode">
+            <summary>
+            MouseModes 값을 갖는 변수
+            </summary>
+        </member>
+        <member name="M:Engion.ImageViewerEx.Refresh">
+            <summary>
+            비트맵의 내용을 강제로 새로 그린다.
+            라이브영상을 볼 때 등 영상의 내용이 바뀌었을 때 사용한다.
+            </summary>
+        </member>
+        <member name="M:Engion.ImageViewerEx.DrawPointAtCenter(System.Drawing.Point)">
+            <summary>
+            인수로 넘겨받은 포인트를 중심으로 하도록 영상을 그린다.
+            </summary>
+            <param name="point"></param>
+        </member>
+        <member name="F:Engion.ImageViewerEx.components">
+            <summary> 
+            필수 디자이너 변수입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.ImageViewerEx.Dispose(System.Boolean)">
+            <summary> 
+            사용 중인 모든 리소스를 정리합니다.
+            </summary>
+            <param name="disposing">관리되는 리소스를 삭제해야 하면 true이고, 그렇지 않으면 false입니다.</param>
+        </member>
+        <member name="M:Engion.ImageViewerEx.InitializeComponent">
+            <summary> 
+            디자이너 지원에 필요한 메서드입니다. 
+            이 메서드의 내용을 코드 편집기로 수정하지 마십시오.
+            </summary>
+        </member>
+        <member name="T:Engion.Wafer.Format.KLARF.ProcessEquipmentIDList">
+            <summary>
+            사용 안함
+            </summary>
+        </member>
+        <member name="T:Engion.PaletteType">
+            <summary>
+            Gray 영상을 위한 팔레트 타입입니다.
+            </summary>
+        </member>
+        <member name="F:Engion.PaletteType.GRAY">
+            <summary>
+            영상을 Gray Palette로 설정
+            </summary>
+        </member>
+        <member name="F:Engion.PaletteType.RED">
+            <summary>
+            영상을 Red 계열 Palette로 설정
+            </summary>
+        </member>
+        <member name="F:Engion.PaletteType.GREEN">
+            <summary>
+            영상을 Green 계열 Palette로 설정
+            </summary>
+        </member>
+        <member name="F:Engion.PaletteType.BLUE">
+            <summary>
+            영상을 Blue 계열 Palette로 설정
+            </summary>
+        </member>
+        <member name="T:Engion.RectMargin">
+            <summary>
+            마진값을 설정 할 때 사용하는 구조체
+            </summary>
+        </member>
+        <member name="P:Engion.LogEx.Format">
+            <summary>
+            {0} : Date
+            {1} : Type
+            {2} : Level
+            {3} : Message
+            {4} : MemberName
+            {5} : Source
+            default "{0:MM-dd HH:mm:ss.fff}, {1}, [{4},{5}] {3}"
+            </summary>
+        </member>
+        <member name="M:Engion.LogEx.AddLogFileList(System.String,Engion.LogType[])">
+            <summary>
+            종류별로 만들 파일을 추가 한다.
+            기본으로는 모든 파일에 대한 로그를 만든다.
+            </summary>
+            <param name="fileName"></param>
+            <param name="types"></param>
+        </member>
+        <member name="M:Engion.LogEx.Clear">
+            <summary>
+            로그를 지운다.
+            </summary>
+        </member>
+        <member name="M:Engion.Log.AddLogFileList(System.String,Engion.LogType[])">
+            <summary>
+            종류별로 만들 파일을 추가 한다.
+            기본으로는 모든 파일에 대한 로그를 만든다.
+            </summary>
+            <param name="fileName"></param>
+            <param name="types"></param>
+        </member>
+        <member name="M:Engion.Log.ClearLogFileList">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Engion.ColumnInfo`1">
+            <summary>
+            File에서 Column은 Class의 Property와 Match됨.
+            </summary>
+        </member>
+        <member name="T:Engion.Vision.Algorithm.CurveFitting">
+             <summary>
+             선형 회귀를 이용한 다항식 커브 fitting
+             </summary>
+             <example>
+             2차 다항식으로 피팅
+             <code>
+                    Dictionary &lt;double, double> xyList = new Dictionary &lt;double, double>();
+                    Console.WriteLine("Hello World!");
+                    using (var sr = new StreamReader("c:\\tmp\\2dFitting2.csv"))
+                    {
+                        sr.ReadLine();
+                        string s;
+                        for (int i = 0; ; i++)
+                        {
+                            s = sr.ReadLine();
+                            if (string.IsNullOrWhiteSpace(s))
+                                break;
+                            var xyValue = s.Split(',');
+                            int.TryParse(xyValue[0], out int x);
+                            double.TryParse(xyValue[1], out double y);
+                            xyList.Add(x, y);
+                        }
+                    }
+            
+                    var fit = new CurveFitting();
+                    fit.CurveFit(xyList, 2, 100);
+                    var values = fit.GetValues(0, 4096);
+            </code>
+             </example>
+        </member>
+        <member name="P:Engion.Vision.Algorithm.CurveFitting.Params">
+            <summary>
+            찾은 parameters, Param[0]=>상수항, Param[1]=>1차항...
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.Algorithm.CurveFitting.Count">
+            <summary>
+            마지막으로 사용된 샘플의 개수
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.Algorithm.EdgeParam.Margin">
+            <summary>
+            Threhold 이상인 값이 나왔을 때 Margin 내에서 최대 값을 찾는다.
+            </summary>
+        </member>
+        <member name="T:Engion.Vision.Algorithm.ImageLib">
+            <summary>
+            Image Library에 대한 요약 설명입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Algorithm.LineFit(System.Drawing.Point[],System.Int32,System.Double@,System.Double[])">
+            <summary>
+            매칭되는 라인 식을 구한다.
+            line eq
+            y = line[1]/line[0] * (x - line[2]) + line[3]
+            x = line[0]/line[1] * (y - line[3]) + line[2]
+            </summary>
+            <param name="points">라인식을 구하기 위한 포인트들</param>
+            <param name="iterCount">반복회수</param>
+            <param name="radTheta">구해진 theta, Radians</param>
+            <param name="line">line식을 구하기 위한 파라메터들, 4개</param>
+            
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Algorithm.LineFit(System.Drawing.PointF[],System.Int32,System.Double@,System.Double[])">
+            <summary>
+            매칭되는 라인 식을 구한다.
+            line eq
+            y = line[1]/line[0] * (x - line[2]) + line[3]
+            x = line[0]/line[1] * (y - line[3]) + line[2]
+            </summary>
+            <param name="points">라인식을 구하기 위한 포인트들</param>
+            <param name="iterCount">반복회수</param>
+            <param name="radTheta">구해진 theta, Radians</param>
+            <param name="line">line식을 구하기 위한 파라메터들, 4개</param>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Algorithm.GetIntersectPoint(System.Double[],System.Double[])">
+            <summary>
+            LineFit 결과를 이용해서 교점을 구한다.
+            </summary>
+            <param name="line1">첫번째 라인 파라메터</param>
+            <param name="line2">두번째 라인 파라메터</param>
+            <returns>교점 정보</returns>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Basic.Enhance(Engion.BitmapBuf,System.Int32,System.Double,System.Int32)">
+            <summary>
+            영상을 Enhance 한다.
+            </summary>
+            <param name="bmp"></param>
+            <param name="refLevel">기준레벨</param>
+            <param name="mulLevel">Enhance level</param>
+            <param name="offset">Offset, 0 일때 레벨은 128 이며 이 값만큼 +- 된다</param>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Basic.Rotation(Engion.BitmapBuf,System.Double,Engion.Interpolation)">
+            <summary>
+            센터를 기준으로 회전을 하고 회전된 크기의 영상을 반환한다.
+            </summary>
+            <param name="bdSrc"></param>
+            <param name="angleDeg"></param>
+            <param name="interpolation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Basic.MakeGaussianNoise(System.Double,System.Double,System.Int32)">
+            <summary>
+            Jarrett's suggestion of using a Box-Muller transform is good for a quick-and-dirty solution. A simple implementation
+            </summary>
+            <param name="mean"></param>
+            <param name="stdDev"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Basic.MakeGaussianNoise(Engion.BitmapBuf,System.Double,System.Double)">
+            <summary>
+            Jarrett's suggestion of using a Box-Muller transform is good for a quick-and-dirty solution. A simple implementation
+            </summary>
+            <param name="bd"></param>
+            <param name="mean"></param>
+            <param name="stdDev"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Line.LineFit(System.Drawing.Point[],System.Int32)">
+            <summary>
+            매칭되는 라인 식을 구한다.
+            line eq
+            y = line[1]/line[0] * (x - line[2]) + line[3]
+            x = line[0]/line[1] * (y - line[3]) + line[2]
+            </summary>
+            <param name="points">라인식을 구하기 위한 포인트들</param>
+            <param name="iterCount">반복회수</param>
+            
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Line.LineFit(System.Drawing.PointF[],System.Int32)">
+            <summary>
+            매칭되는 라인 식을 구한다.
+            line eq
+            y = line[1]/line[0] * (x - line[2]) + line[3]
+            x = line[0]/line[1] * (y - line[3]) + line[2]
+            </summary>
+            <param name="points">라인식을 구하기 위한 포인트들</param>
+            <param name="iterCount">반복회수</param>
+        </member>
+        <member name="M:Engion.Vision.Algorithm.Line.GetIntersectPoint(Engion.Vision.Algorithm.LineEq,Engion.Vision.Algorithm.LineEq)">
+            <summary>
+            LineFit 결과를 이용해서 교점을 구한다.
+            </summary>
+            <param name="line1">첫번째 라인 파라메터</param>
+            <param name="line2">두번째 라인 파라메터</param>
+            <returns>교점 정보</returns>
+        </member>
+        <member name="T:Engion.Vision.Algorithm.LineEq">
+            <summary>
+            ax+by+c = 0
+            </summary>
+            
+        </member>
+        <member name="P:Engion.Vision.AlignInfo.XYMoveList">
+            <summary>
+             XY 좌표 페어
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignInfo.TMoveList">
+            <summary>
+            T 이동 좌표 페어
+            기준 좌표는 XYMoveList의 첫번째 좌표임.
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignMark.PhyPoint">
+            <summary>
+            Align Mark 목적 위치
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignMark.ImagePoint">
+            <summary>
+            Align 목적 위치
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.AlignMark.MakeFactor(Engion.Vision.AlignInfo)">
+            <summary>
+            세점을 넣어서 팩터를 찾는 함수
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.AlignMark.CalcCenterPoint(System.Drawing.PointF,System.Drawing.PointF,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="orgPoint"></param>
+            <param name="tgtPoint"></param>
+            <param name="theta"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Engion.Vision.AlignManagerEx">
+             <summary>
+             두 포인트 또는 그이상의 포인트를 가지고 align을 한다.
+             </summary>
+             <example>
+             <code>
+                // 실좌표와 영상좌표간의 좌표계 통일
+                Test.CoordiConvert coConv = new Test.CoordiConvert();
+                coConv.MakeFactor(new PointF[] { new PointF(0, 0), new PointF(100, 0), new PointF(0, 100), new PointF(100, 100) },
+                    new PointF[] { new PointF(500, 500), new PointF(700, 500), new PointF(500, 700), new PointF(700, 700) });
+            
+                // 첫번째 얼라인 좌표
+                 var info = new Test.AlignInfo();
+                 info.AddXYPoint(new Point(0, 0), new PointF(500, 500));
+                 info.AddXYPoint(new Point(100, 0), new PointF(700, 500));
+                 info.AddXYPoint(new Point(0, 100), new PointF(500, 700));
+                 info.AddXYPoint(new Point(100, 100), new PointF(700, 700));
+                 
+                 info.AddTPoint(0.02, new PointF(151.0F, 849.0F));
+                 info.AddTPoint(-0.02, new PointF(849.0F, 151.0F));
+                 var mark1 = new Test.AlignMark(info);
+                 
+                // 두번째 얼라인 좌표
+                 info = new Test.AlignInfo();
+                 info.AddXYPoint(new Point(0, 0), new PointF(500, 500));
+                 info.AddXYPoint(new Point(100, 0), new PointF(700, 500));
+                 info.AddXYPoint(new Point(0, 100), new PointF(500, 700));
+                 info.AddXYPoint(new Point(100, 100), new PointF(700, 700));
+                 
+                 info.AddTPoint(0.02, new PointF(151.0F, 151.0F));
+                 info.AddTPoint(-0.02, new PointF(849.0F, 849.0F));
+                 var mark2 = new Test.AlignMark(info);
+                 
+                 // align
+                 Test.AlignManagerEx manager = new Test.AlignManagerEx(new Test.AlignMark[] { mark1, mark2 });
+                 var result = manager.AlignFromImagePoint(new PointF[] { new PointF(325, 675), new PointF(325, 325) });
+             </code>
+             </example>
+        </member>
+        <member name="M:Engion.Vision.AlignManagerEx.ReduceAngle(System.Double)">
+            <summary>
+            각도를 -180 ~ +180으로 조정한다.
+            </summary>
+            <param name="deg"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignManagerEx.ReduceAtan2(System.Double,System.Double)">
+            <summary>
+            기존 Atan2가 -180도에서 180도를 리턴하기 때무문에 x가 음수인 경우 각도가 -180, +180으로 널뛰기 하는 경우가 있에서
+            x가 y보다 클 경우에는 -45~+45를
+            y가 x보다 클 경우에는 45 ~ 135도를 리턴하도록 함수 수정
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignManagerEx.AlignFromImagePoint(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            실제 Align 작없을 한다.
+            이 함수를 호출하기 전에 Reg포인트가 설정되어 있어야한다..
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignManagerEx.Align(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            실제 Align 작없을 한다.
+            이 함수를 호출하기 전에 Reg포인트가 설정되어 있어야한다..
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.TestTheta">
+            <summary>
+            Theta를 돌리기 전의 좌표
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmBeforeThetaX">
+            <summary>
+            Theta를 돌리기 전의 좌표(스테이지 좌표계로 변환한 좌표)
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmBeforeThetaY">
+            <summary>
+            Theta를 돌리기 전의 좌표(스테이지 좌표계로 변환한 좌표)
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmBeforeTheta">
+            <summary>
+            Theta를 돌리기 전의 좌표(스테이지 좌표계로 변환한 좌표)
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.ImagePosBeforeTheta">
+            <summary>
+            Theta를 돌리기 전의 좌표(영상에서의 좌표)
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmAfterThetaX">
+            <summary>
+            Theta를 돌리 후의 좌표
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmAfterThetaY">
+            <summary>
+            Theta를 돌리 후의 좌표
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.UmAfterTheta">
+            <summary>
+            Theta를 돌리 후의 좌표
+            </summary>
+        </member>
+        <member name="P:Engion.Vision.AlignModule.ImagePosAfterTheta">
+            <summary>
+            Theta를 돌리 후의 좌표
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.FindFactor(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            세점을 넣어서 팩터를 찾는 함수
+            </summary>
+            <param name="imagePoints"></param>
+            <param name="stagePoints"></param>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.CalcCenterPoint(System.Drawing.PointF,System.Drawing.PointF,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="orgPoint"></param>
+            <param name="tgtPoint"></param>
+            <param name="theta"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.CalcUmAlignPoint(System.Drawing.PointF,System.Drawing.PointF,System.Double)">
+            <summary>
+            theta도를 틀어서 orgPoint가 tagPoint가 되었을 때 중심 위치를 0, 0로 했을 때의 org좌표를 구한다.
+            </summary>
+            <param name="orgPoint"></param>
+            <param name="tgtPoint"></param>
+            <param name="theta"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.CalcUmAlignPoint">
+            <summary>
+            theta도를 틀어서 orgPoint가 tagPoint가 되었을 때 중심 위치를 0, 0로 했을 때의 org좌표를 구한다.
+            받드시 umBeforeTheta, umAfterTheta, testTheta값을 채워놓고 불러야 한다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.ImagePosToRealPos(System.Drawing.PointF)">
+            <summary>
+            2019-06-05
+            영상좌표를 회전 중심을 기준으로 한 리얼 좌표로 바꾸어 준다.
+            MakeRealConvertor 함수가 잘못되어 수정 한 함수임.
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.AlignModule.MakeRealConvertor(System.Drawing.PointF,System.Drawing.PointF)">
+            <summary>
+            여기서 구하고자 하는 것은 현재 영상의 위치를 나타내는 회전 중심을 0,0로 한 리얼 위치이다.
+            </summary>
+            <param name="point">리얼 좌표이며 현재 영상의 base Point에서 Center까지의 거리이다.</param>
+            <param name="basePoint">현재 영상의 포인트</param>
+        </member>
+        <member name="P:Engion.Vision.AlignManager.RegStagePoint">
+            <summary>
+            Align으로 등록되어 있는 포인트
+            Stage좌표계의 좌표이며 Center를 0,0 좌표로 했을 때의 좌표이다.
+            </summary>
+        </member>
+        <member name="M:Engion.Vision.AlignManager.ReduceAtan2(System.Double,System.Double)">
+            <summary>
+            기존 Atan2가 -180도에서 180도를 리턴하기 때무문에 x가 음수인 경우 각도가 -180, +180으로 널뛰기 하는 경우가 있에서
+            x가 y보다 클 경우에는 -45~+45를
+            y가 x보다 클 경우에는 45 ~ 135도를 리턴하도록 함수 수정
+            </summary>
+            <param name="y"></param>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignManager.AlignFromImagePoint(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            실제 Align 작없을 한다.
+            이 함수를 호출하기 전에 Reg포인트가 설정되어 있어야한다..
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Vision.AlignManager.Align(System.Drawing.PointF[],System.Drawing.PointF[])">
+            <summary>
+            실제 Align 작없을 한다.
+            이 함수를 호출하기 전에 Reg포인트가 설정되어 있어야한다..
+            </summary>
+            <returns>검사 결과를 AlignResult 클래스로 반홚한다.
+            결과에서 각도는 Radian이다</returns>
+        </member>
+        <member name="F:Engion.Motion.PMACConsole.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Engion.Motion.PMACConsole.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Engion.Motion.PMACConsole.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Engion.IppIF.Mean(Engion.BitmapBuf,System.Drawing.Rectangle)">
+            <summary>
+            평균값을 구한다.
+            </summary>
+            <param name="srcData"></param>
+            <param name="roiRect"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.IppIF.Dilation(Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Byte[0:,0:],System.Drawing.Point)">
+            <summary>
+            Dialion을 한다.
+            Souce Image와 타겠이미지가 다르다.
+            </summary>
+            <param name="srcData"></param>
+            <param name="dstData"></param>
+            <param name="roiSrc"></param>
+            <param name="mask"></param>
+            <param name="anchor"></param>
+        </member>
+        <member name="M:Engion.IppIF.Sub(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            Base에서 Sub를 뺀다.
+            </summary>
+            <param name="subData"></param>
+            <param name="baseData"></param>
+            <param name="dstData"></param>
+            <param name="roiSub"></param>
+            <param name="roiBase"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.SubLT(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            Base에서 Sub를 뺀다.
+            </summary>
+            <param name="subData"></param>
+            <param name="baseData"></param>
+            <param name="dstData"></param>
+            <param name="roiSub"></param>
+            <param name="roiBase"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.And(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            두 영상의 And를 구한다.
+            </summary>
+            <param name="src1"></param>
+            <param name="src2"></param>
+            <param name="dstData"></param>
+            <param name="roiSrc2"></param>
+            <param name="roiSrc1"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.Or(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            두 영상의 Or 구한다.
+            </summary>
+            <param name="src1"></param>
+            <param name="src2"></param>
+            <param name="dstData"></param>
+            <param name="roiSrc2"></param>
+            <param name="roiSrc1"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.Xor(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            두 영상의 Xor 구한다.
+            </summary>
+            <param name="src1"></param>
+            <param name="src2"></param>
+            <param name="dstData"></param>
+            <param name="roiSrc2"></param>
+            <param name="roiSrc1"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.AbsDiff(Engion.BitmapBuf,Engion.BitmapBuf,Engion.BitmapBuf,System.Drawing.Rectangle,System.Drawing.Rectangle,System.Drawing.Point)">
+            <summary>
+            두 영상의 Duff 구한다.
+            </summary>
+            <param name="src1"></param>
+            <param name="src2"></param>
+            <param name="dstData"></param>
+            <param name="roiSrc2"></param>
+            <param name="roiSrc1"></param>
+            <param name="dstStartPoint"></param>
+        </member>
+        <member name="M:Engion.IppIF.MeanStdDev(Engion.BitmapBuf,System.Drawing.Rectangle,System.Double@,System.Double@)">
+            <summary>
+            평균값과 표준편차 값을 구한다.
+            </summary>
+            <param name="srcData"></param>
+            <param name="roiRect"></param>
+            <param name="mean"></param>
+            <param name="stddev"></param>
+        </member>
+        <member name="T:Engion.ImageExtensions">
+            <summary>
+            간당한 helper기능들을 모아놓은 클래스입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.CoordExtensions.AdjustRect(System.Drawing.Rectangle,System.Drawing.Rectangle)">
+            <summary>
+            사각형을 Target 사각형 안으로 들어오도록 한다.
+            사각형의 크기는 바뀌지 않고 위치를 조정해서 사각형의 크기를 맞춘다.
+            </summary>
+            <param name="r"></param>
+            <param name="target"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Multiply(System.Drawing.Point,System.Int32)">
+            <summary>
+            return new Point(p.X * m, p.Y * m);
+            </summary>
+            <param name="p"></param>
+            <param name="m"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Divide(System.Drawing.RectangleF,System.Double,System.Double)">
+            <summary>
+            RectangleF 의 각 항목에 대한 나눗셈 계산을 합니다.
+            코드는 아래와 같습니다.
+            return new RectangleF(r.Left / w, r.Top / h, r.Width / w, r.Height / h);
+            </summary>
+            <param name="r"></param>
+            <param name="w">가로 계산에 사용될 factor</param>
+            <param name="h">세로 계산에 사용될 factor</param>
+            <returns>계산결과로 만들어진 RectangleF를 리턴합니다.</returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Divide(System.Drawing.RectangleF,System.Double)">
+            <summary>
+            RectangleF 의 각 항목에 대한 나눗셈 계산을 합니다.
+            코드는 아래와 같습니다.
+            return new RectangleF(r.Left / f, r.Top / f, r.Width / f, r.Height / f);
+            </summary>
+            <param name="r"></param>
+            <param name="f">각 항목을 나눌 값</param>
+            <returns>계산결과로 만들어진 RectangleF를 리턴합니다.</returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Multiply(System.Drawing.RectangleF,System.Double)">
+            <summary>
+            RectangleF 의 각 항목에 대한 곱셈 계산을 합니다.
+            코드는 아래와 같습니다.
+            return new RectangleF(r.Left * w, r.Top * h, r.Width * w, r.Height * h);
+            </summary>
+            <param name="r"></param>
+            <param name="f">각 항목을 나눌 값</param>
+            <returns>계산결과로 만들어진 RectangleF를 리턴합니다.</returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Multiply(System.Drawing.RectangleF,System.Double,System.Double)">
+            <summary>
+            RectangleF 의 각 항목에 대한 곱셈값을 계산을 합니다.
+            코드는 아래와 같습니다.
+            return new RectangleF(r.Left * f, r.Top * f, r.Width * f, r.Height * f);
+            </summary>
+            <param name="r"></param>
+            <param name="w">가로 계산에 사용될 factor</param>
+            <param name="h">세로 계산에 사용될 factor</param>
+            <returns>계산결과로 만들어진 RectangleF를 리턴합니다.</returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.ToRectangleF(System.Drawing.Rectangle)">
+            <summary>
+            Recangle 변수를 RectangleF로 변환합니다.
+            </summary>
+            <param name="r"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.CoordExtensions.Normalize(System.Drawing.Rectangle)">
+            <summary>
+            Recangle 변수를 Normalize 해서 Size값을 양수로 만듭니다.
+            </summary>
+            <param name="r"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Engion.ImageContainer.components">
+            <summary> 
+            필수 디자이너 변수입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.ImageContainer.Dispose(System.Boolean)">
+            <summary> 
+            사용 중인 모든 리소스를 정리합니다.
+            </summary>
+            <param name="disposing">관리되는 리소스를 삭제해야 하면 true이고, 그렇지 않으면 false입니다.</param>
+        </member>
+        <member name="M:Engion.ImageContainer.InitializeComponent">
+            <summary> 
+            디자이너 지원에 필요한 메서드입니다. 
+            이 메서드의 내용을 코드 편집기로 수정하지 마세요.
+            </summary>
+        </member>
+        <member name="F:Engion.GlassViewer.components">
+            <summary>
+            필수 디자이너 변수입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.GlassViewer.Dispose(System.Boolean)">
+            <summary> 
+            사용 중인 모든 리소스를 정리합니다.
+            </summary>
+            <param name="disposing">관리되는 리소스를 삭제해야 하면 true이고, 그렇지 않으면 false입니다.</param>
+        </member>
+        <member name="M:Engion.GlassViewer.InitializeComponent">
+            <summary>
+            디자이너 지원에 필요한 메서드입니다.
+            이 메서드의 내용을 코드 편집기로 수정하지 마십시오.
+            </summary>
+        </member>
+        <member name="T:Engion.Net.OnReceiveDataDelegate`1">
+            <summary>
+            메시지를 보내고 그 결과를 받기 위한 형식
+            </summary>
+            <param name="owner"></param>
+            <param name="spec"></param>
+            <returns>
+            받은 데이터에 대한 처리 결괄를 리턴한다.
+            이 값은 ENetData의 Contents 항목으로 리턴 된다.
+            </returns>
+        </member>
+        <member name="T:Engion.Net.EClient`1">
+            <summary>
+            Server와 Client의 통신을 담당하는 class
+            </summary>
+        </member>
+        <member name="F:Engion.Net.EClient`1.OnReceiveData">
+            <summary>
+            데이터를 받았을 때 보내는 메시지.
+            </summary>
+        </member>
+        <member name="M:Engion.Net.EClient`1.#ctor(System.Object,System.String,System.Int32,Engion.LogEx)">
+            <summary>
+            Client용 소켓 초기화
+            </summary>
+            <param name="owner"></param>
+            <param name="serverAddress"></param>
+            <param name="serverPort"></param>
+            <param name="log">로그</param>
+        </member>
+        <member name="M:Engion.Net.EClient`1.#ctor(System.Object,System.Net.Sockets.Socket,Engion.LogEx)">
+            <summary>
+            서버용 소켓 초기화
+            </summary>
+            <param name="log"></param>
+            <param name="owner"></param>
+            <param name="socket"></param>
+        </member>
+        <member name="M:Engion.Net.EClient`1.ReceiveAsync(Engion.Net.OnReceiveDataDelegate{`0})">
+            <summary>
+            데이터를 받는 쓰레드를 실행시킨다.
+            </summary>
+            <param name="OnReceiveData">받은 데이터를 처리할 델리게이트</param>
+        </member>
+        <member name="M:Engion.Net.EClient`1.SendAsync(`0)">
+            <summary>
+            데이터를 보내는 쓰레드를 실행시킨다.
+            </summary>
+        </member>
+        <member name="M:Engion.Net.EClient`1.Connect(System.String,System.Int32,System.Int32)">
+            <summary>
+            지정시간동안만 Connect 시도를 하기 위한 함수
+            서버가 살아있는지 확인하는데 유용함
+            </summary>
+            <param name="ipAddr"></param>
+            <param name="port"></param>
+            <param name="timeout">타임아웃시간</param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Net.EClient`1.Send(`0)">
+            <summary>
+            
+            </summary>
+            <param name="commSpecObject">ENetData Type의 object</param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Net.EClient`1.SendEvent(`0)">
+            <summary>
+            통신을 통해서 받은 명령을 전달하고 그 결과를 리턴한다.
+            </summary>
+            <param name="spec">Client에서 전송받은 데이터</param>
+            <returns>송신자에게 리턴할 결과</returns>
+        </member>
+        <member name="M:Engion.Net.EClient`1.ReceiveWorker">
+            <summary>
+            데이터를 받고 결과를 리턴하는 루틴
+            Server로 동작할때 호출된다.
+            </summary>
+        </member>
+        <member name="T:Engion.Net.TENetData">
+            <summary>
+            EServer와 CommDataWorker용 데이터 클래스
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.IPNo">
+            <summary>
+            이 메시지가 전달 될 IP 번호
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.Name">
+            <summary>
+            이 메시지의 이름을 적는다.
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.WaitResponse">
+            <summary>
+            보낸 데이터에 대한 응답을 받지 않을 경우 true
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.Id">
+            <summary>
+            데이터 쌍일 때 데이터 번호
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.ConnectTimeout">
+            <summary>
+            Connect Timeout 시간. 기본 0.1초
+            </summary>
+        </member>
+        <member name="P:Engion.Net.TENetData.Timeout">
+            <summary>
+            보낸 데이터에 대한 응답을 받을 때 이 시간(ms)까지 응답이 없으면 timeout 에러 발생
+            </summary>
+        </member>
+        <member name="M:Engion.Net.TENetData.ToBytes">
+            <summary>
+            통신을 위해서 클래스를 byte[]로 바꾼다.
+            </summary>
+            <returns>해당 클래스의 내용을 가지고 있는 byte 배열</returns>
+        </member>
+        <member name="M:Engion.Net.TENetData.FromBytes(System.Byte[])">
+            <summary>
+            byte[]로 받은 데이터를 다시 Defect 클래스로 바꾼다.
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Engion.Net.EServer`1">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Engion.Net.EServer`1.OnReceiveData">
+            <summary>
+            데이터를 받았을 때 호출되는 콜백함수
+            </summary>
+        </member>
+        <member name="M:Engion.Net.EServer`1.#ctor(System.Object,Engion.Net.OnReceiveDataDelegate{`0},Engion.LogEx)">
+            <summary>
+            Sever 생성자
+            </summary>
+            <param name="OnReceiveData"></param>
+            <param name="log"></param>
+            <param name="owner"></param>
+        </member>
+        <member name="T:Engion.Net.ENetData">
+            <summary>
+            EServer와 CommDataWorker용 데이터 클래스
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.IPNo">
+            <summary>
+            이 메시지가 전달 될 IP 번호
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.Name">
+            <summary>
+            이 메시지의 이름을 적는다.
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.WaitResponse">
+            <summary>
+            보낸 데이터에 대한 응답을 받지 않을 경우 true
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.Id">
+            <summary>
+            데이터 쌍일 때 데이터 번호
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.Contents">
+            <summary>
+            보낼 데이터
+            </summary>
+        </member>
+        <member name="P:Engion.Net.ENetData.Timeout">
+            <summary>
+            보낸 데이터에 대한 응답을 받을 때 이 시간(ms)까지 응답이 없으면 timeout 에러 발생
+            </summary>
+        </member>
+        <member name="T:Engion.Net.OnAcceptDelegate">
+            <summary>
+            통신이 연결 되었을 때 호출되는 함수
+            </summary>
+            <param name="socket"></param>
+            <returns>리턴값이 false이면 통신을 끊는다.</returns>
+        </member>
+        <member name="T:Engion.Net.OnReceiveDataDelegate">
+            <summary>
+            메시지를 보내고 그 결과를 받기 위한 형식
+            </summary>
+            <param name="owner"></param>
+            <param name="spec"></param>
+            <returns>
+            받은 데이터에 대한 처리 결괄를 리턴한다.
+            이 값은 ENetData의 Contents 항목으로 리턴 된다.
+            </returns>
+        </member>
+        <member name="T:Engion.Net.CommDataWorker">
+            <summary>
+            Server와 Client의 통신을 담당하는 class
+            </summary>
+        </member>
+        <member name="F:Engion.Net.CommDataWorker.OnReceiveData">
+            <summary>
+            데이터를 받았을 때 보내는 메시지.
+            </summary>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.#ctor(System.Object,System.String,System.Int32,Engion.LogEx)">
+            <summary>
+            Client용 소켓 초기화
+            </summary>
+            <param name="owner"></param>
+            <param name="serverAddress"></param>
+            <param name="serverPort"></param>
+            <param name="log">로그</param>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.#ctor(System.Object,System.Net.Sockets.Socket,Engion.LogEx)">
+            <summary>
+            서버용 소켓 초기화
+            </summary>
+            <param name="log"></param>
+            <param name="owner"></param>
+            <param name="socket"></param>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.ReceiveAsync(Engion.Net.OnReceiveDataDelegate)">
+            <summary>
+            데이터를 받는 쓰레드를 실행시킨다.
+            </summary>
+            <param name="OnReceiveData">받은 데이터를 처리할 델리게이트</param>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.SendAsync(Engion.Net.ENetData)">
+            <summary>
+            데이터를 보내는 쓰레드를 실행시킨다.
+            </summary>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.Send(Engion.Net.ENetData)">
+            <summary>
+            
+            </summary>
+            <param name="commSpecObject">ENetData Type의 object</param>
+            <returns></returns>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.SendEvent(Engion.Net.ENetData)">
+            <summary>
+            통신을 통해서 받은 명령을 전달하고 그 결과를 리턴한다.
+            </summary>
+            <param name="spec">Client에서 전송받은 데이터</param>
+            <returns>송신자에게 리턴할 결과</returns>
+        </member>
+        <member name="M:Engion.Net.CommDataWorker.ReceiveWorker">
+            <summary>
+            데이터를 받고 결과를 리턴하는 루틴
+            Server로 동작할때 호출된다.
+            </summary>
+        </member>
+        <member name="T:Engion.Net.EServer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Engion.Net.EServer.OnReceiveData">
+            <summary>
+            데이터를 받았을 때 호출되는 콜백함수
+            </summary>
+        </member>
+        <member name="M:Engion.Net.EServer.#ctor(System.Object,Engion.Net.OnReceiveDataDelegate,Engion.LogEx)">
+            <summary>
+            Sever 생성자
+            </summary>
+            <param name="OnReceiveData"></param>
+            <param name="log"></param>
+            <param name="owner"></param>
+        </member>
+        <member name="T:Engion.Properties.Resources">
+            <summary>
+              지역화된 문자열 등을 찾기 위한 강력한 형식의 리소스 클래스입니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.ResourceManager">
+            <summary>
+              이 클래스에서 사용하는 캐시된 ResourceManager 인스턴스를 반환합니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.Culture">
+            <summary>
+              이 강력한 형식의 리소스 클래스를 사용하여 모든 리소스 조회에 대해 현재 스레드의 CurrentUICulture 속성을
+              재정의합니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.openHS">
+            <summary>
+              System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.PauseHS">
+            <summary>
+              System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.PlayHS">
+            <summary>
+              System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.saveHS">
+            <summary>
+              System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+            </summary>
+        </member>
+        <member name="P:Engion.Properties.Resources.StopHS">
+            <summary>
+              System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+            </summary>
+        </member>
+        <member name="T:Engion.LogViewer">
+            <summary>
+            </summary>
+        </member>
+        <member name="P:Engion.LogViewer.Format">
+            <summary>
+            {0} : Date
+            {1} : Type
+            {2} : Level
+            {3} : Message
+            {4} : MemberName
+            {5} : Source
+            default "{0:MM-dd HH:mm:ss.fff}, {1}, [{4},{5}] {3}"
+            </summary>
+        </member>
+        <member name="M:Engion.LogViewer.AddLogItemToTextBox(Engion.LogDbItem)">
+            <summary>
+            이 함수는 ManageLog함수에서 호출되는 함수이니 직접 호출하지 말것
+            </summary>
+        </member>
+        <member name="F:Engion.LogViewer.components">
+            <summary>
+            필수 디자이너 변수입니다.
+            </summary>
+        </member>
+        <member name="M:Engion.LogViewer.Dispose(System.Boolean)">
+            <summary> 
+            사용 중인 모든 리소스를 정리합니다.
+            </summary>
+            <param name="disposing">관리되는 리소스를 삭제해야 하면 true이고, 그렇지 않으면 false입니다.</param>
+        </member>
+        <member name="M:Engion.LogViewer.InitializeComponent">
+            <summary>
+            디자이너 지원에 필요한 메서드입니다.
+            이 메서드의 내용을 코드 편집기로 수정하지 마십시오.
+            </summary>
+        </member>
+        <member name="P:Engion.Shape.EShape.MinRectSize">
+            <summary>
+            화면에 그려질 최소 크기
+            </summary>
+        </member>
+        <member name="P:Engion.Shape.EShape.EditMode">
+            <summary>
+            크기를 조정할 수 있는 핸들 표시 여부
+            </summary>
+        </member>
+        <member name="P:Engion.Shape.EShape.Done">
+            <summary>
+             그리기가 완료되었는지 여부
+            </summary>
+        </member>
+        <member name="M:Engion.Shape.EShape.AddPoint(System.Drawing.Point)">
+            <summary>
+            Shape를 이루는 포인트를 추가한다.
+            마지막 포인트가 추가된 후에 Done flag를 true로 설정한다.
+            </summary>
+            <param name="point">추가될 Point</param>
+        </member>
+        <member name="M:Engion.Shape.EShape.SetRectangle(System.Drawing.Rectangle)">
+            <summary>
+            Rect나 Circle에 해당하는 좌표를 추가한다.
+            </summary>
+            <param name="rect">추가할 도형의 사각좌표</param>
+        </member>
+        <member name="M:Engion.Shape.EShape.SetLine(System.Drawing.Point[])">
+            <summary>
+            Line을 그리기 위한 포인트를 추가한다..
+            </summary>
+            <param name="points">추가할 포인트</param>
+        </member>
+        <member name="M:Engion.Shape.EShape.SetPolygon(System.Drawing.Point[])">
+            <summary>
+            다각형을 그리기 위한 포인트를 추가한다.
+            </summary>
+            <param name="points">추가할 포인트</param>
+        </member>
+        <member name="P:Engion.Shape.EShape.Rect">
+            <summary>
+            도형을 감싸고 있는 사각형의 좌표를 얻는다.
+            </summary>
+        </member>
+        <member name="M:Engion.Shape.EShape.GetRectPoints">
+            <summary>
+            아래 순서로 번호가 매겨짐
+            0  1  2
+            7     3
+            6  5  4
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Engion.SubRect">
+            <summary>
+            마진값을 설정 할 때 사용하는 구조체
+            </summary>
+        </member>
+        <member name="T:Engion.TryLockBufFreeException">
+            <summary>
+            BitmapBuf가 Lock 되어 있는 상태에서 자동으로 메모리 해지를 시도했을 경우 발생한다.
+            실제로 이 에러가 발생한다는 것은 SafeHandle의 동작에 문제가 있어서 검사중 메모리 해제를 시도하고 있는 것이다.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfRenderable">
+            <summary>
+            Internal use only. 
+            Objects that are renderable can emit RTF code.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfRenderable.render">
+            <summary>
+            Internal use only.
+            Emit RTF code.
+            </summary>
+            <returns>RTF code</returns>
+        </member>
+        <member name="T:DW.RtfWriter.RtfBlock">
+            <summary>
+            Internal use only.
+            RtfBlock is a content block that cannot contain other blocks.
+            For example, an image is an RtfBlock because it cannot contain
+            other content block such as another image, a paragraph, a table, 
+            etc.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.Alignment">
+            <summary>
+            How this block is aligned in its containing block.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.Margins">
+            <summary>
+            By what distance this block is separated from others in
+            the containing block.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.DefaultCharFormat">
+            <summary>
+            Default character formats.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.StartNewPage">
+            <summary>
+            When set to true, this block will be arranged in the beginning
+            of a new page.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.BlockHead">
+            <summary>
+            Internal use only.
+            Beginning RTF control words for this block.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlock.BlockTail">
+            <summary>
+            Internal use only.
+            Ending RTF control word for this block.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.Align">
+            <summary>
+            Horizontal alignment.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.AlignVertical">
+            <summary>
+            Vertical alignment.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.Direction">
+            <summary>
+            Top, bottom, left, and right.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.PaperSize">
+            <summary>
+            Types of paper sizes.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.PaperOrientation">
+            <summary>
+            Types of paper orientaion.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.Lcid">
+            <summary>
+            Types of locality.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.FontStyleFlag">
+            <summary>
+            Types of font styles.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.ImageFileType">
+            <summary>
+            Types of image files.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.BorderStyle">
+            <summary>
+            Types of border styles.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.TwoInOneStyle">
+            <summary>
+            Types of two-in-one style quoting symbols.
+            (For Far East character formatting.)
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.HeaderFooterType">
+            <summary>
+            Internal use only.
+            Specify whether a RtfHeaderFooter object is header or footer.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.SectionStartEnd">
+            <summary>
+            Specify whether an RtfSection is of type Start or End
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.FontStyle">
+            <summary>
+            Container for a set of font styles. It is helpful when more than
+            one of the font styles (e.g., both bold and italic) are associated with 
+            some characters.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.FontStyle.#ctor">
+            <summary>
+            Internal use only.
+            Constructor that initializes as containing none of the styles.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.FontStyle.#ctor(DW.RtfWriter.FontStyle)">
+            <summary>
+            Internal use only.
+            Copy constructor.
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="M:DW.RtfWriter.FontStyle.addStyle(DW.RtfWriter.FontStyleFlag)">
+            <summary>
+            Add a font style to the set. Adding a font style
+            that is already in the set has no effect.
+            </summary>
+            <param name="sty">Font style to be added.</param>
+        </member>
+        <member name="M:DW.RtfWriter.FontStyle.removeStyle(DW.RtfWriter.FontStyleFlag)">
+            <summary>
+            Remove a font style from the set. Removing a font style
+            that is already not in the set has no effect.
+            </summary>
+            <param name="sty">Font style to be removed.</param>
+        </member>
+        <member name="M:DW.RtfWriter.FontStyle.containsStyleAdd(DW.RtfWriter.FontStyleFlag)">
+            <summary>
+            Test whether a font style is in the set.
+            </summary>
+            <param name="sty">Font style to be tested.</param>
+            <returns>True if the font style is in the set; false otherwise.</returns>
+        </member>
+        <member name="P:DW.RtfWriter.FontStyle.IsEmpty">
+            <summary>
+            Indicate whether the set is empty.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.FontDescriptor">
+            <summary>
+            A descriptor for a font. Fonts are assigned as descriptors,
+            not names (e.g., Times New Roman). 
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.FontDescriptor.#ctor(System.Int32)">
+            <summary>
+            Internal use only.
+            Constructor.
+            </summary>
+            <param name="descr">Internal representative integer of the font.</param>
+        </member>
+        <member name="P:DW.RtfWriter.FontDescriptor.Value">
+            <summary>
+            Internal use only.
+            Get internal representative integer of the font.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.ColorDescriptor">
+            <summary>
+            A descriptor for a color. Colors are assigned as descriptors,
+            not names (e.g., #ff0000, or RED). 
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.ColorDescriptor.#ctor(System.Int32)">
+            <summary>
+            Internal use only.
+            Constructor.
+            </summary>
+            <param name="descr">Internal representative integer for the color.</param>
+        </member>
+        <member name="P:DW.RtfWriter.ColorDescriptor.Value">
+            <summary>
+            Internal use only.
+            Get internal representative integer for the color.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.Margins">
+            <summary>
+            Margin settings for a content block, containing four margin values.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Margins.#ctor">
+            <summary>
+            Internal use only.
+            Constructor that initializes all four margins as -1.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Margins.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Internal use only.
+            Constructor that gives initial values for all four margins.
+            </summary>
+            <param name="t">Top margin size in points.</param>
+            <param name="r">Right margin size in points.</param>
+            <param name="b">Bottom margin size in points.</param>
+            <param name="l">Left margin size in points.</param>
+        </member>
+        <member name="P:DW.RtfWriter.Margins.Item(DW.RtfWriter.Direction)">
+            <summary>
+            Indexer that allows getting and setting of one of the four margin values.
+            </summary>
+            <param name="d">The direction at which the margin locates. One of top, 
+            right, bottom, left.</param>
+            <returns>Margin size in points.</returns>
+        </member>
+        <member name="T:DW.RtfWriter.Border">
+            <summary>
+            Border attributes for table cells.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Border.#ctor">
+            <summary>
+            Internal use only.
+            Default constructor that sets border style to None.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Border.Equals(System.Object)">
+            <summary>
+            Indirect use only.
+            See if two borders are equal.
+            </summary>
+            <param name="obj">Border object to be compared with.</param>
+            <returns>True if the two borders are equal; false otherwise.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.Border.GetHashCode">
+            <summary>
+            Indirect use only.
+            Differentiate borders.
+            </summary>
+            <returns>A hash code representing different sets of border attributes.</returns>
+        </member>
+        <member name="P:DW.RtfWriter.Border.Style">
+            <summary>
+            Get or set the border style.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.Border.Width">
+            <summary>
+            Get or set the width of the border line.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.Border.Color">
+            <summary>
+            Get or set the border color.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.Borders">
+            <summary>
+            Border settings for a table cell, containing four sets of border attributes.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Borders.#ctor">
+            <summary>
+            Internal use only.
+            Default constructor that sets all border style to None.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.Borders.Item(DW.RtfWriter.Direction)">
+            <summary>
+            Indexer that gets border attributes for borders in any of the four
+            direction. 
+            </summary>
+            <param name="d">The direction at which the border locates. One of top
+            right, bottom, left.</param>
+            <returns>The border attributes.</returns>
+        </member>
+        <member name="T:DW.RtfWriter.Color">
+            <summary>
+            Colors to be applied in the document. Note that objects of this class
+            cannot be assigned to document directly. Instead, they work through
+            ColorDescriptor objects.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Color.#ctor">
+            <summary>
+            Default constructor that initialized as black color.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.Color.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Constructor that initializes using RGB values.
+            </summary>
+            <param name="red">Red component of the color.</param>
+            <param name="green">Green component of the color.</param>
+            <param name="blue">Blue component of the color.</param>
+        </member>
+        <member name="M:DW.RtfWriter.Color.#ctor(System.String)">
+            <summary>
+            Constructor that initializes using a string representation of 
+            a hexadecimal value.
+            </summary>
+            <param name="hex">String representation of a hexadecimal value, such
+            as "FF0000" or "00AB12".</param>
+        </member>
+        <member name="M:DW.RtfWriter.Color.#ctor(System.Drawing.Color)">
+            <summary>
+            Constructor that initializes using System Drawing colour
+            </summary>
+            <param name="color">System Drawing Colour</param>
+        </member>
+        <member name="M:DW.RtfWriter.Color.Equals(System.Object)">
+            <summary>
+            Indirect use only.
+            See if two colors are the same.
+            </summary>
+            <param name="obj">Color object to be compared with.</param>
+            <returns>True if two colors are identical; false otherwise.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.Color.GetHashCode">
+            <summary>
+            Indirect use only.
+            Differentiate colors.
+            </summary>
+            <returns>A hash code used to differentiate colors.</returns>
+        </member>
+        <member name="P:DW.RtfWriter.Color.Red">
+            <summary>
+            Get or set the red component of the color.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.Color.Green">
+            <summary>
+            Get or set the green component of the color.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.Color.Blue">
+            <summary>
+            Get or set the blue component of the color.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.CellMergeInfo">
+            <summary>
+            Internal use only.
+            A collection of cell merging information associated with each table cell being merged.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.CellMergeInfo.#ctor(DW.RtfWriter.RtfTableCell,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Internal use only.
+            Constructor.
+            </summary>
+            <param name="representative">Representative cell for the cell. 
+            (Usually the one located at top left corner of the group of merged cell.)</param>
+            <param name="rowSpan">Number of rows that this group of merged cells spans.</param>
+            <param name="colSpan">Number of columns that this group of merged cells spans.</param>
+            <param name="rowIndex">The relative row index of the cell within this group 
+            of merged cells.</param>
+            <param name="colIndex">The relative column index of the cell within this group 
+            of merged cells.</param>
+        </member>
+        <member name="P:DW.RtfWriter.CellMergeInfo.RowSpan">
+            <summary>
+            Get the number of rows that this group of merged cells spans.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.CellMergeInfo.ColSpan">
+            <summary>
+            Get the number of columns that this group of merged cells spans.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.CellMergeInfo.RowIndex">
+            <summary>
+            Get the relative row index of the cell within this group of merged cells.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.CellMergeInfo.ColIndex">
+            <summary>
+            Get the relative column index of the cell within this group of merged cells.
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.CellMergeInfo.Representative">
+            <summary>
+            Get the representative cell of the cell.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.DefaultValue">
+            <summary>
+            Internal use only.
+            Constant values for default document settings.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfBlockList">
+            <summary>
+            A container for an array of content blocks. For example, a footnote
+            is a RtfBlockList because it may contains a paragraph and an image.
+            </summary>
+        </member>
+        <member name="F:DW.RtfWriter.RtfBlockList._blocks">
+            <summary>
+            Storage for array of content blocks.
+            </summary>
+        </member>
+        <member name="F:DW.RtfWriter.RtfBlockList._defaultCharFormat">
+            <summary>
+            Default character formats within this container.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.#ctor">
+            <summary>
+            Internal use only.
+            Default constructor that allows containing all types of content blocks.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Internal use only.
+            Constructor specifying allowed content blocks to be contained.
+            </summary>
+            <param name="allowParagraph">Whether an RtfParagraph is allowed.</param>
+            <param name="allowTable">Whether RtfTable is allowed.</param>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Internal use only.
+            Constructor specifying allowed content blocks to be contained.
+            </summary>
+            <param name="allowParagraph">Whether an RtfParagraph is allowed.</param>
+            <param name="allowFootnote">Whether an RtfFootnote is allowed in contained RtfParagraph.</param>
+            <param name="allowControlWord">Whether an field control word is allowed in contained
+            RtfParagraph.</param>
+            <param name="allowImage">Whether RtfImage is allowed.</param>
+            <param name="allowTable">Whether RtfTable is allowed.</param>
+        </member>
+        <member name="P:DW.RtfWriter.RtfBlockList.DefaultCharFormat">
+            <summary>
+            Get default character formats within this container.
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.addParagraph">
+            <summary>
+            Add a paragraph to this container.
+            </summary>
+            <returns>Paragraph being added.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.addSection(DW.RtfWriter.SectionStartEnd,DW.RtfWriter.RtfDocument)">
+            <summary>
+            Add a section to this container
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.addImage(System.String,DW.RtfWriter.ImageFileType)">
+            <summary>
+            Add an image to this container.
+            </summary>
+            <param name="imgFname">Filename of the image.</param>
+            <param name="imgType">File type of the image.</param>
+            <returns>Image being added.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.addImage(System.String)">
+            <summary>
+            Add an image to this container.
+            </summary>
+            <param name="imgFname">Filename of the image.</param>
+            <returns>Image being added.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.addTable(System.Int32,System.Int32,System.Single,System.Single)">
+            <summary>
+            Add a table to this container.
+            </summary>
+            <param name="rowCount">Number of rows in the table.</param>
+            <param name="colCount">Number of columns in the table.</param>
+            <param name="horizontalWidth">Horizontabl width (in points) of the table.</param>
+            <param name="fontSize">The size of font used in this table. This is used to calculate margins.</param>
+            <returns>Table begin added.</returns>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.transferBlocksTo(DW.RtfWriter.RtfBlockList)">
+            <summary>
+            Internal use only. 
+            Transfer all content blocks to another RtfBlockList object.
+            </summary>
+            <param name="target">Target RtfBlockList object to transfer to.</param>
+        </member>
+        <member name="M:DW.RtfWriter.RtfBlockList.render">
+            <summary>
+            Internal use only. 
+            Emit RTF code.
+            </summary>
+            <returns>Resulting RTF code for this object.</returns>
+        </member>
+        <member name="T:DW.RtfWriter.RtfCharFormat">
+            <summary>
+            Summary description for RtfCharFormat
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfDocument">
+            <summary>
+            Summary description for RtfDocument
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfFootnote">
+            <summary>
+            Summary description for RtfFootnote
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfHeaderFooter">
+            <summary>
+            Summary description for RtfHeaderFooter
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfImage">
+            <summary>
+            Summary description for RtfImage
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfParagraph">
+            <summary>
+            Summary description for RtfParagraph
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfParagraph.addCharFormat(System.Int32,System.Int32)">
+            <summary>
+            Add a character formatting to a range in this paragraph.
+            To specify the whole paragraph as the range, set begin = end = -1.
+            Format that is added latter will override the former, if their 
+            range overlays each other.
+            </summary>
+            <param name="begin">Beginning of the range</param>
+            <param name="end">End of the range</param>
+        </member>
+        <member name="P:DW.RtfWriter.RtfSection.PageWidth">
+            <summary>
+            Pagewidth in twips
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfSection.PageHeight">
+            <summary>
+            Page height in twips
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfTable">
+            <summary>
+            Summary description for RtfTable
+            </summary>
+        </member>
+        <member name="P:DW.RtfWriter.RtfTable.TitleRowCount">
+            <summary>
+            Title row will be displayed in every page on which the table appears.
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfTableCell">
+            <summary>
+            Summary description for RtfTableCell
+            </summary>
+        </member>
+        <member name="T:DW.RtfWriter.RtfUtility">
+            <summary>
+            Summary description for RtfUtility
+            </summary>
+        </member>
+        <member name="M:DW.RtfWriter.RtfUtility.big5Encode(System.String)">
+            <summary>
+            big5 encoding (preserve this function for failure restoration)
+            </summary>
+            <param name="str">string to be encoded</param>
+            <returns>encoded string</returns>
+        </member>
+    </members>
+</doc>
